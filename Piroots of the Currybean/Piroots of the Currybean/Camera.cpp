@@ -28,13 +28,13 @@ void Camera::DestroyInstance() {
 	std::cout << "Camera Destroyed\n";
 }
 
-glm::mat4 & Camera::GetMatrix() {
+glm::mat4& Camera::GetMatrix() {
 	View = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	Projection = glm::perspective(1.0f, 1.0f, 0.1f, 100.0f);
 	glm::mat4 RotationMatrix =
 		glm::rotate(
 		glm::mat4(),
-		glm::radians(-45.0f),
+		glm::radians(-30.0f),
 		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 
@@ -49,5 +49,7 @@ glm::mat4 & Camera::GetMatrix() {
 }
 
 void Camera::SetCameraPos(glm::vec3 _SnapToPos) {
+	CameraPos = _SnapToPos / 375.0f;
+	GetMatrix();
 
 }

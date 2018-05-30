@@ -11,7 +11,8 @@ struct Level {
 	CEntity BG;
 	Cube box;*/
 	CUBE bleh;
-	//Pyramid pyramid;
+	CUBE Mehg;
+	PYRAMID pyramid;
 	//Text Title = Text("Jack Sparrow", ARIAL, glm::vec2(10.0f, 700.0f));
 
 	void Draw(GLuint _Program, glm::mat4 _VPMat) {
@@ -19,6 +20,7 @@ struct Level {
 		/*box.Draw(_Program, Camera::GetMatrix());*/
 		//PlayerObj.Process(_Program, _VPMat);
 		bleh.Draw(_Program, Camera::GetMatrix());
+		pyramid.Draw(_Program, Camera::GetMatrix());
 		for (auto it : EntityVect) {
 			it.Draw(_Program, _VPMat);
 		}

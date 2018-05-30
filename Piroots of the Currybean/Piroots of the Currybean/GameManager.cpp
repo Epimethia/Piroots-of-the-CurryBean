@@ -44,6 +44,19 @@ void GameManager::GenerateLevels() {
 		glm::vec3(0.1f, 0.1f, 0.1f),
 		glm::vec3(0.0f, 0.0f, 0.0f)
 	);
+	Level1.Mehg = CUBE(
+		PLAYER_SPRITE,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.3f, 0.3f, 0.3f),
+		glm::vec3(0.0f, 0.0f, 0.0f)
+	);
+
+	Level1.pyramid = PYRAMID(
+		PLAYER_SPRITE,
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.1f, 0.1f, 0.1f),
+		glm::vec3(0.0f, 0.0f, 0.0f)
+	);
 	LevelVect.push_back(Level1);
 
 }

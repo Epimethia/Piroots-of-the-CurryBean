@@ -64,12 +64,14 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 	}
 
 	
-	float x = _PlayerObj.GetPos().x / 375.0f;
-	float y = -0.3f + (_PlayerObj.GetPos().y / 375.0f);
-	float z = _PlayerObj.GetPos().z + 1.0f;
+	float x = _PlayerObj.GetPos().x / 375.0f * -1.0f;
+	float y = -0.3f + (_PlayerObj.GetPos().y / 375.0f) * -1.0f;
+	float z = _PlayerObj.GetPos().z;
 
 	//Setting Camera Pos
-	Camera::SetCameraPos(glm::vec3(x, y, z));
+	Camera::GetPos().x = x;
+	Camera::GetPos().y = y;
+	Camera::GetPos().z = z;
 
 }
 
