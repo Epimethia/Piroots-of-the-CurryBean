@@ -1,20 +1,20 @@
 #pragma once
 #include "Resource.h"
 
-class Entity3D {
+class Entity {
 public:
-	Entity3D();
+	Entity();
+	~Entity();
 	virtual void Draw(GLuint _Program, glm::mat4 _VPMatrix);
-	~Entity3D();
-protected:
 	glm::vec3 ObjPos;
+protected:
 	GLuint VAO;
 	GLuint Texture;
 	glm::mat4 ModelMatrix;
 	glm::mat4 VPMatrix;
 };
 
-class CUBE : public Entity3D {
+class CUBE : public Entity {
 public:
 	CUBE();
 	CUBE(const char* _TextureRef, float _xPos, float _yPos, float _zPos, float _Scale, float _Rot);
@@ -22,7 +22,7 @@ public:
 	~CUBE();
 };
 
-class PYRAMID : public Entity3D {
+class PYRAMID : public Entity {
 public:	
 	PYRAMID();
 	PYRAMID(const char* _TextureRef, float _xPos, float _yPos, float _zPos, float _Scale, float _Rot);

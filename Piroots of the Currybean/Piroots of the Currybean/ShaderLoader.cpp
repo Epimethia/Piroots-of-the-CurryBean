@@ -1,4 +1,4 @@
-#include "Shader Loader.h" 
+#include "ShaderLoader.h" 
 
 ShaderLoader::ShaderLoader(void) {}
 ShaderLoader::~ShaderLoader(void) {}

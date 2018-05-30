@@ -28,6 +28,15 @@
     <Filter Include="System\Game Manager">
       <UniqueIdentifier>{acea45ca-ae11-4905-9760-4f205ef9e7c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Camera">
+      <UniqueIdentifier>{344f916a-5aa3-4c93-82a3-8ab0131e3a4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Input Manager">
+      <UniqueIdentifier>{2d72e6a4-dad0-4c6f-b55b-1879e6c9b85b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Sound Manager">
+      <UniqueIdentifier>{15c9c88d-6473-4fcb-8b87-42fe73aef137}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -39,8 +48,20 @@
     <ClCompile Include="Entity.cpp">
       <Filter>System\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="Shader Loader.cpp">
+    <ClCompile Include="ShaderLoader.cpp">
       <Filter>System\Shader Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>System\Game Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>System\Sound Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>System\Input Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>System\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,8 +74,17 @@
     <ClInclude Include="GameManager.h">
       <Filter>System\Game Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Shader Loader.h">
+    <ClInclude Include="ShaderLoader.h">
       <Filter>System\Shader Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>System\Sound Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>System\Input Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>System\Camera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

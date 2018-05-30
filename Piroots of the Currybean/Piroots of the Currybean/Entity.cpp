@@ -1,15 +1,15 @@
 #include "Entity.h"
 
-Entity3D::Entity3D() {
+Entity::Entity() {
 	ObjPos = { 0.0f, 0.0f, 0.0f };
 	VAO = 0;
 	Texture = 0;
 	ModelMatrix = glm::mat4();
 	VPMatrix = glm::mat4();
 };
-Entity3D::~Entity3D() {};
+Entity::~Entity() {};
 
-void Entity3D::Draw(GLuint _Program, glm::mat4 _VPMatrix) {};
+void Entity::Draw(GLuint _Program, glm::mat4 _VPMatrix) {};
 
 #pragma region CUBE FUNCTION DECLARATIONS
 //Cube Constructor
@@ -153,27 +153,7 @@ CUBE::CUBE(const char* _SpriteRef, float _xPos, float _yPos, float _zPos, float 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	//#########MOVE ELSEWHERE#############/
-	glm::mat4 TranslationMatrix =
-		glm::translate(
-		glm::mat4(),
-		glm::vec3(0.0f, 0.0f, 0.1f)
-		);
-
-	glm::mat4 RotationMatrix =
-		glm::rotate(
-		glm::mat4(),
-		glm::radians(0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-
-	glm::mat4 ScaleMatrix =
-		glm::scale(
-		glm::mat4(),
-		glm::vec3(0.1f, 0.1f, 0.1f)
-		);
-
-	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
+;
 
 }
 
@@ -199,6 +179,28 @@ void CUBE::Draw(GLuint _Program, glm::mat4 _VPMatrix) {
 
 	//Sending the texture to the GPU via uniform
 	glUniform1i(glGetUniformLocation(_Program, "tex"), 0);
+
+	//Translating the cube (x,y,z)
+	glm::mat4 TranslationMatrix =
+		glm::translate(
+		glm::mat4(),
+		glm::vec3(0.0f, 0.0f, 0.1f)
+		);
+
+	glm::mat4 RotationMatrix =
+		glm::rotate(
+		glm::mat4(),
+		glm::radians(0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
+		);
+
+	glm::mat4 ScaleMatrix =
+		glm::scale(
+		glm::mat4(),
+		glm::vec3(0.1f, 0.1f, 0.1f)
+		);
+
+	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
 
 	glm::mat4 MVP = _VPMatrix * ModelMatrix;
 
