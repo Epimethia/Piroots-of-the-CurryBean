@@ -5,11 +5,20 @@ class Entity {
 public:
 	Entity();
 	~Entity();
+	virtual glm::vec3& GetPos() { return ObjPos; };
+	virtual glm::vec3& GetScale() { return ObjScale; };
+	virtual glm::vec3& GetRotation() { return ObjRotation; };
 	virtual void Draw(GLuint _Program, glm::mat4 _VPMatrix);
-	glm::vec3 ObjPos;
+
+
 protected:
 	GLuint VAO;
 	GLuint Texture;
+
+	glm::vec3 ObjPos;
+	glm::vec3 ObjScale;
+	glm::vec3 ObjRotation;
+
 	glm::mat4 ModelMatrix;
 	glm::mat4 VPMatrix;
 };
@@ -17,7 +26,7 @@ protected:
 class CUBE : public Entity {
 public:
 	CUBE();
-	CUBE(const char* _TextureRef, float _xPos, float _yPos, float _zPos, float _Scale, float _Rot);
+	CUBE(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
 	void Draw(GLuint _Program, glm::mat4 _VPMatrix);
 	~CUBE();
 };
@@ -25,7 +34,15 @@ public:
 class PYRAMID : public Entity {
 public:	
 	PYRAMID();
-	PYRAMID(const char* _TextureRef, float _xPos, float _yPos, float _zPos, float _Scale, float _Rot);
+	PYRAMID(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
 	void Draw(GLuint _Program, glm::mat4 _VPMatrix);
 	~PYRAMID();
+};
+
+class WAVEPLANE : public Entity {
+public:
+	WAVEPLANE();
+
+	~WAVEPLANE();
+
 };

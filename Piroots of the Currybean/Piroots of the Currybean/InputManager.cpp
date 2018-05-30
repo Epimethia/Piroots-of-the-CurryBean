@@ -20,26 +20,26 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 
 	//RIGHT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_HELD) {
-		_PlayerObj.ObjPos.x += 2.0f;
-		if (_PlayerObj.ObjPos.x > 350.0f) _PlayerObj.ObjPos.x = 350.0f;
+		_PlayerObj.GetPos().x += 2.0f;
+		if (_PlayerObj.GetPos().x > 350.0f) _PlayerObj.GetPos().x = 350.0f;
 	} else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_RIGHT] = KEY_HELD;
 
 	//LEFT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
-		_PlayerObj.ObjPos.x -= 2.0f;
-		if (_PlayerObj.ObjPos.x < -350.0f) _PlayerObj.ObjPos.x = -350.0f;
+		_PlayerObj.GetPos().x -= 2.0f;
+		if (_PlayerObj.GetPos().x < -350.0f) _PlayerObj.GetPos().x = -350.0f;
 	} else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_LEFT] = KEY_HELD;
 
 	//UP KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
-		_PlayerObj.ObjPos.y += 2.0f;
-		if (_PlayerObj.ObjPos.y > 350.0f) _PlayerObj.ObjPos.y = 350.0f;
+		_PlayerObj.GetPos().y += 2.0f;
+		if (_PlayerObj.GetPos().y > 350.0f) _PlayerObj.GetPos().y = 350.0f;
 
 	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
 
 	if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
-		_PlayerObj.ObjPos.y -= 2.0f;
-		if (_PlayerObj.ObjPos.y < -350.0f) _PlayerObj.ObjPos.y = -350.0f;
+		_PlayerObj.GetPos().y -= 2.0f;
+		if (_PlayerObj.GetPos().y < -350.0f) _PlayerObj.GetPos().y = -350.0f;
 
 	} else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_DOWN] = KEY_HELD; 
 
@@ -67,8 +67,8 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 	}
 
 	//Setting Camera Pos
-	Camera::GetPos().x = (_PlayerObj.ObjPos.x / 375.0f) * -1.0f;
-	Camera::GetPos().y = -0.3f + (_PlayerObj.ObjPos.y / 375.0f) * -1.0f;
+	Camera::GetPos().x = (_PlayerObj.GetPos().x / 375.0f) * -1.0f;
+	Camera::GetPos().y = -0.3f + (_PlayerObj.GetPos().y / 375.0f) * -1.0f;
 
 }
 

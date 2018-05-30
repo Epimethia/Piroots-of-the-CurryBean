@@ -13,9 +13,14 @@ struct Level {
 	CUBE bleh;
 	//Pyramid pyramid;
 	//Text Title = Text("Jack Sparrow", ARIAL, glm::vec2(10.0f, 700.0f));
-
+	
 	Level() {
-		bleh = CUBE(PLAYER_SPRITE, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		bleh = CUBE(
+			PLAYER_SPRITE,
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.1f, 0.1f, 0.1f),
+			glm::vec3(0.0f, 0.0f, 0.0f)
+		);
 	}
 
 	void Draw(GLuint _Program, glm::mat4 _VPMat) {

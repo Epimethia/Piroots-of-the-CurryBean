@@ -22,7 +22,12 @@ CUBE::CUBE() {
 }
 
 //Cube Constructor overload
-CUBE::CUBE(const char* _SpriteRef, float _xPos, float _yPos, float _zPos, float _Scale, float _Rot) {
+CUBE::CUBE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
+	//Setting position, scale and rotation
+	ObjPos = _Pos;
+	ObjScale = _Scale;
+	ObjRotation = _Rot;
+
 	//Defining Cube Vertices
 	GLfloat CubeVerts[] = {
 		// Positions             // Color Coords        // TexCoords
@@ -152,7 +157,6 @@ CUBE::CUBE(const char* _SpriteRef, float _xPos, float _yPos, float _zPos, float 
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 ;
 
 }
@@ -181,26 +185,38 @@ void CUBE::Draw(GLuint _Program, glm::mat4 _VPMatrix) {
 	glUniform1i(glGetUniformLocation(_Program, "tex"), 0);
 
 	//Translating the cube (x,y,z)
-	glm::mat4 TranslationMatrix =
-		glm::translate(
-		glm::mat4(),
-		glm::vec3(0.0f, 0.0f, 0.1f)
-		);
+	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f,0.0f));
 
-	glm::mat4 RotationMatrix =
+	//Z Rotation
+	glm::mat4 RotateZ =
 		glm::rotate(
 		glm::mat4(),
-		glm::radians(0.0f),
+		glm::radians(ObjRotation.z),
 		glm::vec3(0.0f, 0.0f, 1.0f)
 		);
 
-	glm::mat4 ScaleMatrix =
-		glm::scale(
+	//Y Rotation
+	glm::mat4 RotateY =
+		glm::rotate(
 		glm::mat4(),
-		glm::vec3(0.1f, 0.1f, 0.1f)
+		glm::radians(ObjRotation.y),
+		glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 
+	//X Rotation
+	glm::mat4 RotateX =
+		glm::rotate(
+		glm::mat4(),
+		glm::radians(ObjRotation.x),
+		glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+
+	glm::mat4 RotationMatrix = RotateZ * RotateY * RotateX;
+
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), ObjScale);
+
 	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
+
 
 	glm::mat4 MVP = _VPMatrix * ModelMatrix;
 
@@ -228,6 +244,8 @@ CUBE::~CUBE() {};
 //Pyramid Constructor
 PYRAMID::PYRAMID() {
 	ObjPos = { 0.0f, 0.0f, 0.0f };
+	ObjScale = { 0.0f, 0.0f, 0.0f };
+	ObjRotation = { 0.0f, 0.0f, 0.0f };
 	VAO = 0;
 	Texture = 0;
 	ModelMatrix = glm::mat4();
@@ -235,7 +253,10 @@ PYRAMID::PYRAMID() {
 }
 
 //Pyramid Overload Constructor
-PYRAMID::PYRAMID(const char* _TextureRef, float _xPos, float _yPos, float _zPos, float _Scale, float _Rot) {
+PYRAMID::PYRAMID(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
+	ObjPos = _Pos;
+	ObjScale = _Scale;
+	ObjRotation = _Rot;
 	//Defining Pyramid Vertices
 	GLfloat PyramidVerts[25] = {
 		// Positions		// Tex Coords
@@ -374,5 +395,9 @@ void PYRAMID::Draw(GLuint _Program, glm::mat4 _VPMatrix) {
 }
 
 PYRAMID::~PYRAMID() {};
+
+#pragma endregion
+
+#pragma region WAVEPLANE FUNCTION DECLARATIONS
 
 #pragma endregion
