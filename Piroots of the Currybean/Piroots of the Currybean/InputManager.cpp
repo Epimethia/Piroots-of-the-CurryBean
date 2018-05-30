@@ -51,10 +51,8 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 		//	CBullet Bullet(x, y, 0.25f, 0.0f);
 		//	GameManager::GetInstance()->GetCurrentLevel().BulletVect.push_back(Bullet);
 		//	GameManager::GetInstance()->GetCurrentLevel().PlayerObj.CanShoot = false;
-		std::cout << "Bullet Shot\n";
 	}
 	else {
-		std::cout << "Bullet on cooldown\n";
 		KeyArray[32] = KEY_HELD;
 	}
 
@@ -62,13 +60,16 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 		//Do esc stuff
 	}
 	else if (KeyArray[27] == KEY_FIRST_PRESS) {
-		std::cout << "Esc Held\n";
 		KeyArray[27] = KEY_HELD;
 	}
 
+	
+	float x = _PlayerObj.GetPos().x / 375.0f;
+	float y = -0.3f + (_PlayerObj.GetPos().y / 375.0f);
+	float z = _PlayerObj.GetPos().z + 1.0f;
+
 	//Setting Camera Pos
-	Camera::GetPos().x = (_PlayerObj.GetPos().x / 375.0f) * -1.0f;
-	Camera::GetPos().y = -0.3f + (_PlayerObj.GetPos().y / 375.0f) * -1.0f;
+	Camera::SetCameraPos(glm::vec3(x, y, z));
 
 }
 
@@ -78,12 +79,10 @@ void InputManager::NormKeyDown(unsigned char key, int x, int y) {
 	switch (key) {
 		case 32: {
 			KeyArray[32] = KEY_FIRST_PRESS;
-			std::cout << "Space Down\n";
 			break;
 		}
 		case 27: {
 			KeyArray[27] = KEY_FIRST_PRESS;
-			std::cout << "Esc Down\n";
 			break;
 		}
 	}
@@ -93,12 +92,10 @@ void InputManager::NormKeyUp(unsigned char key, int x, int y) {
 	switch (key) {
 		case 32: {
 			KeyArray[32] = KEY_RELEASED;
-			std::cout << "Space Released\n";
 			break;
 		}
 		case 27: {
 			KeyArray[27] = KEY_RELEASED;
-			std::cout << "Esc Released\n";
 			break;
 		}
 		default:break;

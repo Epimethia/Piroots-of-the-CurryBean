@@ -9,7 +9,76 @@ Entity::Entity() {
 };
 Entity::~Entity() {};
 
-void Entity::Draw(GLuint _Program, glm::mat4 _VPMatrix) {};
+void Entity::Draw(GLuint _Program, glm::mat4 _VPMatrix) {
+	glUseProgram(_Program);
+	//Binding the array
+	glBindVertexArray(VAO);
+
+	//Setting back face culling
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CW);
+	glEnable(GL_CULL_FACE);
+
+	//Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//Setting and binding the correct texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture);
+
+	//Sending the texture to the GPU via uniform
+	glUniform1i(glGetUniformLocation(_Program, "tex"), 0);
+
+	//Translating the cube (x,y,z)
+	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f,0.0f));
+
+	//Z Rotation
+	glm::mat4 RotateZ =
+		glm::rotate(
+		glm::mat4(),
+		glm::radians(ObjRotation.z),
+		glm::vec3(0.0f, 0.0f, 1.0f)
+		);
+
+	//Y Rotation
+	glm::mat4 RotateY =
+		glm::rotate(
+		glm::mat4(),
+		glm::radians(ObjRotation.y),
+		glm::vec3(0.0f, 1.0f, 0.0f)
+		);
+
+	//X Rotation
+	glm::mat4 RotateX =
+		glm::rotate(
+		glm::mat4(),
+		glm::radians(ObjRotation.x),
+		glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+
+	glm::mat4 RotationMatrix = RotateZ;// * RotateY * RotateX;
+
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), ObjScale);
+
+	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
+
+
+	glm::mat4 MVP = _VPMatrix * ModelMatrix;
+
+	GLuint  transformLoc = glGetUniformLocation(_Program, "MVP");
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+
+	//Drawing the entity
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+	//Disabling backface culling
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+
+	//Clearing the vertex array
+	glBindVertexArray(0);
+};
 
 #pragma region CUBE FUNCTION DECLARATIONS
 //Cube Constructor
@@ -23,11 +92,6 @@ CUBE::CUBE() {
 
 //Cube Constructor overload
 CUBE::CUBE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
-	//Setting position, scale and rotation
-	ObjPos = _Pos;
-	ObjScale = _Scale;
-	ObjRotation = _Rot;
-
 	//Defining Cube Vertices
 	GLfloat CubeVerts[] = {
 		// Positions             // Color Coords        // TexCoords
@@ -157,84 +221,84 @@ CUBE::CUBE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-;
 
+	//Setting position, scale and rotation
+	ObjPos = _Pos;
+	ObjScale = _Scale;
+	ObjRotation = _Rot;
 }
 
 //Cube Draw Function
-void CUBE::Draw(GLuint _Program, glm::mat4 _VPMatrix) {
-	glUseProgram(_Program);
-
-	//Binding the array
-	glBindVertexArray(VAO);
-
-	//Setting back face culling
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
-	glEnable(GL_CULL_FACE);
-
-	//Enable blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	//Setting and binding the correct texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture);
-
-	//Sending the texture to the GPU via uniform
-	glUniform1i(glGetUniformLocation(_Program, "tex"), 0);
-
-	//Translating the cube (x,y,z)
-	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f,0.0f));
-
-	//Z Rotation
-	glm::mat4 RotateZ =
-		glm::rotate(
-		glm::mat4(),
-		glm::radians(ObjRotation.z),
-		glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-
-	//Y Rotation
-	glm::mat4 RotateY =
-		glm::rotate(
-		glm::mat4(),
-		glm::radians(ObjRotation.y),
-		glm::vec3(0.0f, 1.0f, 0.0f)
-		);
-
-	//X Rotation
-	glm::mat4 RotateX =
-		glm::rotate(
-		glm::mat4(),
-		glm::radians(ObjRotation.x),
-		glm::vec3(1.0f, 0.0f, 0.0f)
-		);
-
-	glm::mat4 RotationMatrix = RotateZ * RotateY * RotateX;
-
-	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), ObjScale);
-
-	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
-
-
-	glm::mat4 MVP = _VPMatrix * ModelMatrix;
-
-	GLuint  transformLoc = glGetUniformLocation(_Program, "MVP");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(MVP));
-
-	//Drawing the entity
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-	//Disabling backface culling
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-
-	//Clearing the vertex array
-	glBindVertexArray(0);
-
-	std::cout << "Cube\n";
-}
+//void CUBE::Draw(GLuint _Program, glm::mat4 _VPMatrix) {
+//	glUseProgram(_Program);
+//	//Binding the array
+//	glBindVertexArray(VAO);
+//
+//	//Setting back face culling
+//	glCullFace(GL_BACK);
+//	glFrontFace(GL_CW);
+//	glEnable(GL_CULL_FACE);
+//
+//	//Enable blending
+//	glEnable(GL_BLEND);
+//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//
+//	//Setting and binding the correct texture
+//	glActiveTexture(GL_TEXTURE0);
+//	glBindTexture(GL_TEXTURE_2D, Texture);
+//
+//	//Sending the texture to the GPU via uniform
+//	glUniform1i(glGetUniformLocation(_Program, "tex"), 0);
+//
+//	//Translating the cube (x,y,z)
+//	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f,0.0f));
+//
+//	//Z Rotation
+//	glm::mat4 RotateZ =
+//		glm::rotate(
+//		glm::mat4(),
+//		glm::radians(ObjRotation.z),
+//		glm::vec3(0.0f, 0.0f, 1.0f)
+//		);
+//
+//	//Y Rotation
+//	glm::mat4 RotateY =
+//		glm::rotate(
+//		glm::mat4(),
+//		glm::radians(ObjRotation.y),
+//		glm::vec3(0.0f, 1.0f, 0.0f)
+//		);
+//
+//	//X Rotation
+//	glm::mat4 RotateX =
+//		glm::rotate(
+//		glm::mat4(),
+//		glm::radians(ObjRotation.x),
+//		glm::vec3(1.0f, 0.0f, 0.0f)
+//		);
+//
+//	glm::mat4 RotationMatrix = RotateZ;// * RotateY * RotateX;
+//
+//	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), ObjScale);
+//
+//	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
+//
+//
+//	glm::mat4 MVP = _VPMatrix * ModelMatrix;
+//
+//	GLuint  transformLoc = glGetUniformLocation(_Program, "MVP");
+//	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+//
+//	//Drawing the entity
+//	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+//
+//	//Disabling backface culling
+//	glDisable(GL_CULL_FACE);
+//	glDisable(GL_BLEND);
+//
+//	//Clearing the vertex array
+//	glBindVertexArray(0);
+//}
 
 //Cube Destructor
 CUBE::~CUBE() {};
@@ -398,6 +462,113 @@ PYRAMID::~PYRAMID() {};
 
 #pragma endregion
 
-#pragma region WAVEPLANE FUNCTION DECLARATIONS
+#pragma region PLANE FUNCTION DECLARATIONS
+PLANE::PLANE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
+	float num = 1.0f;
+	////Defining Plane Vertices
+	//for (int i = 0; i < 10; ++i) {
+	//	for (int j = 0; j < 10; ++j) {
 
+	//	}
+	//}
+	GLfloat PlaneVerts[] = {
+		-1.0, -1.0, -1.0,	//Top right
+		0.0, -1.0f, 
+	};
+
+	//Defining Cube Indices
+	GLuint CubeIndices[] = {
+		0, 1, 2,		0, 2, 3,		// Front Face
+		4, 5, 6,		4, 6, 7,		// Right Face
+		8, 9, 10,		8, 10, 11,		// Back Face
+		12, 13, 14,		12, 14, 15,		// Left Face
+		16, 17, 18,		16, 18, 19,		// Top Face
+		20, 21, 22,		20, 22, 23,		// Bottom Face
+	};
+
+	GLuint VBO;
+	GLuint EBO;
+
+	//Generating buffers
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+
+	//Binding and setting buffer data
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(PlaneVerts), PlaneVerts, GL_STATIC_DRAW);
+
+	//Enabling the positional floats
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+		(GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	//Enabling Color Floats
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+		(GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	//Enabling the Texture floats
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+		(GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
+	//Generating EBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices,
+		GL_STATIC_DRAW);
+
+	//Generating and binding the texture
+	glGenTextures(1, &Texture);
+	glBindTexture(GL_TEXTURE_2D, Texture);
+
+	//Getting the image from filepath
+	int width, height;
+	unsigned char* image = SOIL_load_image(
+		_SpriteRef,
+		&width,
+		&height,
+		0,
+		SOIL_LOAD_RGBA
+	);
+
+	//Generating the texture from image data
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA,
+		width,
+		height,
+		0,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		image
+	);
+
+	//Generating mipmaps
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	//Setting Texture wrap
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	//Setting texture filters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//Freeing up data
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//Setting position, scale and rotation
+	ObjPos = _Pos;
+	ObjScale = _Scale;
+	ObjRotation = _Rot;
+}
 #pragma endregion
