@@ -12,7 +12,7 @@ uniform float currentTime;
 
 
 void main(void) {
-	gl_Position = MVP* vec4(position.x, position.y, position.z * sin(currentTime), 1.0);
+	gl_Position = MVP* vec4(position, 1.0);
 	fragColor = color;
 	fragTexCoord = texCoord;
 }

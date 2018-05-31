@@ -37,6 +37,9 @@
     <Filter Include="System\Sound Manager">
       <UniqueIdentifier>{15c9c88d-6473-4fcb-8b87-42fe73aef137}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Mesh">
+      <UniqueIdentifier>{7feac014-c878-402f-a124-1785d3573dd8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>System\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>System\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

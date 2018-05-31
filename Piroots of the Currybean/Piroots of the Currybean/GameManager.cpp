@@ -1,6 +1,5 @@
 #include "GameManager.h"
 std::shared_ptr<GameManager> GameManager::SceneManagerPtr;
-GLuint GameManager::ObjectShaders;
 
 GameManager::~GameManager() {}
 
@@ -18,9 +17,9 @@ void GameManager::DestroyInstance() {
 }
 
 void GameManager::GameLoop() {
-	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);// Get current time.
-	currentTime = currentTime / 1000; // Convert millisecond to seconds
-	GLint currentTimeLoc = glGetUniformLocation(ObjectShaders, "currentTime");
+	GLfloat currentTime = static_cast<GLfloat>(glutGet(GLUT_ELAPSED_TIME));// Get current time.
+	currentTime = currentTime; // Convert millisecond to seconds
+	GLint currentTimeLoc = glGetUniformLocation(GetCurrentLevel().WaveShader, "currentTime");
 	glUniform1f(currentTimeLoc, currentTime);// set value
 	InputManager::ProcessKeyInput(LevelVect[CurrentLevel].bleh);
 }
@@ -35,7 +34,7 @@ void GameManager::Init() {
 	ObjectShaders = sl.CreateProgram(VERT_SHADER, FRAG_SHADER);
 	GenerateLevels();
 	InputManager();
-	//Camera::GetInstance();
+	Camera::GetInstance();
 }
 
 void GameManager::GenerateLevels() {
@@ -62,8 +61,9 @@ void GameManager::GenerateLevels() {
 		glm::vec3(0.5f, 0.5f, 0.5f),
 		glm::vec3(0.0f, 0.0f, 0.0f)
 	);
-	LevelVect.push_back(Level1);
 
+	Level1.Player = Model(MODEL_A, Level1.ModelShader);
+	LevelVect.push_back(Level1);
 }
 
 

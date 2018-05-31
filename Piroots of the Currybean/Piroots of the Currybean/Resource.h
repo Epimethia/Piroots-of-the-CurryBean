@@ -37,6 +37,10 @@ namespace UTILS {
 #define FRAG_SHADER				"Assets/Shaders/Fragment Shader.fs"
 #define TEXT_VERT_SHADER		"Assets/Shaders/Text.vs"
 #define TEXT_FRAG_SHADER		"Assets/Shaders/Text.fs"
+#define WAVE_VERT_SHADER		"Assets/Shaders/WaveVert.vs"
+#define WAVE_FRAG_SHADER		"Assets/Shaders/WaveFrag.fs"
+#define MODEL_VERT_SHADER		"Assets/Shaders/ModelVertShader.vs"
+#define MODEL_FRAG_SHADER		"Assets/Shaders/ModelFragShader.fs"
 
 //Sprite Macros
 #define PLAYER_SPRITE			"Assets/Sprite/Rayman.jpg"
@@ -44,7 +48,6 @@ namespace UTILS {
 
 //Background Macros
 #define MAIN_MENU_SPRITE		""
-#define SEA_BG					"Assets/Background/Sea BG.png"
 
 //Sound Macros
 #define THUMP_SOUND				"Assets/Sound/Thump.wav"
@@ -54,6 +57,9 @@ namespace UTILS {
 #define ARIAL					"Assets/Fonts/arial.ttf"
 #define SNACKERCOMIC			"Assets/Fonts/SnackerComic.ttf"
 #define WALLTOGRAPHUI			"Assets/Fonts/waltographUI.ttf"
+
+//Model Macros					
+#define MODEL_A					"Assets/Models/pug/Dog 1.obj"
 
 //Keyboard Macros
 #define INPUT_FIRST_RELEASED	0

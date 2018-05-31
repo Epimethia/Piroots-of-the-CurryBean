@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "Camera.h"
 #include "InputManager.h"
+#include "Mesh.h"
 
 struct Level {
 	std::vector<Entity> EntityVect;
@@ -13,16 +14,29 @@ struct Level {
 	CUBE bleh;
 	PLANE planeboi;
 	PYRAMID pyramid;
+	Model Player;
+
 	//Text Title = Text("Jack Sparrow", ARIAL, glm::vec2(10.0f, 700.0f));
 
-	void Draw(GLuint _Program, glm::mat4 _VPMat) {
+	GLuint WaveShader;
+	GLuint ModelShader;
+	ShaderLoader sl;
+	ShaderLoader sl2;
+	Level() {
+		WaveShader = sl.CreateProgram(WAVE_VERT_SHADER, WAVE_FRAG_SHADER);
+		ModelShader = sl2.CreateProgram(MODEL_VERT_SHADER, MODEL_FRAG_SHADER);
+	}
 
+	void Draw(GLuint _Program, glm::mat4 _VPMat) {
 		//BG.Process(_Program, _VPMat);
 		/*box.Draw(_Program, Camera::GetMatrix());*/
 		//PlayerObj.Process(_Program, _VPMat);
-		bleh.Draw(_Program, Camera::GetMatrix());
+		//bleh.Draw(_Program, Camera::GetMatrix());
 		//pyramid.Draw(_Program, Camera::GetMatrix());
-		planeboi.Draw(_Program, Camera::GetMatrix());
+		planeboi.Draw(WaveShader, Camera::GetMatrix());
+		glFrontFace(GL_CCW);
+		Player.Render();
+		glFrontFace(GL_CW);
 		for (auto it : EntityVect) {
 			it.Draw(_Program, _VPMat);
 		}
@@ -40,7 +54,6 @@ public:
 
 	void Init();
 	void GameLoop();
-	static GLuint GetShader() { return ObjectShaders; };
 	//CEntity PlayerObj;
 	Level& GetCurrentLevel() { return LevelVect[CurrentLevel]; };
 
@@ -51,7 +64,9 @@ private:
 	void GenerateLevels();
 	std::vector<Level> LevelVect;
 	ShaderLoader sl;
-	static GLuint ObjectShaders;
+	ShaderLoader sl2;
+	GLuint ObjectShaders;
+	GLuint WaveShader;
 	//CSoundMngr SoundManager;
 	int CurrentLevel = 0;
 };
