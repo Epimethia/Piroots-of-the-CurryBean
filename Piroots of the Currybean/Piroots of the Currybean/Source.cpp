@@ -23,6 +23,7 @@ void render(void) {
 
 void update(void) {
 	GameManager::GetInstance()->GameLoop();
+
 	glutPostRedisplay();
 }
 

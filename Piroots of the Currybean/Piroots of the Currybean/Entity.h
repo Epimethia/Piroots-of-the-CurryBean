@@ -21,6 +21,7 @@ protected:
 
 	glm::mat4 ModelMatrix;
 	glm::mat4 VPMatrix;
+	int NumTris;
 };
 
 class CUBE : public Entity {
@@ -40,17 +41,12 @@ public:
 };
 
 class WAVEPLANE : public Entity {
-public:
-	WAVEPLANE();
-
-	~WAVEPLANE();
-
 };
 
 class PLANE : public Entity {
 public:	
-	//PLANE();
-	//PLANE(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
-	//void Draw(GLuint _Program, glm::mat4 _VPMatrix);
-	//~PLANE();
+	PLANE() {};
+	PLANE(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
+	void Draw(GLuint _Program, glm::mat4 _VPMatrix);
+	~PLANE() {};
 };
