@@ -59,6 +59,12 @@ public:
 	// Render the mesh
 	void Render(GLuint _Program, glm::mat4 _VPMatrix) {
 		Rotation += 25.0f;
+		if (CurrentAngle >= 360.0f) CurrentAngle = 0.0f;
+		else CurrentAngle += 0.1f;
+
+		x = Radius * cos(CurrentAngle);
+		y = Radius * sin(CurrentAngle);
+
 		glUseProgram(_Program);
 		// Bind appropriate textures
 		GLuint diffuseNr = 1;
@@ -79,11 +85,6 @@ public:
 			glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
 		}
 
-		if (CurrentAngle >= 360.0f) CurrentAngle = 0.0f;
-		else CurrentAngle += 0.1f;
-
-		x = Radius * cos(CurrentAngle);
-		y = Radius * sin(CurrentAngle);
 
 		glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0f) / 375.0f);
 
@@ -183,9 +184,9 @@ public:
 	}
 
 	// Draws the model, and thus all its meshes
-	void Render() {
+	void Render(GLuint _Program) {
 		for (GLuint i = 0; i < this->meshes.size(); i++) {
-			this->meshes[i].Render(program, Camera::GetMatrix());
+			this->meshes[i].Render(_Program, Camera::GetMatrix());
 		}
 	}
 

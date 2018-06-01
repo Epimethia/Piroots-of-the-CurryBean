@@ -5,7 +5,6 @@
 #include <cstring>
 
 void init() {
-	VLDDisable();
 	GameManager::GetInstance()->Init();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -26,6 +25,10 @@ void update(void) {
 	glutPostRedisplay();
 }
 
+void Exit(void) {
+	GameManager::DestroyInstance();
+}
+
 int main(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -34,13 +37,14 @@ int main(int argc, char **argv) {
 		static_cast<int>(UTILS::WindowWidth),
 		static_cast<int>(UTILS::WindowHeight)
 	);
-	glutCreateWindow("OpenGL First Window");
+	glutCreateWindow("Piroots of the CurryBeans");
 	glClearColor(0.0, 0.5, 0.5, 1.0);
 	glewInit();
 	init();
 	glutDisplayFunc(render);
 	glutIdleFunc(update);
 	glutIgnoreKeyRepeat(1);
+	glutCloseFunc(Exit);
 	glutMainLoop();
 	return 0;
 }

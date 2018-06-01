@@ -30,6 +30,7 @@
 namespace UTILS {
 	const int WindowWidth = 750;
 	const int WindowHeight = 750;
+
 }
 
 //Shader Macros

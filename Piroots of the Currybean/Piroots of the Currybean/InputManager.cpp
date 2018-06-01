@@ -62,7 +62,9 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 	}
 	else if (KeyArray[27] == KEY_FIRST_PRESS) {
 		KeyArray[27] = KEY_HELD;
+		GameManager::DestroyInstance();
 		glutLeaveMainLoop();
+		return;
 	}
 	
 	float x = _PlayerObj.GetPos().x / 375.0f * -1.0f;

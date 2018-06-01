@@ -6,6 +6,7 @@
 class ShaderLoader {
 private:
 
+
 	std::string ReadShader(std::string filename);
 	GLuint CreateShader(GLenum shaderType,
 		std::string source,
