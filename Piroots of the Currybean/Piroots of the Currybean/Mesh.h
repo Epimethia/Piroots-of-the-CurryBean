@@ -58,14 +58,19 @@ public:
 
 	// Render the mesh
 	void Render(GLuint _Program, glm::mat4 _VPMatrix) {
-		Rotation += 25.0f;
+		/*Rotation += 25.0f;
 		if (CurrentAngle >= 360.0f) CurrentAngle = 0.0f;
 		else CurrentAngle += 0.1f;
 
 		x = Radius * cos(CurrentAngle);
-		y = Radius * sin(CurrentAngle);
+		y = Radius * sin(CurrentAngle);*/
 
 		glUseProgram(_Program);
+
+		//Enable blending
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		// Bind appropriate textures
 		GLuint diffuseNr = 1;
 		GLuint specularNr = 1;
@@ -85,7 +90,6 @@ public:
 			glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
 		}
 
-
 		glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0f) / 375.0f);
 
 		//Z Rotation
@@ -100,7 +104,7 @@ public:
 		glm::mat4 RotateY =
 			glm::rotate(
 			glm::mat4(),
-			glm::radians(Rotation),
+			glm::radians(0.0f),
 			glm::vec3(0.0f, 1.0f, 0.0f)
 			);
 
@@ -113,7 +117,7 @@ public:
 			);
 
 		glm::mat4 RotationMatrix = RotateX * RotateY * RotateZ;
-		glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.1f, 0.1f, 0.1f));
+		glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.7f, 0.7f, 0.7f));
 		glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
 		glm::mat4 MVP = _VPMatrix * ModelMatrix;
 
@@ -124,6 +128,10 @@ public:
 		glBindVertexArray(this->VAO);
 		glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+
+		//Disabling backface culling
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
 
 		//Clearing textures
 		for (GLuint i = 0; i < this->textures.size(); i++) {

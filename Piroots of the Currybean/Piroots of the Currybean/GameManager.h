@@ -8,12 +8,13 @@
 
 struct Level {
 	CUBE bleh;
-	PLANE planeboi;
 	PYRAMID pyramid;
 	Model Player;
+	Model Wave;
 	std::shared_ptr<ShaderLoader> SL0 = std::make_shared<ShaderLoader>();
 	std::shared_ptr<ShaderLoader> SL1 = std::make_shared<ShaderLoader>();
 	std::shared_ptr<ShaderLoader> SL2 = std::make_shared<ShaderLoader>();
+
 	GLuint WaveShader;
 	GLuint ModelShader;
 	GLuint ObjectShader;
@@ -28,10 +29,11 @@ struct Level {
 	void Draw(glm::mat4 _VPMat) {
 
 		bleh.Draw(ObjectShader, Camera::GetMatrix());
-		pyramid.Draw(ObjectShader, Camera::GetMatrix());
-		planeboi.Draw(WaveShader, Camera::GetMatrix());
+		//pyramid.Draw(ObjectShader, Camera::GetMatrix());
+		//planeboi.Draw(WaveShader, Camera::GetMatrix());
 		glFrontFace(GL_CCW);
-		Player.Render(ModelShader);
+		//Player.Render(ModelShader);
+		Wave.Render(WaveShader);
 		glFrontFace(GL_CW);
 
 	}

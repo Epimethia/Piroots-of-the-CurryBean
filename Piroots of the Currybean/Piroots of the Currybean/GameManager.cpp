@@ -56,14 +56,8 @@ void GameManager::GenerateLevels() {
 		glm::vec3(0.0f, 0.0f, 0.0f)
 	);
 
-	Level1.planeboi = PLANE(
-		PLAYER_SPRITE,
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.5f, 0.5f, 0.5f),
-		glm::vec3(0.0f, 0.0f, 0.0f)
-	);
-
-	Level1.Player = Model(MODEL_A, Level1.ModelShader);
+	//Level1.Player = Model(MODEL_A, Level1.ModelShader);
+	Level1.Wave = Model(WAVE_MODEL, Level1.WaveShader);
 }
 
 

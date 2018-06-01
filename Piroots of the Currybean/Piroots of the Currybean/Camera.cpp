@@ -47,9 +47,3 @@ glm::mat4& Camera::GetMatrix() {
 	VPMat = Projection * View * (RotationMatrix * TranslationMatrix);
 	return VPMat;
 }
-
-void Camera::SetCameraPos(glm::vec3 _SnapToPos) {
-	CameraPos = _SnapToPos / 375.0f;
-	GetMatrix();
-
-}
