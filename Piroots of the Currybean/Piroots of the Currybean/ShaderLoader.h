@@ -6,18 +6,16 @@
 class ShaderLoader {
 private:
 
-	std::string ReadShader(char *filename);
+	std::string ReadShader(std::string filename);
 	GLuint CreateShader(GLenum shaderType,
 		std::string source,
-		char* shaderName);
+		std::string shaderName);
 
 public:
-	ShaderLoader(void);
-	~ShaderLoader(void);
-	GLuint CreateProgram(char* VertexShaderFilename,
-		char* FragmentShaderFilename);
+	ShaderLoader();
+	~ShaderLoader();
+	GLuint CreateProgram(std::string VertexShaderFilename,
+		std::string FragmentShaderFilename);
 
 	std::map<std::string, GLuint> Shaders;		//CAUSES MEMORY LEAK
-
-
 };

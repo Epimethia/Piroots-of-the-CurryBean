@@ -4,6 +4,7 @@
 unsigned char InputManager::KeyArray[255];
 unsigned char InputManager::KeySpecialArray[255];
 
+void memes() {};
 
 InputManager::InputManager() {
 	for (int i = 0; i < 255; ++i) {
@@ -61,8 +62,8 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 	}
 	else if (KeyArray[27] == KEY_FIRST_PRESS) {
 		KeyArray[27] = KEY_HELD;
+		glutLeaveMainLoop();
 	}
-
 	
 	float x = _PlayerObj.GetPos().x / 375.0f * -1.0f;
 	float y = -0.3f + (_PlayerObj.GetPos().y / 375.0f) * -1.0f;

@@ -16,7 +16,7 @@
 #include FT_FREETYPE_H
 
 //VLD
-//#include "Dependencies\Visual Leak Detector\include\vld.h"
+#include "Dependencies\Visual Leak Detector\include\vld.h"
 
 //Main Includes
 #include <iostream>
@@ -28,8 +28,8 @@
 #include <memory>
 
 namespace UTILS {
-	extern float WindowWidth;
-	extern float WindowHeight;
+	const int WindowWidth = 750;
+	const int WindowHeight = 750;
 }
 
 //Shader Macros

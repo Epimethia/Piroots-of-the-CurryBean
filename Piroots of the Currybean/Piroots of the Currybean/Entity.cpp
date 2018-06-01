@@ -231,7 +231,8 @@ CUBE::CUBE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _
 }
 
 //Cube Destructor
-CUBE::~CUBE() {};
+CUBE::~CUBE() {
+};
 #pragma endregion
 
 #pragma region PYRAMID FUNCTION DECLARATIONS

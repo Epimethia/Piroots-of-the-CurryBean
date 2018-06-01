@@ -1,7 +1,17 @@
 #include "GameManager.h"
 std::shared_ptr<GameManager> GameManager::SceneManagerPtr;
 
-GameManager::~GameManager() {}
+GameManager::~GameManager() {
+	for (int i = 0; i < static_cast<int>(LevelVect.size()); ++i) {
+		LevelVect.pop_back();
+	}
+	LevelVect.clear();
+	sl.~ShaderLoader();
+	sl2.~ShaderLoader();
+	ObjectShaders = 0;
+	Camera::DestroyInstance();
+
+}
 
 GameManager::GameManager() {
 
@@ -31,14 +41,15 @@ std::shared_ptr<GameManager> GameManager::GetInstance() {
 
 void GameManager::Init() {
 	//generating shaders
+	VLDEnable();
 	ObjectShaders = sl.CreateProgram(VERT_SHADER, FRAG_SHADER);
+	VLDDisable();
 	GenerateLevels();
 	InputManager();
 	Camera::GetInstance();
 }
 
 void GameManager::GenerateLevels() {
-
 	//Start Menu Generation
 	Level Level1;
 	Level1.bleh = CUBE(
@@ -63,6 +74,7 @@ void GameManager::GenerateLevels() {
 	);
 
 	Level1.Player = Model(MODEL_A, Level1.ModelShader);
+
 	LevelVect.push_back(Level1);
 }
 

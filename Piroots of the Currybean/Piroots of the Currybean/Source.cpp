@@ -5,9 +5,8 @@
 #include <cstring>
 
 void init() {
-	GameManager::GetInstance();
+	VLDDisable();
 	GameManager::GetInstance()->Init();
-
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -19,11 +18,11 @@ void render(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GameManager::GetInstance()->DrawScene(0);
 	glutSwapBuffers();
+
 }
 
 void update(void) {
 	GameManager::GetInstance()->GameLoop();
-
 	glutPostRedisplay();
 }
 
@@ -43,8 +42,5 @@ int main(int argc, char **argv) {
 	glutIdleFunc(update);
 	glutIgnoreKeyRepeat(1);
 	glutMainLoop();
-	glutExit();
-
-	GameManager::DestroyInstance();
 	return 0;
 }
