@@ -22,6 +22,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <cstring>
 #include <fstream>
 #include <vector>
 #include <iterator>
@@ -33,22 +34,35 @@ namespace UTILS {
 
 }
 
-//Shader Macros
-#define VERT_SHADER				"Assets/Shaders/Vertex Shader.vs"
-#define FRAG_SHADER				"Assets/Shaders/Fragment Shader.fs"
+#pragma region SHADER MACROS
+//Entity Shader
+#define VERT_SHADER				"Assets/Shaders/Entity.vs"
+#define FRAG_SHADER				"Assets/Shaders/Entity.fs"
+
+//Text Shader
 #define TEXT_VERT_SHADER		"Assets/Shaders/Text.vs"
 #define TEXT_FRAG_SHADER		"Assets/Shaders/Text.fs"
-#define WAVE_VERT_SHADER		"Assets/Shaders/WaveVert.vs"
-#define WAVE_FRAG_SHADER		"Assets/Shaders/WaveFrag.fs"
-#define MODEL_VERT_SHADER		"Assets/Shaders/ModelVertShader.vs"
-#define MODEL_FRAG_SHADER		"Assets/Shaders/ModelFragShader.fs"
+
+//Wave Shader
+#define WAVE_VERT_SHADER		"Assets/Shaders/Wave.vs"
+#define WAVE_FRAG_SHADER		"Assets/Shaders/Wave.fs"
+
+//Model Shader
+#define MODEL_VERT_SHADER		"Assets/Shaders/Model.vs"
+#define MODEL_FRAG_SHADER		"Assets/Shaders/Model.fs"
+
+//CubeMap Shader
+#define CUBEMAP_VERT_SHADER		"Assets/Shaders/CubeMap.vs"
+#define CUBEMAP_FRAG_SHADER		"Assets/Shaders/CubeMap.fs"
+
+#pragma endregion	SHADER MACROS END
 
 //Sprite Macros
 #define PLAYER_SPRITE			"Assets/Sprite/Rayman.jpg"
 #define BOSS_SPRITE				"Assets/Sprite/AwesomeFace.png"
 
-//Background Macros
-#define MAIN_MENU_SPRITE		""
+//CubeMap Macro
+#define CUBEMAP_FILE_PATH		"Assets/Sprite/"
 
 //Sound Macros
 #define THUMP_SOUND				"Assets/Sound/Thump.wav"

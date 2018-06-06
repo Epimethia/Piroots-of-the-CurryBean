@@ -21,26 +21,22 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 
 	//RIGHT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_HELD) {
-		_PlayerObj.GetPos().x += 2.0f;
-		if (_PlayerObj.GetPos().x > 350.0f) _PlayerObj.GetPos().x = 350.0f;
+		_PlayerObj.GetPos().x += 20.0f;//5.0f;
 	} else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_RIGHT] = KEY_HELD;
 
 	//LEFT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
-		_PlayerObj.GetPos().x -= 2.0f;
-		if (_PlayerObj.GetPos().x < -350.0f) _PlayerObj.GetPos().x = -350.0f;
+		_PlayerObj.GetPos().x -= 20.0f;//5.0f;
 	} else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_LEFT] = KEY_HELD;
 
 	//UP KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
-		_PlayerObj.GetPos().y += 2.0f;
-		if (_PlayerObj.GetPos().y > 350.0f) _PlayerObj.GetPos().y = 350.0f;
+		_PlayerObj.GetPos().y += 20.0f;//5.0f;
 
 	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
 
 	if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
-		_PlayerObj.GetPos().y -= 2.0f;
-		if (_PlayerObj.GetPos().y < -350.0f) _PlayerObj.GetPos().y = -350.0f;
+		_PlayerObj.GetPos().y -= 20.0f;//5.0f;
 
 	} else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_DOWN] = KEY_HELD; 
 

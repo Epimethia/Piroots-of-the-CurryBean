@@ -66,6 +66,7 @@ GLuint ShaderLoader::CreateProgram(std::string vertexShaderFilename, std::string
 				std::cout << "Fragment Shader already assigned. ID: " << it->second << std::endl;
 			}
 		}
+		return 0;
 	}
 	else {
 		vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");

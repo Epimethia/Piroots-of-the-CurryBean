@@ -40,6 +40,9 @@
     <Filter Include="System\Mesh">
       <UniqueIdentifier>{7feac014-c878-402f-a124-1785d3573dd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Cubemap">
+      <UniqueIdentifier>{ef5ff924-48e0-488d-9313-96f09385d3d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -66,6 +69,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>System\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="CubeMap.cpp">
+      <Filter>System\Cubemap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>System\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeMap.h">
+      <Filter>System\Cubemap</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

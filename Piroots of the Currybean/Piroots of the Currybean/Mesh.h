@@ -117,12 +117,15 @@ public:
 			);
 
 		glm::mat4 RotationMatrix = RotateX * RotateY * RotateZ;
-		glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.7f, 0.7f, 0.7f));
+		glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.1f, 0.1f, 0.1f));
 		glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
 		glm::mat4 MVP = _VPMatrix * ModelMatrix;
 
-		GLuint  transformLoc = glGetUniformLocation(_Program, "MVP");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+		GLuint  ModelLoc = glGetUniformLocation(_Program, "model");
+		glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+
+		GLuint  MVPLoc = glGetUniformLocation(_Program, "MVP");
+		glUniformMatrix4fv(MVPLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 
 		//Drawing mesh
 		glBindVertexArray(this->VAO);
@@ -343,10 +346,10 @@ private:
 		GLuint textureID;
 		glGenTextures(1, &textureID);
 		int width, height;
-		unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
 		// Assign texture to ID
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		// Parameters

@@ -17,7 +17,6 @@ void render(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GameManager::GetInstance()->DrawScene(0);
 	glutSwapBuffers();
-
 }
 
 void update(void) {
@@ -27,18 +26,15 @@ void update(void) {
 
 void Exit(void) {
 	GameManager::DestroyInstance();
-}
+} 
 
 int main(int argc, char **argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(
-		static_cast<int>(UTILS::WindowWidth),
-		static_cast<int>(UTILS::WindowHeight)
-	);
+	glutInitWindowSize(static_cast<int>(UTILS::WindowWidth), static_cast<int>(UTILS::WindowHeight));
 	glutCreateWindow("Piroots of the CurryBeans");
-	glClearColor(0.0, 0.5, 0.5, 1.0);
+	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glewInit();
 	init();
 	glutDisplayFunc(render);

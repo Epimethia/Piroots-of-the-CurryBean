@@ -8,7 +8,7 @@ public:
 	virtual glm::vec3& GetPos() { return ObjPos; };
 	virtual glm::vec3& GetScale() { return ObjScale; };
 	virtual glm::vec3& GetRotation() { return ObjRotation; };
-	virtual void Draw(GLuint _Program, glm::mat4 _VPMatrix);
+	virtual void Render(GLuint _Program, glm::mat4 _VPMatrix);
 
 
 protected:
@@ -24,6 +24,7 @@ protected:
 	int NumTris;
 };
 
+//CUBE DERIVED CLASS
 class CUBE : public Entity {
 public:
 	CUBE();
@@ -31,21 +32,11 @@ public:
 	~CUBE();
 };
 
+//PYRAMID DERIVED CLASS
 class PYRAMID : public Entity {
 public:	
 	PYRAMID();
 	PYRAMID(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
-	void Draw(GLuint _Program, glm::mat4 _VPMatrix);
+	void Render(GLuint _Program, glm::mat4 _VPMatrix);
 	~PYRAMID();
-};
-
-class WAVEPLANE : public Entity {
-};
-
-class PLANE : public Entity {
-public:	
-	PLANE() {};
-	PLANE(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
-	void Draw(GLuint _Program, glm::mat4 _VPMatrix);
-	~PLANE() {};
 };
