@@ -42,18 +42,12 @@ void GameManager::Init() {
 
 void GameManager::GenerateLevels() {
 	//Start Menu Generation
-	Level1.bleh = CUBE(
-		PLAYER_SPRITE,
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.1f, 0.1f, 0.1f),
-		glm::vec3(0.0f, 0.0f, 90.0f)
-	);
 
 	std::vector<std::string> String;
 	String.push_back("egwge");
 	Level1.CM = CubeMap(String);
 
-	//Level1.Player = Model(MODEL_A, Level1.ModelShader);
+	Level1.Player = Model(MODEL_A, Level1.ModelShader);
 	Level1.Wave = Model(WAVE_MODEL, Level1.WaveShader);
 }
 

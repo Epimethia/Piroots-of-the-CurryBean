@@ -61,23 +61,23 @@ GLuint ShaderLoader::CreateProgram(std::string vertexShaderFilename, std::string
 		for (auto it = Shaders.begin(); it != Shaders.end(); ++it) {
 			if (it->first == vertexShaderFilename) {
 				std::cout << "Vertex Shader already assigned. ID: " << it->second << std::endl;
+				return 0;
 			}
 			if (it->first == fragmentShaderFilename) {
 				std::cout << "Fragment Shader already assigned. ID: " << it->second << std::endl;
+				return 0;
 			}
 		}
-		return 0;
+		
 	}
-	else {
-		vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
-		Shaders[vertexShaderFilename] = vertex_shader;
-		std::cout << "Vertex Shader created. Assigned ID: " << Shaders[vertexShaderFilename] << std::endl;
+	vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
+	Shaders[vertexShaderFilename] = vertex_shader;
+	std::cout << "Vertex Shader created. Assigned ID: " << Shaders[vertexShaderFilename] << std::endl;
 
-		fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader");
-		Shaders[fragmentShaderFilename] = fragment_shader;
-		std::cout << "Fragment Shader created. Assigned ID: " << Shaders[fragmentShaderFilename] << std::endl;
+	fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader");
+	Shaders[fragmentShaderFilename] = fragment_shader;
+	std::cout << "Fragment Shader created. Assigned ID: " << Shaders[fragmentShaderFilename] << std::endl;
 
-	}
 	//read the shader files and save the code
 
 	int link_result = 0;
@@ -98,8 +98,5 @@ GLuint ShaderLoader::CreateProgram(std::string vertexShaderFilename, std::string
 		std::cout << "Shader Loader : LINK ERROR" << std::endl << &program_log[0] << std::endl;
 		return 0;
 	}
-
-	
-
 	return program;
 }
