@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include "Camera.h"
 
 class CubeMap {
 public:

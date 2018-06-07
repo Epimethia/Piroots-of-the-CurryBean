@@ -144,17 +144,23 @@ void CubeMap::Render(GLuint _Program, glm::mat4 _VPMatrix) {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, Texture);
 
 	glUniform1i(glGetUniformLocation(_Program, "cubeSampler"), 0);
-	glm::mat4 model = glm::scale(glm::mat4(), glm::vec3(10.0f, 10.0f, 10.0f));
+	glm::mat4 model = glm::scale(glm::mat4(), glm::vec3(100.0f, 100.0f, 100.0f));
 	glm::mat4 View = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 Projection = glm::perspective(1.0f, 1.0f, 0.1f, 1000.0f);
-	glm::mat4 RotationMatrix =
+	glm::mat4 Projection = glm::perspective(1.0f, 1.0f, 0.1f, 10000.0f);
+	glm::mat4 RotationMatrixX =
 		glm::rotate(
-		glm::mat4(),
-		glm::radians(-30.0f),
-		glm::vec3(1.0f, 0.0f, 0.0f)
+			glm::mat4(),
+			glm::radians(-45.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+	glm::mat4 RotationMatrixY =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(-0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f)
 		);
 
-	glm::mat4 VPMat = Projection * View * (RotationMatrix) * model;
+	glm::mat4 VPMat = Camera::GetMatrix() * model;
 	glUniformMatrix4fv(glGetUniformLocation(_Program, "MVP"), 1, GL_FALSE, glm::value_ptr(VPMat));
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);

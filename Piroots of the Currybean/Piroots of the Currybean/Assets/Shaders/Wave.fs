@@ -5,10 +5,10 @@ in vec2 fragTexCoord;
 
 out vec4 color;
 uniform sampler2D texture_diffuse1;
-uniform float ambientStr = 0.05f;
+uniform float ambientStr = 0.50f;
 uniform vec3 ambientColor = vec3(1.0f, 1.0f, 1.0f);
 uniform vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3 lightPos = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3 lightPos = vec3(1.0f, 3.0f, 1.0f);
 uniform float lightSpecStr = 1.0f;
 
 void main() {

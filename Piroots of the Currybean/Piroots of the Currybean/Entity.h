@@ -8,7 +8,7 @@ public:
 	virtual glm::vec3& GetPos() { return ObjPos; };
 	virtual glm::vec3& GetScale() { return ObjScale; };
 	virtual glm::vec3& GetRotation() { return ObjRotation; };
-	virtual void Render(GLuint _Program, glm::mat4 _VPMatrix) = 0;
+	virtual void Render(GLuint _Program, glm::mat4 _VPMatrix);
 
 
 protected:
@@ -28,7 +28,7 @@ class CUBE : public Entity {
 public:
 	CUBE();
 	CUBE(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
-	virtual void Render(GLuint _Program, glm::mat4 _VPMatrix) = 0;
+	void Render(GLuint _Program, glm::mat4 _VPMatrix) override;
 	~CUBE();
 };
 
@@ -37,6 +37,6 @@ class PYRAMID : public Entity {
 public:	
 	PYRAMID();
 	PYRAMID(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
-	void Render(GLuint _Program, glm::mat4 _VPMatrix) = 0;
+	void Render(GLuint _Program, glm::mat4 _VPMatrix);
 	~PYRAMID();
 };

@@ -30,12 +30,18 @@ void Camera::DestroyInstance() {
 
 glm::mat4& Camera::GetMatrix() {
 	View = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	Projection = glm::perspective(1.0f, 1.0f, 0.1f, 100.0f);
-	glm::mat4 RotationMatrix =
+	Projection = glm::perspective(1.0f, 1.0f, 0.1f, 10000.0f);
+	glm::mat4 RotationMatrixX =
 		glm::rotate(
 		glm::mat4(),
-		glm::radians(-30.0f),
+		glm::radians(-45.0f),
 		glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+	glm::mat4 RotationMatrixY =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(-30.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f)
 		);
 
 	glm::mat4 TranslationMatrix =
@@ -44,6 +50,6 @@ glm::mat4& Camera::GetMatrix() {
 		CameraPos
 		);
 
-	VPMat = Projection * View * (RotationMatrix * TranslationMatrix);
+	VPMat = Projection * View * ((RotationMatrixX * RotationMatrixY) * TranslationMatrix);
 	return VPMat;
 }

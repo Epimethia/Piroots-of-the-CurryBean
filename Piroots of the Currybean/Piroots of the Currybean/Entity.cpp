@@ -9,76 +9,7 @@ Entity::Entity() {
 };
 Entity::~Entity() {};
 
-void Entity::Render(GLuint _Program, glm::mat4 _VPMatrix) {
-	glUseProgram(_Program);
-	//Binding the array
-	glBindVertexArray(VAO);
-
-	//Setting back face culling
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
-	glEnable(GL_CULL_FACE);
-
-	//Enable blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	//Setting and binding the correct texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Texture);
-
-	//Sending the texture to the GPU via uniform
-	glUniform1i(glGetUniformLocation(_Program, "tex"), 0);
-
-	//Translating the cube (x,y,z)
-	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), ObjPos / 375.0f);
-
-	//Z Rotation
-	glm::mat4 RotateZ =
-		glm::rotate(
-		glm::mat4(),
-		glm::radians(ObjRotation.z),
-		glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-
-	//Y Rotation
-	glm::mat4 RotateY =
-		glm::rotate(
-		glm::mat4(),
-		glm::radians(ObjRotation.y),
-		glm::vec3(0.0f, 1.0f, 0.0f)
-		);
-
-	//X Rotation
-	glm::mat4 RotateX =
-		glm::rotate(
-		glm::mat4(),
-		glm::radians(ObjRotation.x),
-		glm::vec3(1.0f, 0.0f, 0.0f)
-		);
-
-	glm::mat4 RotationMatrix = RotateX * RotateY * RotateZ;
-
-	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), ObjScale);
-
-	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
-
-
-	glm::mat4 MVP = _VPMatrix * ModelMatrix;
-
-	GLuint  transformLoc = glGetUniformLocation(_Program, "MVP");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(MVP));
-
-	//Drawing the entity
-	glDrawElements(GL_TRIANGLES, 100, GL_UNSIGNED_INT, 0);
-
-	//Disabling backface culling
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-
-	//Clearing the vertex array
-	glBindVertexArray(0);
-};
+void Entity::Render(GLuint _Program, glm::mat4 _VPMatrix) {};
 
 #pragma region CUBE FUNCTION DECLARATIONS
 //Cube Constructor
@@ -299,9 +230,7 @@ void CUBE::Render(GLuint _Program, glm::mat4 _VPMatrix) {
 }
 
 //Cube Destructor
-CUBE::~CUBE() {
-
-};
+CUBE::~CUBE() {};
 #pragma endregion
 
 #pragma region PYRAMID FUNCTION DECLARATIONS
@@ -434,7 +363,7 @@ PYRAMID::PYRAMID(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm:
 }
 
 void PYRAMID::Render(GLuint _Program, glm::mat4 _VPMatrix) {
-	ObjRotation.x += 10.0f;
+	ObjRotation.x += 100.0f;
 	glUseProgram(_Program);
 	//Binding the array
 	glBindVertexArray(VAO);
