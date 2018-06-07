@@ -36,6 +36,7 @@ void GameManager::Init() {
 	GenerateLevels();
 	InputManager();
 	Camera::GetInstance();
+	EntityManager::GetInstance();
 	Level1.Init();
 }
 
@@ -46,13 +47,6 @@ void GameManager::GenerateLevels() {
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.1f, 0.1f, 0.1f),
 		glm::vec3(0.0f, 0.0f, 90.0f)
-	);
-
-	Level1.pyramid = PYRAMID(
-		PLAYER_SPRITE,
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.1f, 0.1f, 0.1f),
-		glm::vec3(0.0f, 0.0f, 0.0f)
 	);
 
 	std::vector<std::string> String;

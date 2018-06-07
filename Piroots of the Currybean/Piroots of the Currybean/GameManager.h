@@ -6,10 +6,11 @@
 #include "InputManager.h"
 #include "Mesh.h"
 #include "CubeMap.h"
+#include "EntityManager.h"
 
 struct Level {
 	CUBE bleh;
-	PYRAMID pyramid;
+	//PYRAMID pyramid;
 	Model Player;
 	Model Wave;
 	CubeMap CM;
@@ -56,7 +57,7 @@ struct Level {
 
 	void Draw() {
 		CM.Render(CubeMapShader, Camera::GetMatrix());
-		//bleh.Render(ObjectShader, Camera::GetMatrix());
+		bleh.Render(ObjectShader, Camera::GetMatrix());
 		//pyramid.Render(ObjectShader, Camera::GetMatrix());
 
 		for (auto it : EntityVect) {

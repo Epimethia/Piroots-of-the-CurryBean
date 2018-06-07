@@ -58,13 +58,6 @@ public:
 
 	// Render the mesh
 	void Render(GLuint _Program, glm::mat4 _VPMatrix) {
-		/*Rotation += 25.0f;
-		if (CurrentAngle >= 360.0f) CurrentAngle = 0.0f;
-		else CurrentAngle += 0.1f;
-
-		x = Radius * cos(CurrentAngle);
-		y = Radius * sin(CurrentAngle);*/
-
 		glUseProgram(_Program);
 
 		//Enable blending

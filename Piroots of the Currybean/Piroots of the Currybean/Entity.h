@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include "EntityManager.h"
 
 class Entity {
 public:
@@ -12,7 +13,8 @@ public:
 
 
 protected:
-	GLuint VAO;
+
+	std::shared_ptr<GLuint> VAO;
 	GLuint Texture;
 
 	glm::vec3 ObjPos;
@@ -28,7 +30,7 @@ class CUBE : public Entity {
 public:
 	CUBE();
 	CUBE(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
-	void Render(GLuint _Program, glm::mat4 _VPMatrix) override;
+	void Render(GLuint _Program, glm::mat4 _VPMatrix);
 	~CUBE();
 };
 

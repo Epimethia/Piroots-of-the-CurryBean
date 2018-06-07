@@ -72,6 +72,9 @@
     <ClCompile Include="CubeMap.cpp">
       <Filter>System\Cubemap</Filter>
     </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="CubeMap.h">
       <Filter>System\Cubemap</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>System\Entity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
