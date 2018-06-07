@@ -27,18 +27,41 @@ struct Level {
 	GLuint CubeMapShader;
 	//-------------------------------------------------------
 
-
+	std::vector<Entity> EntityVect;
 	void Init() {
 		WaveShader = SL0->CreateProgram(WAVE_VERT_SHADER, WAVE_FRAG_SHADER);
 		ModelShader = SL1->CreateProgram(MODEL_VERT_SHADER, MODEL_FRAG_SHADER);
 		ObjectShader = SL2->CreateProgram(VERT_SHADER, FRAG_SHADER);
 		CubeMapShader = SL3->CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
+
+		for (int i = 0; i < 10; ++i) {
+			CUBE cube;
+			cube = CUBE(
+				PLAYER_SPRITE,
+				glm::vec3(i * 100.0f, 0.0f, 0.0f),
+				glm::vec3(0.1f, 0.1f, 0.1f),
+				glm::vec3(0.0f, 0.0f, 90.0f)
+			);
+
+			PYRAMID pyr;
+			pyr = PYRAMID(
+				PLAYER_SPRITE,
+				glm::vec3(0.0f, 0.0f, i * 100.0f),
+				glm::vec3(0.3f, 0.3f, 0.3f),
+				glm::vec3(0.0f, 0.0f, 0.0f)
+			);
+			EntityVect.push_back(cube);
+			EntityVect.push_back(pyr);
+		}
+
 	}
 
 	void Draw() {
 		CM.Render(CubeMapShader, Camera::GetMatrix());
 		//bleh.Render(ObjectShader, Camera::GetMatrix());
 		//pyramid.Render(ObjectShader, Camera::GetMatrix());
+
+
 		glFrontFace(GL_CCW);
 		//Player.Render(ModelShader);
 		Wave.Render(WaveShader);
