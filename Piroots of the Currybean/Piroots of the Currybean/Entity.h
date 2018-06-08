@@ -13,7 +13,6 @@ public:
 
 
 protected:
-
 	std::shared_ptr<GLuint> VAO;
 	GLuint Texture;
 

@@ -57,7 +57,7 @@ public:
 	float CurrentAngle = 0.0f;
 
 	// Render the mesh
-	void Render(GLuint _Program, glm::mat4 _VPMatrix) {
+	void Render(GLuint& _Program, glm::mat4 _VPMatrix) {
 		glUseProgram(_Program);
 
 		//Enable blending

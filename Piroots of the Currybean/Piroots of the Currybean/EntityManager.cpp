@@ -116,6 +116,7 @@ std::shared_ptr<GLuint> EntityManager::GetVAO(SHAPE _Shape) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
 			CUBEMESH = std::make_shared<GLuint>(VAO);
+			return CUBEMESH;
 		}
 		return CUBEMESH;
 	}
@@ -138,8 +139,6 @@ std::shared_ptr<GLuint> EntityManager::GetVAO(SHAPE _Shape) {
 				-1.0f, 0.0f, -1.0f,   	1.0f, 1.0f, 0.0f,	1.0f, 1.0f, // 11
 				0.0f, 1.0f,  0.0f,  	0.0f, 1.0f, 1.0f,	0.5f, 0.0f, // 12   // Top Point
 			};
-
-
 			//Defining Pyramid Indices
 			GLuint PyramidIndices[] = {
 				4, 12, 5,	// Side 1

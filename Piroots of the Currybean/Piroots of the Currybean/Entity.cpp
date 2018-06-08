@@ -23,6 +23,9 @@ CUBE::CUBE() {
 
 //Cube Constructor overload
 CUBE::CUBE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
+	ObjPos = _Pos;
+	ObjScale = _Scale;
+	ObjRotation = _Rot;
 	VAO = EntityManager::GetVAO(CUBE_MESH);
 
 	//Generating and binding the texture
@@ -60,7 +63,8 @@ CUBE::CUBE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	//Setting texture filters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Freeing up data
@@ -69,16 +73,12 @@ CUBE::CUBE(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//Setting position, scale and rotation
-	ObjPos = _Pos;
-	ObjScale = _Scale;
-	ObjRotation = _Rot;
 }
 
 void CUBE::Render(GLuint _Program, glm::mat4 _VPMatrix) {
 	glUseProgram(_Program);
 	//Binding the array
+
 	glBindVertexArray(*VAO);
 
 	//Setting back face culling
@@ -164,7 +164,7 @@ PYRAMID::PYRAMID() {
 }
 
 //Pyramid Overload Constructor
-PYRAMID::PYRAMID(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
+PYRAMID::PYRAMID(const char* _SpriteRef, glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
 	ObjPos = _Pos;
 	ObjScale = _Scale;
 	ObjRotation = _Rot;
@@ -177,7 +177,7 @@ PYRAMID::PYRAMID(const char* _TextureRef, glm::vec3 _Pos, glm::vec3 _Scale, glm:
 	//Getting the image from filepath
 	int width, height;
 	unsigned char* image = SOIL_load_image(
-		_TextureRef,
+		_SpriteRef,
 		&width,
 		&height,
 		0,

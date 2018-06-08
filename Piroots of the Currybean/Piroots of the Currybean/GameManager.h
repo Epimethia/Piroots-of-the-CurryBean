@@ -35,31 +35,42 @@ struct Level {
 				glm::vec3(0.1f, 0.1f, 0.1f),
 				glm::vec3(0.0f, 0.0f, 90.0f)
 			);
+
+			/*auto cube2 = std::make_shared<CUBE>(
+				BOSS_SPRITE,
+				glm::vec3(0.0f, i * 100.0f, 0.0f),
+				glm::vec3(0.1f, 0.1f, 0.1f),
+				glm::vec3(0.0f, 0.0f, 90.0f)
+			);*/
 			
-			auto pyr = std::make_shared<PYRAMID>(
-				PLAYER_SPRITE,
-				glm::vec3(0.0f, 0.0f, i * 100.0f),
-				glm::vec3(0.3f, 0.3f, 0.3f),
-				glm::vec3(0.0f, 0.0f, 0.0f)
-			);
-			EntityVect.push_back(cube);
-			EntityVect.push_back(pyr);
+			
+			//EntityVect.push_back(cube);
+			//EntityVect.push_back(cube2);
+			//EntityVect.push_back(pyr);
 		}
+		bleh = CUBE(
+			PLAYER_SPRITE,
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.1f, 0.1f, 0.1f),
+			glm::vec3(0.0f, 0.0f, 90.0f)
+		);
 	}
+	
 
 	void Draw() {
 		CM.Render(CubeMapShader, Camera::GetMatrix());
+		
 		bleh.Render(ObjectShader, Camera::GetMatrix());
 		//pyramid.Render(ObjectShader, Camera::GetMatrix());
 
 		for (auto it : EntityVect) {
 			it->Render(ObjectShader, Camera::GetMatrix());
 		}
-
 		glFrontFace(GL_CCW);
-		Player.Render(ModelShader);
+		//Player.Render(ModelShader);
 		Wave.Render(WaveShader);
 		glFrontFace(GL_CW);
+		
 	}
 	~Level() {
 

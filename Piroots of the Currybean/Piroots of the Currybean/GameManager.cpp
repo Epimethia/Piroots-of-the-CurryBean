@@ -6,11 +6,9 @@ GameManager::~GameManager() {
 }
 
 GameManager::GameManager() {
-
 }
 
 void GameManager::DrawScene(int _LevelIndex) {
-
 	Level1.Draw();
 }
 
