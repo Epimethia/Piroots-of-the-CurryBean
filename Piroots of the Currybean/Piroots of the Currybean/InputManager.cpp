@@ -13,7 +13,7 @@ InputManager::InputManager() {
 	}
 }
 
-void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
+void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 	glutSpecialFunc(InputManager::SpecialKeyDown);
 	glutSpecialUpFunc(InputManager::SpecialKeyUp);
 	glutKeyboardFunc(InputManager::NormKeyDown);
@@ -21,33 +21,36 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 
 	//RIGHT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_HELD) {
-		_PlayerObj.GetPos().x += 20.0f;//5.0f;
+		_Obj->GetPos().x += 20.0f;//5.0f;
 	} else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_RIGHT] = KEY_HELD;
 
 	//LEFT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
-		_PlayerObj.GetPos().x -= 20.0f;//5.0f;
+		_Obj->GetPos().x -= 20.0f;//5.0f;
 	} else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_LEFT] = KEY_HELD;
 
 	//UP KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
-		_PlayerObj.GetPos().y += 20.0f;//5.0f;
+		_Obj->GetPos().y += 20.0f;//5.0f;
 
 	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
 
 	if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
-		_PlayerObj.GetPos().y -= 20.0f;//5.0f;
+		_Obj->GetPos().y -= 20.0f;//5.0f;
 
 	} else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_DOWN] = KEY_HELD; 
 
 	//SPACE BAR INPUT
 	if (KeyArray[32] == KEY_FIRST_PRESS) {
-		//if (GameManager::GetInstance()->GetCurrentLevel().PlayerObj.CanShoot == true) {
-		//	float x = _PlayerObj.ObjPos.x;
-		//	float y = _PlayerObj.ObjPos.y;
-		//	CBullet Bullet(x, y, 0.25f, 0.0f);
-		//	GameManager::GetInstance()->GetCurrentLevel().BulletVect.push_back(Bullet);
-		//	GameManager::GetInstance()->GetCurrentLevel().PlayerObj.CanShoot = false;
+		KeyArray[32] = KEY_HELD;
+		GameManager::GetInstance()->Level1.EntityVect.push_back(std::make_shared<Entity>(
+			PYRAMID_MESH,
+			PLAYER_SPRITE,
+			glm::vec3(_Obj->GetPos().x, _Obj->GetPos().y, _Obj->GetPos().z),
+			glm::vec3(0.1f, 0.1f, 0.1f),
+			glm::vec3(90.0f, 0.0f, 0.0f)
+			)
+		);
 	}
 	else {
 		KeyArray[32] = KEY_HELD;
@@ -64,15 +67,14 @@ void InputManager::ProcessKeyInput(Entity& _PlayerObj) {
 	}
 
 	//Setting Camera Pos
-	Camera::GetPos().x = _PlayerObj.GetPos().x / 375.0f * -1.0f;
-	Camera::GetPos().y = (_PlayerObj.GetPos().y / 375.0f) * -1.0f;
-	Camera::GetPos().z = _PlayerObj.GetPos().z + 0.2f;
+	Camera::GetPos().x = _Obj->GetPos().x / 375.0f * -1.0f;
+	Camera::GetPos().y = (_Obj->GetPos().y / 375.0f) * -1.0f;
+	Camera::GetPos().z = _Obj->GetPos().z + 0.2f;
 
 }
 
 void InputManager::NormKeyDown(unsigned char key, int x, int y) {
 	int num = key;
-	std::cout << num << std::endl;
 	switch (key) {
 		case 32: {
 			KeyArray[32] = KEY_FIRST_PRESS;

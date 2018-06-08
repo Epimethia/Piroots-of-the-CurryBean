@@ -73,7 +73,7 @@
       <Filter>System\Cubemap</Filter>
     </ClCompile>
     <ClCompile Include="EntityManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>System\Entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -19,9 +19,9 @@ void GameManager::DestroyInstance() {
 void GameManager::GameLoop() {
 	GLfloat currentTime = static_cast<GLfloat>(glutGet(GLUT_ELAPSED_TIME));// Get current time.
 	currentTime = currentTime; // Convert millisecond to seconds
-	GLint currentTimeLoc = glGetUniformLocation(GetCurrentLevel().WaveShader, "currentTime");
+	GLint currentTimeLoc = glGetUniformLocation(Level1.WaveShader, "currentTime");
 	glUniform1f(currentTimeLoc, currentTime);// set value
-	InputManager::ProcessKeyInput(Level1.bleh);
+	InputManager::ProcessKeyInput(Level1.Cube);
 }
 
 std::shared_ptr<GameManager> GameManager::GetInstance() {

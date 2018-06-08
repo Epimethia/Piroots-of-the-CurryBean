@@ -14,21 +14,27 @@
 //					on execution time
 
 #include "Resource.h"
-#include "Entity.h"
-enum SHAPE {
+enum TYPE {
 	CUBE_MESH,
 	PYRAMID_MESH,
 	PLAYER_MESH,
+	CUSTOM_MESH,
 	ENEMY_SMALL_MESH,
 	ENEMY_MEDIUM_MESH,
 	ENEMY_BIG_MESH
+};
+
+struct MESH {
+	std::shared_ptr<GLuint> VAO;
+	unsigned int NumIndices;
 };
 
 class EntityManager {
 public:
 	static std::shared_ptr<EntityManager> GetInstance();
 	static void DestroyInstance();
-	static std::shared_ptr<GLuint> GetVAO(SHAPE _SHAPE);
+
+	static std::shared_ptr<MESH> GetMesh(TYPE _Shape);
 	~EntityManager();
 
 private:
@@ -36,7 +42,7 @@ private:
 
 	static std::shared_ptr<EntityManager> EntityManagerPtr;
 
-	static std::shared_ptr<GLuint> CUBEMESH;
-	static std::shared_ptr<GLuint> PYRAMIDMESH;
-	static std::shared_ptr<GLuint> MODELMESH;
+	static std::shared_ptr<MESH> CUBEMESH;
+	static std::shared_ptr<MESH> PYRAMIDMESH;
+	static std::shared_ptr<MESH> MODELMESH;
 };

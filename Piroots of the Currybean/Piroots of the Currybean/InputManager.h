@@ -11,7 +11,7 @@ enum KeyState {
 class InputManager {
 public:
 	InputManager();
-	static void ProcessKeyInput(Entity& _Obj);
+	static void ProcessKeyInput(std::shared_ptr<Entity> _Obj);
 private:	
 	static unsigned char KeyArray[255];
 	static unsigned char KeySpecialArray[255];

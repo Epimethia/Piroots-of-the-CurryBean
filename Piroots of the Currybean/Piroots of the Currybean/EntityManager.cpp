@@ -13,9 +13,9 @@
 
 #include "EntityManager.h"
 
-std::shared_ptr<GLuint> EntityManager::CUBEMESH = nullptr;
-std::shared_ptr<GLuint> EntityManager::PYRAMIDMESH = nullptr;
-std::shared_ptr<GLuint> EntityManager::MODELMESH = nullptr;
+std::shared_ptr<MESH> EntityManager::CUBEMESH = nullptr;
+std::shared_ptr<MESH> EntityManager::PYRAMIDMESH = nullptr;
+std::shared_ptr<MESH> EntityManager::MODELMESH = nullptr;
 
 std::shared_ptr<EntityManager> EntityManager::EntityManagerPtr = nullptr;
 
@@ -30,9 +30,10 @@ void EntityManager::DestroyInstance() {
 	EntityManagerPtr = nullptr;
 }
 
-std::shared_ptr<GLuint> EntityManager::GetVAO(SHAPE _Shape) {
+std::shared_ptr<MESH> EntityManager::GetMesh(TYPE _Shape) {
 	if (_Shape == CUBE_MESH) {
-		if (CUBEMESH == nullptr) {	//If the cube vao hasnt been generated yet
+		if (CUBEMESH == nullptr) {	//If the cube mesh hasnt been generated yet
+			CUBEMESH = std::make_shared<MESH>();
 			GLfloat CubeVerts[] = {
 				// Positions             // Normal Coords        // TexCoords
 				// Front Face            
@@ -115,14 +116,15 @@ std::shared_ptr<GLuint> EntityManager::GetVAO(SHAPE _Shape) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
-			CUBEMESH = std::make_shared<GLuint>(VAO);
-			return CUBEMESH;
+			CUBEMESH->VAO = std::make_shared<GLuint>(VAO);
+			CUBEMESH->NumIndices = sizeof(CubeIndices);
 		}
 		return CUBEMESH;
 	}
 
 	if (_Shape == PYRAMID_MESH) {
-		if (PYRAMIDMESH == nullptr) {	//If the cube vao hasnt been generated yet
+		if (PYRAMIDMESH == nullptr) {	//If the Pyramid vao hasnt been generated yet
+			PYRAMIDMESH = std::make_shared<MESH>();
 			GLfloat PyramidVerts[] = {
 				// Positions          	// Colors			// Tex Coords
 				-1.0f, 0.0f, -1.0f,   	1.0f, 1.0f, 0.0f,	0.0f, 1.0f, // 0	// Base
@@ -182,7 +184,8 @@ std::shared_ptr<GLuint> EntityManager::GetVAO(SHAPE _Shape) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PyramidIndices), PyramidIndices, GL_STATIC_DRAW);
-			PYRAMIDMESH = std::make_shared<GLuint>(VAO);
+			PYRAMIDMESH->VAO = std::make_shared<GLuint>(VAO);
+			PYRAMIDMESH->NumIndices = sizeof(PyramidIndices);
 		}
 		return PYRAMIDMESH;
 	}
