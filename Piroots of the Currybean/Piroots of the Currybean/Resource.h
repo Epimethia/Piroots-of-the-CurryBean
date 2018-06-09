@@ -31,7 +31,6 @@
 namespace UTILS {
 	const int WindowWidth = 750;
 	const int WindowHeight = 750;
-
 }
 
 #pragma region SHADER MACROS
@@ -60,7 +59,7 @@ namespace UTILS {
 //Sprite Macros
 #define PLAYER_SPRITE			"Assets/Sprite/Rayman.jpg"
 #define BOSS_SPRITE				"Assets/Sprite/AwesomeFace.png"
-
+#define POWER_UP_1				"Assets/Sprite/Power_Up_1.png"
 //CubeMap Macro
 #define CUBEMAP_FILE_PATH		"Assets/Sprite/"
 

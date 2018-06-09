@@ -16,6 +16,9 @@
 std::shared_ptr<MESH> EntityManager::Cube_Mesh = nullptr;
 std::shared_ptr<MESH> EntityManager::Pyramid_Mesh = nullptr;
 
+std::shared_ptr<Model> EntityManager::Wave_Model = nullptr;
+std::shared_ptr<Model> EntityManager::Player_Model = nullptr;
+
 std::shared_ptr<EntityManager> EntityManager::EntityManagerPtr = nullptr;
 
 std::shared_ptr<EntityManager> EntityManager::GetInstance() {
@@ -30,8 +33,9 @@ void EntityManager::DestroyInstance() {
 }
 
 std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
-	if (_EntityType == CUBE_ENTITY) {
+	if (_EntityType == CUBE_ENTITY || CUBE_PICKUP_ENTITY) {
 		if (Cube_Mesh == nullptr) {	//If the cube mesh hasnt been generated yet
+			#pragma region Generating VAO
 			Cube_Mesh = std::make_shared<MESH>();
 			GLfloat CubeVerts[] = {
 				// Positions             // Normal Coords        // TexCoords
@@ -115,8 +119,59 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
-			Cube_Mesh->VAO.push_back(VAO);
+
+			#pragma endregion
+
+			#pragma region Generating Textures
+			GLuint Texture;
+			//Generating and binding the texture
+			glGenTextures(1, &Texture);
+			glBindTexture(GL_TEXTURE_2D, Texture);
+
+			//Getting the image from filepath
+			int width, height;
+			unsigned char* image = SOIL_load_image(
+				POWER_UP_1,
+				&width,
+				&height,
+				0,
+				SOIL_LOAD_RGBA
+			);
+
+			//Generating the texture from image data
+			glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RGBA,
+				width, height,
+				0,
+				GL_RGBA,
+				GL_UNSIGNED_BYTE,
+				image
+			);
+
+			//Generating mipmaps
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			//Setting Texture wrap
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			//Setting texture filters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+							GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			//Freeing up data
+			SOIL_free_image_data(image);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindVertexArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			#pragma endregion
+
+			Cube_Mesh->VAO = VAO;
 			Cube_Mesh->NumIndices = sizeof(CubeIndices);
+			Cube_Mesh->Texture = Texture;
 		}
 		return Cube_Mesh;
 	}
@@ -183,16 +238,17 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PyramidIndices), PyramidIndices, GL_STATIC_DRAW);
-			Pyramid_Mesh->VAO.push_back(VAO);
+			Pyramid_Mesh->VAO = VAO;
 			Pyramid_Mesh->NumIndices = sizeof(PyramidIndices);
 		}
 		return Pyramid_Mesh;
 	}
 
+
 	return nullptr;
 }
 
-std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType, GLuint _Program) {
+std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType, GLuint& _Program) {
 	if (_EntityType == WAVE_ENTITY) {
 		if (Wave_Model == nullptr) {
 			Wave_Model = std::make_shared<Model>(WAVE_MODEL, _Program);

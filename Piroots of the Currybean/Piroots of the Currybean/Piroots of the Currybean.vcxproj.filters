@@ -75,6 +75,12 @@
     <ClCompile Include="EntityManager.cpp">
       <Filter>System\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>System\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelMesh.cpp">
+      <Filter>System\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -98,14 +104,17 @@
     <ClInclude Include="Camera.h">
       <Filter>System\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>System\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="CubeMap.h">
       <Filter>System\Cubemap</Filter>
     </ClInclude>
     <ClInclude Include="EntityManager.h">
       <Filter>System\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>System\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelMesh.h">
+      <Filter>System\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

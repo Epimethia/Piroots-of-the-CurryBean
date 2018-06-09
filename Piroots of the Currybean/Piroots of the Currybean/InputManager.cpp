@@ -43,7 +43,7 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 	//SPACE BAR INPUT
 	if (KeyArray[32] == KEY_FIRST_PRESS) {
 		KeyArray[32] = KEY_HELD;
-		GameManager::GetInstance()->Level1.EntityVect.push_back(std::make_shared<Entity>(
+		/*GameManager::GetInstance()->Level1.EntityVect.push_back(std::make_shared<Entity>(
 			ENEMY_ENTITY,
 			PLAYER_SPRITE,
 			GameManager::GetInstance()->Level1.ObjectShader,
@@ -51,7 +51,7 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 			glm::vec3(0.1f, 0.1f, 0.1f),
 			glm::vec3(90.0f, 0.0f, 0.0f)
 			)
-		);
+		);*/
 	}
 	else {
 		KeyArray[32] = KEY_HELD;

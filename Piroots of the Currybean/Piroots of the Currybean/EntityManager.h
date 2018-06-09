@@ -14,7 +14,7 @@
 //					on execution time
 
 #include "Resource.h"
-#include "Mesh.h"
+#include "Model.h"
 
 
 enum ENTITY_TYPE {
@@ -25,12 +25,14 @@ enum ENTITY_TYPE {
 	WAVE_ENTITY,
 	ENEMY_SMALL_ENTITY,
 	ENEMY_MEDIUM_ENTITY,
-	ENEMY_BIG_ENTITY
+	ENEMY_BIG_ENTITY,
+	CUBE_PICKUP_ENTITY
 };
 
 struct MESH {
 	GLuint VAO;
 	unsigned int NumIndices;
+	GLuint Texture;
 };
 
 class EntityManager {
@@ -39,14 +41,13 @@ public:
 	static void DestroyInstance();
 
 	static std::shared_ptr<MESH> GetMesh(ENTITY_TYPE _EntityType);
-	static std::shared_ptr<Model> GetModel(ENTITY_TYPE _EntityType, GLuint _Program);
+	static std::shared_ptr<Model> GetModel(ENTITY_TYPE _EntityType, GLuint& _Program);
 	~EntityManager();
 
 private:
 	EntityManager();
 
 	static std::shared_ptr<EntityManager> EntityManagerPtr;
-
 
 	static std::shared_ptr<MESH> Cube_Mesh;
 	static std::shared_ptr<MESH> Pyramid_Mesh;

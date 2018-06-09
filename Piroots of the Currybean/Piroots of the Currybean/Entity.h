@@ -5,8 +5,7 @@
 class Entity {
 public:
 	Entity();
-	Entity(ENTITY_TYPE _EntityType, const char* _SpriteRef, GLuint _Shader,
-		glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
+	Entity(ENTITY_TYPE _EntityType, GLuint _Shader, glm::vec3 _Pos);
 	virtual ~Entity();
 	virtual glm::vec3& GetPos() { return ObjPos; };
 	virtual glm::vec3& GetScale() { return ObjScale; };
@@ -14,10 +13,10 @@ public:
 	virtual void Render();
 	virtual void Process(glm::mat4 _VPMatrix);
 
-
 protected:
 	GLuint VAO;
 	unsigned int NumIndices;
+	std::shared_ptr<Model> model;
 	GLuint Texture;
 	GLuint Shader;
 	glm::vec3 ObjPos;
@@ -28,3 +27,15 @@ protected:
 	glm::mat4 VPMatrix;
 };
 
+class PickUp : public Entity {
+public:
+	PickUp(glm::vec3 _Pos, GLuint _Shader);
+	void Process(glm::mat4 _VPMatrix);
+};
+
+class Wave : public Entity {
+public:
+	Wave(glm::vec3 _Pos, GLuint _Shader);
+	void Process(glm::mat4 _VPMatrix);
+	void Render();
+};

@@ -143,6 +143,8 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelMesh.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="SoundManager.cpp" />
@@ -154,8 +156,9 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="ModelMesh.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="SoundManager.h" />
