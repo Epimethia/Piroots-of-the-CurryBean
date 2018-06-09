@@ -14,18 +14,22 @@
 //					on execution time
 
 #include "Resource.h"
-enum TYPE {
-	CUBE_MESH,
-	PYRAMID_MESH,
-	PLAYER_MESH,
-	CUSTOM_MESH,
-	ENEMY_SMALL_MESH,
-	ENEMY_MEDIUM_MESH,
-	ENEMY_BIG_MESH
+#include "Mesh.h"
+
+
+enum ENTITY_TYPE {
+	CUBE_ENTITY,
+	PLAYER_ENTITY,
+	ENEMY_ENTITY,
+	CUBEMAP_ENTITY,
+	WAVE_ENTITY,
+	ENEMY_SMALL_ENTITY,
+	ENEMY_MEDIUM_ENTITY,
+	ENEMY_BIG_ENTITY
 };
 
 struct MESH {
-	std::shared_ptr<GLuint> VAO;
+	GLuint VAO;
 	unsigned int NumIndices;
 };
 
@@ -34,7 +38,8 @@ public:
 	static std::shared_ptr<EntityManager> GetInstance();
 	static void DestroyInstance();
 
-	static std::shared_ptr<MESH> GetMesh(TYPE _Shape);
+	static std::shared_ptr<MESH> GetMesh(ENTITY_TYPE _EntityType);
+	static std::shared_ptr<Model> GetModel(ENTITY_TYPE _EntityType, GLuint _Program);
 	~EntityManager();
 
 private:
@@ -42,7 +47,10 @@ private:
 
 	static std::shared_ptr<EntityManager> EntityManagerPtr;
 
-	static std::shared_ptr<MESH> CUBEMESH;
-	static std::shared_ptr<MESH> PYRAMIDMESH;
-	static std::shared_ptr<MESH> MODELMESH;
+
+	static std::shared_ptr<MESH> Cube_Mesh;
+	static std::shared_ptr<MESH> Pyramid_Mesh;
+
+	static std::shared_ptr<Model> Wave_Model;
+	static std::shared_ptr<Model> Player_Model;
 };

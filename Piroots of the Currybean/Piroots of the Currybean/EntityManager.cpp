@@ -13,9 +13,8 @@
 
 #include "EntityManager.h"
 
-std::shared_ptr<MESH> EntityManager::CUBEMESH = nullptr;
-std::shared_ptr<MESH> EntityManager::PYRAMIDMESH = nullptr;
-std::shared_ptr<MESH> EntityManager::MODELMESH = nullptr;
+std::shared_ptr<MESH> EntityManager::Cube_Mesh = nullptr;
+std::shared_ptr<MESH> EntityManager::Pyramid_Mesh = nullptr;
 
 std::shared_ptr<EntityManager> EntityManager::EntityManagerPtr = nullptr;
 
@@ -30,10 +29,10 @@ void EntityManager::DestroyInstance() {
 	EntityManagerPtr = nullptr;
 }
 
-std::shared_ptr<MESH> EntityManager::GetMesh(TYPE _Shape) {
-	if (_Shape == CUBE_MESH) {
-		if (CUBEMESH == nullptr) {	//If the cube mesh hasnt been generated yet
-			CUBEMESH = std::make_shared<MESH>();
+std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
+	if (_EntityType == CUBE_ENTITY) {
+		if (Cube_Mesh == nullptr) {	//If the cube mesh hasnt been generated yet
+			Cube_Mesh = std::make_shared<MESH>();
 			GLfloat CubeVerts[] = {
 				// Positions             // Normal Coords        // TexCoords
 				// Front Face            
@@ -116,15 +115,15 @@ std::shared_ptr<MESH> EntityManager::GetMesh(TYPE _Shape) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
-			CUBEMESH->VAO = std::make_shared<GLuint>(VAO);
-			CUBEMESH->NumIndices = sizeof(CubeIndices);
+			Cube_Mesh->VAO.push_back(VAO);
+			Cube_Mesh->NumIndices = sizeof(CubeIndices);
 		}
-		return CUBEMESH;
+		return Cube_Mesh;
 	}
 
-	if (_Shape == PYRAMID_MESH) {
-		if (PYRAMIDMESH == nullptr) {	//If the Pyramid vao hasnt been generated yet
-			PYRAMIDMESH = std::make_shared<MESH>();
+	if (_EntityType == ENEMY_ENTITY) {
+		if (Pyramid_Mesh == nullptr) {	//If the Pyramid vao hasnt been generated yet
+			Pyramid_Mesh = std::make_shared<MESH>();
 			GLfloat PyramidVerts[] = {
 				// Positions          	// Colors			// Tex Coords
 				-1.0f, 0.0f, -1.0f,   	1.0f, 1.0f, 0.0f,	0.0f, 1.0f, // 0	// Base
@@ -184,15 +183,21 @@ std::shared_ptr<MESH> EntityManager::GetMesh(TYPE _Shape) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PyramidIndices), PyramidIndices, GL_STATIC_DRAW);
-			PYRAMIDMESH->VAO = std::make_shared<GLuint>(VAO);
-			PYRAMIDMESH->NumIndices = sizeof(PyramidIndices);
+			Pyramid_Mesh->VAO.push_back(VAO);
+			Pyramid_Mesh->NumIndices = sizeof(PyramidIndices);
 		}
-		return PYRAMIDMESH;
+		return Pyramid_Mesh;
 	}
 
-	if (_Shape == PLAYER_MESH) {
+	return nullptr;
+}
 
-		return MODELMESH;
+std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType, GLuint _Program) {
+	if (_EntityType == WAVE_ENTITY) {
+		if (Wave_Model == nullptr) {
+			Wave_Model = std::make_shared<Model>(WAVE_MODEL, _Program);
+		}
+		return Wave_Model;
 	}
 	return nullptr;
 }

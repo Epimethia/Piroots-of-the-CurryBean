@@ -17,10 +17,6 @@ void GameManager::DestroyInstance() {
 }
 
 void GameManager::GameLoop() {
-	GLfloat currentTime = static_cast<GLfloat>(glutGet(GLUT_ELAPSED_TIME));// Get current time.
-	currentTime = currentTime; // Convert millisecond to seconds
-	GLint currentTimeLoc = glGetUniformLocation(Level1.WaveShader, "currentTime");
-	glUniform1f(currentTimeLoc, currentTime);// set value
 	InputManager::ProcessKeyInput(Level1.Cube);
 }
 
@@ -45,7 +41,7 @@ void GameManager::GenerateLevels() {
 	String.push_back("egwge");
 	Level1.CM = CubeMap(String);
 
-	Level1.Player = Model(MODEL_A, Level1.ModelShader);
+	Level1.Pug = Model(MODEL_A, Level1.ModelShader);
 	Level1.Wave = Model(WAVE_MODEL, Level1.WaveShader);
 }
 

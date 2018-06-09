@@ -74,7 +74,7 @@ namespace UTILS {
 #define WALLTOGRAPHUI			"Assets/Fonts/waltographUI.ttf"
 
 //Model Macros					
-#define MODEL_A					"Assets/Models/pug/Dog 1.obj"
+#define MODEL_A					"Assets/Models/PlayerBoat/Boat1.obj"
 #define WAVE_MODEL				"Assets/Models/wave/Wave2.obj"
 
 //Keyboard Macros

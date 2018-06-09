@@ -44,8 +44,9 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 	if (KeyArray[32] == KEY_FIRST_PRESS) {
 		KeyArray[32] = KEY_HELD;
 		GameManager::GetInstance()->Level1.EntityVect.push_back(std::make_shared<Entity>(
-			PYRAMID_MESH,
+			ENEMY_ENTITY,
 			PLAYER_SPRITE,
+			GameManager::GetInstance()->Level1.ObjectShader,
 			glm::vec3(_Obj->GetPos().x, _Obj->GetPos().y, _Obj->GetPos().z),
 			glm::vec3(0.1f, 0.1f, 0.1f),
 			glm::vec3(90.0f, 0.0f, 0.0f)

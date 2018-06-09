@@ -1,11 +1,40 @@
-#version 450 core
+// #version 450 core
 
-in vec2 fragTexCoords;
+// in vec2 fragTexCoords;
+
+// out vec4 color;
+
+// uniform sampler2D texture_diffuse1;
+
+// void main() {
+//     color = texture(texture_diffuse1, fragTexCoords);
+// }
+
+#version 450 core
+in vec3 fragPos;
+in vec3 fragNormal;
+in vec2 fragTexCoord;
 
 out vec4 color;
-
 uniform sampler2D texture_diffuse1;
+uniform float ambientStr = 0.50f;
+uniform vec3 ambientColor = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3 lightPos = vec3(1.0f, 3.0f, 1.0f);
+uniform float lightSpecStr = 1.0f;
 
 void main() {
-    color = texture(texture_diffuse1, fragTexCoords);
+    vec3 ambient = ambientStr * ambientColor;
+    
+    //LightDir
+    vec3 norm = normalize(fragNormal);
+    vec3 lightDir = normalize(fragPos - lightPos);
+
+    //Diffuse Color
+    float diffuseStr = max(dot(norm, -lightDir), 0.0f);
+    vec3 diffuse = diffuseStr * lightColor;
+
+
+    color = vec4(ambient + diffuse, 1.0f) * texture(texture_diffuse1, fragTexCoord);//texture(tex, fragTexCoord); //
+
 }

@@ -9,7 +9,7 @@
 #include "EntityManager.h"
 
 struct Level {
-	Model Player;
+	Model Pug;
 	Model Wave;
 	CubeMap CM;
 	std::shared_ptr<Entity> Cube;
@@ -21,13 +21,6 @@ struct Level {
 	GLuint ObjectShader;
 	GLuint CubeMapShader;
 
-	/*
-	std::shared_ptr<GLuint> WaveShader;
-	std::shared_ptr<GLuint>  ModelShader;
-	std::shared_ptr<GLuint>  ObjectShader;
-	std::shared_ptr<GLuint>  CubeMapShader;
-	*/
-
 	std::vector<std::shared_ptr<Entity>> EntityVect;
 	void Init() {
 		WaveShader = SL->CreateProgram(WAVE_VERT_SHADER, WAVE_FRAG_SHADER);
@@ -35,8 +28,9 @@ struct Level {
 		ObjectShader = SL->CreateProgram(VERT_SHADER, FRAG_SHADER);
 		CubeMapShader = SL->CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 		Cube = std::make_shared<Entity>(
-			CUBE_MESH,
+			CUBE_ENTITY,
 			PLAYER_SPRITE,
+			ObjectShader,
 			glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.1f, 0.1f, 0.1f),
 			glm::vec3(0.0f, 0.0f, 0.0f)
@@ -45,16 +39,16 @@ struct Level {
 	
 
 	void Draw() {
-		CM.Render(CubeMapShader, Camera::GetMatrix());
-		Cube->Render(ModelShader, Camera::GetMatrix());
 		for (auto it : EntityVect) {
-			it->Render(ObjectShader, Camera::GetMatrix());
+			it->Process(Camera::GetMatrix());
 		}
 		glFrontFace(GL_CCW);
-		Player.Render(ModelShader);
+		Pug.Render(ModelShader);
 		Wave.Render(WaveShader);
 		glFrontFace(GL_CW);
-		
+		CM.Render(CubeMapShader, Camera::GetMatrix());
+		Cube->Process(Camera::GetMatrix());
+
 	}
 	~Level() {
 

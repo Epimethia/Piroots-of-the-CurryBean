@@ -120,6 +120,11 @@ public:
 		GLuint  MVPLoc = glGetUniformLocation(_Program, "MVP");
 		glUniformMatrix4fv(MVPLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 
+		GLfloat currentTime = static_cast<GLfloat>(glutGet(GLUT_ELAPSED_TIME));// Get current time.
+		currentTime = currentTime; // Convert millisecond to seconds
+		GLint currentTimeLoc = glGetUniformLocation(_Program, "currentTime");
+		glUniform1f(currentTimeLoc, currentTime);// set value
+
 		//Drawing mesh
 		glBindVertexArray(this->VAO);
 		glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);

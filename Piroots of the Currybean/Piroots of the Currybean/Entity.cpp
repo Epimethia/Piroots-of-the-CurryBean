@@ -8,12 +8,12 @@ Entity::Entity() {
 //Return Type:		None
 //Description:		Overloaded Constructor to create an entity with the specified
 //							mesh.
-Entity::Entity(TYPE _EntityType, const char* _SpriteRef, std::shared_ptr<GLuint> _Shader,
+Entity::Entity(ENTITY_TYPE _EntityType, const char* _SpriteRef, GLuint _Shader,
 	glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
-	Shader = _Shader;
 	ObjPos = _Pos;
 	ObjScale = _Scale;
 	ObjRotation = _Rot;
+	Shader = _Shader;
 	VAO = EntityManager::GetMesh(_EntityType)->VAO;
 	NumIndices = EntityManager::GetMesh(_EntityType)->NumIndices;
 	//Generating and binding the texture
@@ -64,11 +64,13 @@ Entity::Entity(TYPE _EntityType, const char* _SpriteRef, std::shared_ptr<GLuint>
 
 Entity::~Entity() {};
 
-void Entity::Render(GLuint& _Program, glm::mat4 _VPMatrix) {
-	glUseProgram(_Program);
+void Entity::Render() {
+
+	glUseProgram(Shader);
+
 	//Binding the array
 
-	glBindVertexArray(*VAO);
+	glBindVertexArray(it);
 
 	//Setting back face culling
 	glCullFace(GL_BACK);
@@ -84,7 +86,7 @@ void Entity::Render(GLuint& _Program, glm::mat4 _VPMatrix) {
 	glBindTexture(GL_TEXTURE_2D, Texture);
 
 	//Sending the texture to the GPU via uniform
-	glUniform1i(glGetUniformLocation(_Program, "tex"), 0);
+	glUniform1i(glGetUniformLocation(Shader, "tex"), 0);
 
 	//Translating the cube (x,y,z)
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), ObjPos / 375.0f);
@@ -118,9 +120,9 @@ void Entity::Render(GLuint& _Program, glm::mat4 _VPMatrix) {
 
 	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
 
-	glm::mat4 MVP = _VPMatrix * ModelMatrix;
+	glm::mat4 MVP = VPMatrix * ModelMatrix;
 
-	GLuint  transformLoc = glGetUniformLocation(_Program, "MVP");
+	GLuint  transformLoc = glGetUniformLocation(Shader, "MVP");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(MVP));
 
 	//Drawing the entity
@@ -133,4 +135,14 @@ void Entity::Render(GLuint& _Program, glm::mat4 _VPMatrix) {
 	//Clearing the vertex array
 	glBindVertexArray(0);
 };
+
+void Entity::Process(glm::mat4 _VPMatrix) {
+	VPMatrix = _VPMatrix;
+
+	//REMOVE
+	//DO OTHER PROCESSING STUFF IN HERE
+
+	Render();
+}
+
 
