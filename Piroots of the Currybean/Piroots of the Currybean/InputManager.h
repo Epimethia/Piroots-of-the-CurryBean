@@ -1,6 +1,7 @@
 #pragma once
 #include "Resource.h"
 #include "Entity.h"
+#include "AutonomousMove.h"
 
 enum KeyState {
 	KEY_FIRST_PRESS,

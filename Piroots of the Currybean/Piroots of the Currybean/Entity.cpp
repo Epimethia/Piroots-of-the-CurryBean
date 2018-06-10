@@ -81,7 +81,7 @@ void Entity::Render() {
 
 	glUniformMatrix4fv(glGetUniformLocation(Shader, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
 	glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
-
+	glUniform3fv(glGetUniformLocation(Shader, "camPos"), 1, glm::value_ptr(Camera::GetPos()));
 	//Drawing the entity
 	glDrawElements(GL_TRIANGLES, NumIndices, GL_UNSIGNED_INT, 0);
 
@@ -118,12 +118,20 @@ void PickUp::Process(glm::mat4 _VPMatrix) {
 	Render();
 }
 
+EnemySmall::EnemySmall(glm::vec3 _Pos, GLuint _Shader) {
+
+}
+
+void EnemySmall::Process(glm::mat4 _VPMatrix) {
+
+}
+
 Wave::Wave(glm::vec3 _Pos, GLuint _Shader) {
 	Shader = _Shader;
-	ObjScale = glm::vec3(1.0f, 1.0f, 1.0f);
+	ObjScale = glm::vec3(0.3f, 0.2f, 0.3f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
-	model = std::make_shared<Model>(Model(WAVE_MODEL, Shader));
+	model = EntityManager::GetModel(WAVE_ENTITY, Shader);
 };
 
 void Wave::Process(glm::mat4 _VPMatrix) {
@@ -132,5 +140,18 @@ void Wave::Process(glm::mat4 _VPMatrix) {
 }
 
 void Wave::Render() {
-	model->Render(ObjPos, ObjScale, ObjPos);
+	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), ObjPos / 375.0f);
+
+	//X Rotation
+	glm::mat4 RotateX =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(ObjRotation.x + 90.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
+	glm::mat4 ModelMatrix = TranslationMatrix * RotateX * ScaleMatrix;
+
+	model->Render(ModelMatrix);
 }

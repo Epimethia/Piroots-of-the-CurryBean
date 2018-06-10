@@ -17,7 +17,7 @@ void GameManager::DestroyInstance() {
 }
 
 void GameManager::GameLoop() {
-	//InputManager::ProcessKeyInput(Level1.pu);
+	InputManager::ProcessKeyInput(Level1.pu);
 }
 
 std::shared_ptr<GameManager> GameManager::GetInstance() {

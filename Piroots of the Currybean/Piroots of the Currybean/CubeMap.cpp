@@ -144,7 +144,7 @@ void CubeMap::Render(GLuint _Program, glm::mat4 _VPMatrix) {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, Texture);
 
 	glUniform1i(glGetUniformLocation(_Program, "cubeSampler"), 0);
-	glm::mat4 model = glm::scale(glm::mat4(), glm::vec3(100.0f, 100.0f, 100.0f));
+	glm::mat4 model = glm::scale(glm::mat4(), glm::vec3(10000.0f, 10000.0f, 10000.0f));
 	glm::mat4 View = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 Projection = glm::perspective(1.0f, 1.0f, 0.1f, 10000.0f);
 	glm::mat4 RotationMatrixX =

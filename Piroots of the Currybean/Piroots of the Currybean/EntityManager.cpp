@@ -251,6 +251,7 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType, GLuint& _Program) {
 	if (_EntityType == WAVE_ENTITY) {
 		if (Wave_Model == nullptr) {
+			std::cout << "Generating Wave Mesh\n";
 			Wave_Model = std::make_shared<Model>(WAVE_MODEL, _Program);
 		}
 		return Wave_Model;

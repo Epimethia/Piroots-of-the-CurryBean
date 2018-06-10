@@ -74,7 +74,7 @@ namespace UTILS {
 
 //Model Macros					
 #define MODEL_A					"Assets/Models/PlayerBoat/Boat1.obj"
-#define WAVE_MODEL				"Assets/Models/wave/Wave.obj"
+#define WAVE_MODEL				"Assets/Models/wave/Wave2.obj"
 
 //Keyboard Macros
 #define INPUT_FIRST_RELEASED	0

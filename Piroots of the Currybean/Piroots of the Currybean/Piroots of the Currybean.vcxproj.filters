@@ -81,6 +81,9 @@
     <ClCompile Include="ModelMesh.cpp">
       <Filter>System\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="AutonomousMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="ModelMesh.h">
       <Filter>System\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="AutonomousMove.h">
+      <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

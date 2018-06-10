@@ -21,7 +21,10 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 
 	//RIGHT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_HELD) {
-		_Obj->GetPos().x += 20.0f;//5.0f;
+		glm::vec3 Move = AutoMove::Seek(*_Obj, glm::vec3(0.0f, 0.0f, 0.0f));
+		_Obj->GetVelocity() += Move;
+		_Obj->GetPos() += _Obj->GetVelocity();
+		//_Obj->GetPos().x += 20.0f;//5.0f;
 	} else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_RIGHT] = KEY_HELD;
 
 	//LEFT KEY INPUT
@@ -69,8 +72,8 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 
 	//Setting Camera Pos
 	Camera::GetPos().x = _Obj->GetPos().x / 375.0f * -1.0f;
-	Camera::GetPos().y = (_Obj->GetPos().y / 375.0f) * -1.0f;
-	Camera::GetPos().z = _Obj->GetPos().z + 0.2f;
+	Camera::GetPos().y = ((_Obj->GetPos().y - 375.0f) / 375.0f) * -1.0f;
+	Camera::GetPos().z = _Obj->GetPos().z - 0.8f;
 
 }
 

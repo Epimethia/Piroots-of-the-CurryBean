@@ -10,7 +10,6 @@
 
 struct Level {
 	Model Pug;
-	std::shared_ptr<Wave> w;
 	CubeMap CM;
 	std::shared_ptr<PickUp> pu;
 	std::shared_ptr<PickUp> pu1;
@@ -30,29 +29,29 @@ struct Level {
 		ObjectShader = SL->CreateProgram(VERT_SHADER, FRAG_SHADER);
 		CubeMapShader = SL->CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 
+		pu = std::make_shared<PickUp>(glm::vec3(-375.0f, -375.0f, 0.0f), ObjectShader);
+		//EntityVect.push_back(std::make_shared<PickUp>(glm::vec3(0.0f, 0.0f, 0.0f), ObjectShader));
 
-		//pu = std::make_shared<PickUp>(glm::vec3(0.0f, 0.0f, 0.0f), ObjectShader);
-		//pu1 = std::make_shared<PickUp>(glm::vec3(0.0f, 0.0f, 0.0f), ObjectShader);
-		w = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f), WaveShader);
-		//EntityVect.push_back(pu = std::make_shared<PickUp>(glm::vec3(0.0f, 0.0f, 0.0f)));
-		//Cube = std::make_shared<Entity>(glm::vec3(0.0f, 0.0f, 0.0f));
+		EntityVect.push_back(std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f), WaveShader));
+		
 	}
 	
 
 	void Draw() {
+		CM.Render(CubeMapShader, Camera::GetMatrix());
+
 		for (auto it : EntityVect) {
 			it->Process(Camera::GetMatrix());
 		}
-		//pu->Process(Camera::GetMatrix());
+		pu->Process(Camera::GetMatrix());
 		//pu1->Process(Camera::GetMatrix());
-		w->Process(Camera::GetMatrix());
+		
 		glFrontFace(GL_CCW);
 		
 
-		Pug.Render(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+		//Pug.Render(ModelShader);
 		//Wave.Render(WaveShader);
 		glFrontFace(GL_CW);
-		CM.Render(CubeMapShader, Camera::GetMatrix());
 		//Cube->Process(Camera::GetMatrix());
 
 	}
