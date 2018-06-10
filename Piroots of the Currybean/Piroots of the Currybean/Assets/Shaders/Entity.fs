@@ -6,10 +6,10 @@ in vec3 fragPos;
 out vec4 color;
 uniform sampler2D tex;
 
-uniform float ambientStr = 0.5f;
+uniform float ambientStr = 0.05f;
 uniform vec3 ambientColor = vec3(1.0f, 1.0f, 1.0f);
 uniform vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3 lightPos = vec3(0.0f, 13.0f, 0.0f);
+uniform vec3 lightPos = vec3(0.0f, 5.0f, 3.0f);
 
 void main() {
 

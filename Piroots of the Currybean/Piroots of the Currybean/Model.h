@@ -29,7 +29,7 @@ public:
 	Model(std::string path, GLuint program);
 
 	// Draws the model, and thus all its meshes
-	void Render(glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot, GLuint _Shader);
+	void Render(glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot);
 
 private:
 	/*  Model Data  */

@@ -79,8 +79,8 @@ void Entity::Render() {
 
 	glm::mat4 MVP = VPMatrix * ModelMatrix;
 
-	GLuint  transformLoc = glGetUniformLocation(Shader, "MVP");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(MVP));
+	glUniformMatrix4fv(glGetUniformLocation(Shader, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+	glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
 
 	//Drawing the entity
 	glDrawElements(GL_TRIANGLES, NumIndices, GL_UNSIGNED_INT, 0);
@@ -123,7 +123,7 @@ Wave::Wave(glm::vec3 _Pos, GLuint _Shader) {
 	ObjScale = glm::vec3(1.0f, 1.0f, 1.0f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
-	model = EntityManager::GetModel(WAVE_ENTITY, Shader);
+	model = std::make_shared<Model>(Model(WAVE_MODEL, Shader));
 };
 
 void Wave::Process(glm::mat4 _VPMatrix) {
@@ -132,5 +132,5 @@ void Wave::Process(glm::mat4 _VPMatrix) {
 }
 
 void Wave::Render() {
-	model->Render(ObjPos, ObjScale, ObjPos, Shader);
+	model->Render(ObjPos, ObjScale, ObjPos);
 }

@@ -7,9 +7,9 @@ Model::Model(std::string path, GLuint _Shader) {
 	this->loadModel(path);
 }
 
-void Model::Render(glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot, GLuint _Shader) {
+void Model::Render(glm::vec3 _Pos, glm::vec3 _Scale, glm::vec3 _Rot) {
 	for (GLuint i = 0; i < this->meshes.size(); i++) {
-		this->meshes[i].Render(Camera::GetMatrix(), _Pos, _Scale, _Rot, _Shader);
+		this->meshes[i].Render(Camera::GetMatrix(), _Pos, _Scale, _Rot, Shader);
 	}
 }
 
