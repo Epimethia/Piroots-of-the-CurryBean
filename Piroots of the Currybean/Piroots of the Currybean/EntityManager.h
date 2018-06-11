@@ -18,15 +18,11 @@
 
 
 enum ENTITY_TYPE {
-	CUBE_ENTITY,
+	CUBE_PICKUP,
 	PLAYER_ENTITY,
 	ENEMY_ENTITY,
-	CUBEMAP_ENTITY,
+	BULLET_ENTITY,
 	WAVE_ENTITY,
-	ENEMY_SMALL_ENTITY,
-	ENEMY_MEDIUM_ENTITY,
-	ENEMY_BIG_ENTITY,
-	CUBE_PICKUP_ENTITY
 };
 
 struct MESH {
@@ -51,6 +47,7 @@ private:
 
 	static std::shared_ptr<MESH> Cube_Mesh;
 	static std::shared_ptr<MESH> Pyramid_Mesh;
+	static std::shared_ptr<MESH> Sphere_Mesh;
 
 	static std::shared_ptr<Model> Wave_Model;
 	static std::shared_ptr<Model> Player_Model;

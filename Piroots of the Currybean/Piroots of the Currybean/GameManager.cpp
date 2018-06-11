@@ -18,6 +18,7 @@ void GameManager::DestroyInstance() {
 
 void GameManager::GameLoop() {
 	InputManager::ProcessKeyInput(Level1.pu);
+
 }
 
 std::shared_ptr<GameManager> GameManager::GetInstance() {
@@ -26,7 +27,7 @@ std::shared_ptr<GameManager> GameManager::GetInstance() {
 }
 
 void GameManager::Init() {
-	//generating shaders
+	Clock::GetInstance();
 	GenerateLevels();
 	InputManager();
 	Camera::GetInstance();
@@ -36,12 +37,9 @@ void GameManager::Init() {
 
 void GameManager::GenerateLevels() {
 	//Start Menu Generation
-
 	std::vector<std::string> String;
 	String.push_back("egwge");
 	Level1.CM = CubeMap(String);
-
-	Level1.Pug = Model(MODEL_A, Level1.ModelShader);
 	//Level1.Wave = Model(WAVE_MODEL, Level1.WaveShader);
 }
 

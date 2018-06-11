@@ -15,6 +15,7 @@
 
 std::shared_ptr<MESH> EntityManager::Cube_Mesh = nullptr;
 std::shared_ptr<MESH> EntityManager::Pyramid_Mesh = nullptr;
+std::shared_ptr<MESH> EntityManager::Sphere_Mesh = nullptr;
 
 std::shared_ptr<Model> EntityManager::Wave_Model = nullptr;
 std::shared_ptr<Model> EntityManager::Player_Model = nullptr;
@@ -33,10 +34,9 @@ void EntityManager::DestroyInstance() {
 }
 
 std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
-	if (_EntityType == CUBE_ENTITY || CUBE_PICKUP_ENTITY) {
+	if (_EntityType == CUBE_PICKUP) {
 		if (Cube_Mesh == nullptr) {	//If the cube mesh hasnt been generated yet
 			#pragma region Generating VAO
-			Cube_Mesh = std::make_shared<MESH>();
 			GLfloat CubeVerts[] = {
 				// Positions             // Normal Coords        // TexCoords
 				// Front Face            
@@ -86,9 +86,7 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 				20, 21, 22,		20, 22, 23,		// Bottom Face
 			};
 
-			GLuint VBO;
-			GLuint EBO;
-			GLuint VAO;
+			GLuint VAO, VBO, EBO;
 
 			//Generating buffers
 			glGenVertexArrays(1, &VAO);
@@ -119,7 +117,6 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
-
 			#pragma endregion
 
 			#pragma region Generating Textures
@@ -169,16 +166,21 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			#pragma endregion
 
+			Cube_Mesh = std::make_shared<MESH>();
 			Cube_Mesh->VAO = VAO;
 			Cube_Mesh->NumIndices = sizeof(CubeIndices);
 			Cube_Mesh->Texture = Texture;
+			return Cube_Mesh;
 		}
-		return Cube_Mesh;
+		else {
+			std::cout << "cube mesh already generated\n";
+			return Cube_Mesh;
+		}
 	}
 
 	if (_EntityType == ENEMY_ENTITY) {
 		if (Pyramid_Mesh == nullptr) {	//If the Pyramid vao hasnt been generated yet
-			Pyramid_Mesh = std::make_shared<MESH>();
+			#pragma region Generating VAO
 			GLfloat PyramidVerts[] = {
 				// Positions          	// Colors			// Tex Coords
 				-1.0f, 0.0f, -1.0f,   	1.0f, 1.0f, 0.0f,	0.0f, 1.0f, // 0	// Base
@@ -238,12 +240,199 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			//Generating EBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PyramidIndices), PyramidIndices, GL_STATIC_DRAW);
+			#pragma endregion 
+
+			#pragma region Generating Textures
+			GLuint Texture;
+			//Generating and binding the texture
+			glGenTextures(1, &Texture);
+			glBindTexture(GL_TEXTURE_2D, Texture);
+
+			//Getting the image from filepath
+			int width, height;
+			unsigned char* image = SOIL_load_image(
+				POWER_UP_2,
+				&width,
+				&height,
+				0,
+				SOIL_LOAD_RGBA
+			);
+
+			//Generating the texture from image data
+			glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RGBA,
+				width, height,
+				0,
+				GL_RGBA,
+				GL_UNSIGNED_BYTE,
+				image
+			);
+
+			//Generating mipmaps
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			//Setting Texture wrap
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			//Setting texture filters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+							GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			//Freeing up data
+			SOIL_free_image_data(image);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindVertexArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			#pragma endregion
+
+			//Passing them into the mesh structure
+			Pyramid_Mesh = std::make_shared<MESH>();
 			Pyramid_Mesh->VAO = VAO;
 			Pyramid_Mesh->NumIndices = sizeof(PyramidIndices);
+			Pyramid_Mesh->Texture = Texture;
 		}
 		return Pyramid_Mesh;
 	}
 
+	if (_EntityType == BULLET_ENTITY) {
+		if (Sphere_Mesh == nullptr) {
+			std::cout << "Generating Bullet Mesh\n";
+			#pragma region Generating VAO
+			float radius = 1.0f;
+			const int sections = 8;
+			const int vertexAttrib = 8;
+			const int indexPerQuad = 6;
+			const float PI = 3.14159265359f;
+			double phi = 0.0;
+			double theta = 0.0;
+
+			//Loops to generate the vertices of the sphere
+			GLfloat SphereVerts[sections * sections * vertexAttrib];
+			int offset = 0;
+
+			for (int i = 0; i < sections; ++i) {
+				theta = 0.0;
+				for (int j = 0; j < sections; ++j) {
+					float x = static_cast<float>(cos(phi) * sin(theta));
+					float y = static_cast<float>(cos(theta));
+					float z = static_cast<float>(sin(phi) * sin(theta));
+
+					SphereVerts[offset++] = x * radius;
+					SphereVerts[offset++] = y * radius;
+					SphereVerts[offset++] = z * radius;
+
+					SphereVerts[offset++] = x;
+					SphereVerts[offset++] = y;
+					SphereVerts[offset++] = z;
+
+					SphereVerts[offset++] = (float)i / (sections - 1);
+					SphereVerts[offset++] = (float)j / (sections - 1);
+
+					theta += (PI / (sections - 1));
+				}
+				phi += (2 * PI) / (sections - 1);
+			}
+
+			//Loops to generate the indices of the sphere
+			GLuint SphereIndices[sections * sections * indexPerQuad];
+			offset = 0;
+			for (int i = 0; i < sections; ++i) {
+				for (int j = 0; j < sections; ++j) {
+					SphereIndices[offset++] = (((i + 1) % sections) * sections) + ((j + 1) % sections);
+					SphereIndices[offset++] = (((i + 1) % sections) * sections) + (j);
+					SphereIndices[offset++] = (i * sections) + (j);
+
+					SphereIndices[offset++] = (i * sections) + ((j + 1) % sections);
+					SphereIndices[offset++] = (((i + 1) % sections) * sections) + ((j + 1) % sections);
+					SphereIndices[offset++] = (i * sections) + (j);
+				}
+			}
+
+			GLuint VAO, VBO, EBO;
+
+			glGenVertexArrays(1, &VAO);
+			glBindVertexArray(VAO);
+
+			glGenBuffers(1, &VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(SphereVerts), SphereVerts, GL_STATIC_DRAW);
+
+			glGenBuffers(1, &EBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(SphereIndices), SphereIndices, GL_STATIC_DRAW);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)0);
+			glEnableVertexAttribArray(0);
+
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+			glEnableVertexAttribArray(1);
+
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+			glEnableVertexAttribArray(2);
+			#pragma endregion
+
+			#pragma region Generating Textures
+			GLuint Texture;
+			//Generating and binding the texture
+			glGenTextures(1, &Texture);
+			glBindTexture(GL_TEXTURE_2D, Texture);
+
+			//Getting the image from filepath
+			int width, height;
+			unsigned char* image = SOIL_load_image(
+				BULLET_SPRITE,
+				&width,
+				&height,
+				0,
+				SOIL_LOAD_RGBA
+			);
+
+			//Generating the texture from image data
+			glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RGBA,
+				width, height,
+				0,
+				GL_RGBA,
+				GL_UNSIGNED_BYTE,
+				image
+			);
+
+			//Generating mipmaps
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			//Setting Texture wrap
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			//Setting texture filters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+							GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			//Freeing up data
+			SOIL_free_image_data(image);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindVertexArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			#pragma endregion
+
+			Sphere_Mesh = std::make_shared<MESH>();
+			Sphere_Mesh->VAO = VAO;
+			Sphere_Mesh->NumIndices = sizeof(SphereIndices);
+			Sphere_Mesh->Texture = Texture;
+			return Sphere_Mesh;
+		}
+		else {
+			std::cout << "Mesh already generated\n";
+			return Sphere_Mesh;
+		}
+	}
 
 	return nullptr;
 }
@@ -255,6 +444,13 @@ std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType, GLuint& 
 			Wave_Model = std::make_shared<Model>(WAVE_MODEL, _Program);
 		}
 		return Wave_Model;
+	}
+	if (_EntityType == PLAYER_ENTITY) {
+		if (Player_Model == nullptr) {
+			std::cout << "Generating Player Mesh\n";
+			Player_Model = std::make_shared<Model>(PLAYER_MODEL, _Program);
+		}
+		return Player_Model;
 	}
 	return nullptr;
 }

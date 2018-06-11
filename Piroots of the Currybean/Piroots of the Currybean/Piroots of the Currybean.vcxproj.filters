@@ -43,6 +43,9 @@
     <Filter Include="System\Cubemap">
       <UniqueIdentifier>{ef5ff924-48e0-488d-9313-96f09385d3d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Clock">
+      <UniqueIdentifier>{479845cc-b492-45fe-911f-08b5e535b85f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -84,6 +87,9 @@
     <ClCompile Include="AutonomousMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Clock.cpp">
+      <Filter>System\Clock</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -121,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="AutonomousMove.h">
       <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Clock.h">
+      <Filter>System\Clock</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

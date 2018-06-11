@@ -29,12 +29,12 @@ void Camera::DestroyInstance() {
 }
 
 glm::mat4& Camera::GetMatrix() {
-	View = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	View = glm::lookAt(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 	Projection = glm::perspective(1.0f, 1.0f, 0.1f, 20000.0f);
 	glm::mat4 RotationMatrixX =
 		glm::rotate(
 		glm::mat4(),
-		glm::radians(-45.0f),
+		glm::radians(45.0f),
 		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 	glm::mat4 RotationMatrixY =

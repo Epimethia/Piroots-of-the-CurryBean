@@ -1,7 +1,8 @@
 #pragma once
 #include "Resource.h"
-#include "Entity.h"
 #include "AutonomousMove.h"
+#include "GameManager.h"
+
 
 enum KeyState {
 	KEY_FIRST_PRESS,
@@ -12,7 +13,7 @@ enum KeyState {
 class InputManager {
 public:
 	InputManager();
-	static void ProcessKeyInput(std::shared_ptr<Entity> _Obj);
+	static void ProcessKeyInput(std::shared_ptr<Player> _Obj);
 private:	
 	static unsigned char KeyArray[255];
 	static unsigned char KeySpecialArray[255];

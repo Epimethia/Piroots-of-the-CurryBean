@@ -1,5 +1,6 @@
 #include "Entity.h"
 
+#pragma region ENTITY BASE CLASS DEFINITIONS
 Entity::Entity() {
 }
 
@@ -10,15 +11,13 @@ Entity::Entity() {
 //							mesh.
 Entity::Entity(ENTITY_TYPE _EntityType, GLuint _Shader, glm::vec3 _Pos) {
 	Shader = _Shader;
-	if (_EntityType == CUBE_PICKUP_ENTITY) {
-		ObjScale = glm::vec3(1.0f, 1.0f, 1.0f);
-		ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-		ObjPos = _Pos;
-		VAO = EntityManager::GetMesh(CUBE_PICKUP_ENTITY)->VAO;
-		NumIndices = EntityManager::GetMesh(CUBE_PICKUP_ENTITY)->NumIndices;
-		Texture = EntityManager::GetMesh(CUBE_PICKUP_ENTITY)->Texture;
-	}
-
+	Velocity = { 0.0f, 1000.0f, 0.0f };
+	ObjScale = glm::vec3(1.0f, 1.0f, 1.0f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjPos = _Pos;
+	VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
+	NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
+	Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
 };
 
 Entity::~Entity() {};
@@ -93,39 +92,72 @@ void Entity::Render() {
 	glBindVertexArray(0);
 };
 
-void Entity::Process(glm::mat4 _VPMatrix) {
-	VPMatrix = _VPMatrix;
+void Entity::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
 
 	//REMOVE
 	//DO OTHER PROCESSING STUFF IN HERE
 
 	Render();
 }
+#pragma endregion
 
+#pragma region MODEL ENTITY FUNCTION DEFINITIONS
+ModelEntity::ModelEntity() {
+
+}
+
+ModelEntity::ModelEntity(ENTITY_TYPE _EntityType, GLuint _Shader, glm::vec3 _Pos) {
+	Shader = _Shader;
+	ObjScale = glm::vec3(0.1f, 0.1f, 0.1f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjPos = _Pos;
+	model = EntityManager::GetModel(PLAYER_ENTITY, Shader);
+}
+
+void ModelEntity::Render() {
+	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), ObjPos / 375.0f);
+
+	//X Rotation
+	glm::mat4 RotateX =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(ObjRotation.x + 90.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
+	glm::mat4 ModelMatrix = TranslationMatrix * RotateX * ScaleMatrix;
+
+	model->Render(ModelMatrix);
+}
+
+void ModelEntity::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
+	Render();
+}
+#pragma endregion
+
+#pragma region PICKUP FUNCTION DEFINITIONS
 PickUp::PickUp(glm::vec3 _Pos, GLuint _Shader) {
 	Shader = _Shader;
+	Velocity = { 0.0f, 1.0f, 0.0f };
 	ObjScale = glm::vec3(0.05f, 0.05f, 0.05f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
-	VAO = EntityManager::GetMesh(CUBE_PICKUP_ENTITY)->VAO;
-	NumIndices = EntityManager::GetMesh(CUBE_PICKUP_ENTITY)->NumIndices;
-	Texture = EntityManager::GetMesh(CUBE_PICKUP_ENTITY)->Texture;
+	VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
+	NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
+	Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
 };
 
-void PickUp::Process(glm::mat4 _VPMatrix) {
+void PickUp::Process(float _DeltaTime) {
 	ObjRotation.z += 5.0f;
-	VPMatrix = _VPMatrix;
+	VPMatrix = Camera::GetMatrix();
 	Render();
 }
+#pragma endregion
 
-EnemySmall::EnemySmall(glm::vec3 _Pos, GLuint _Shader) {
-
-}
-
-void EnemySmall::Process(glm::mat4 _VPMatrix) {
-
-}
-
+#pragma region WAVE FUNCTION DEFINITIONS
 Wave::Wave(glm::vec3 _Pos, GLuint _Shader) {
 	Shader = _Shader;
 	ObjScale = glm::vec3(0.3f, 0.2f, 0.3f);
@@ -134,8 +166,8 @@ Wave::Wave(glm::vec3 _Pos, GLuint _Shader) {
 	model = EntityManager::GetModel(WAVE_ENTITY, Shader);
 };
 
-void Wave::Process(glm::mat4 _VPMatrix) {
-	VPMatrix = _VPMatrix;
+void Wave::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
 	Render();
 }
 
@@ -155,3 +187,69 @@ void Wave::Render() {
 
 	model->Render(ModelMatrix);
 }
+#pragma endregion
+
+#pragma region PLAYER FUNCTION DEFINITIONS
+Player::Player(glm::vec3 _Pos, GLuint _Shader) {
+	Shader = _Shader;
+	ObjScale = glm::vec3(0.05f, 0.05f, -0.05f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjPos = _Pos;
+	Velocity = { 0.0f, 0.0f, 0.0f };
+	Target = { 0.0f, 0.0f, 0.0f };
+	model = EntityManager::GetModel(PLAYER_ENTITY, Shader);
+}
+
+void Player::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
+	ObjPos += Velocity * 10.0f * _DeltaTime;
+	Render();
+}
+
+void Player::Render() {
+	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(ObjPos.x, ObjPos.y, ObjPos.z + 30.0f) / 375.0f);
+	float PI = 3.14159265359f;
+	float angle;
+	angle = atan2f(Velocity.x, Velocity.y) * (180.0f/PI);
+	/*if (angle < 0.0f) angle += 360.0f;*/
+	//X Rotation
+	glm::mat4 RotateX =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(ObjRotation.x + 90.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+
+	glm::mat4 RotateY =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(ObjRotation.y + (angle * -1.0f)),
+			glm::vec3(0.0f, 1.0f, 0.0f)
+		);
+
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
+	glm::mat4 ModelMatrix = TranslationMatrix * (RotateX * RotateY) * ScaleMatrix;
+
+	model->Render(ModelMatrix);
+}
+#pragma endregion
+
+#pragma region BULLET FUNCTION DEFINITIONS
+Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos, GLuint _Shader) {
+	Shader = _Shader;
+	ObjPos = _Pos;
+	ObjScale = glm::vec3(0.04f, 0.04f, 0.04f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	Velocity = _Velocity;
+	MaxSpeed = 1000.0f;
+	VAO = EntityManager::GetMesh(BULLET_ENTITY)->VAO;
+	NumIndices = EntityManager::GetMesh(BULLET_ENTITY)->NumIndices;
+	Texture = EntityManager::GetMesh(BULLET_ENTITY)->Texture;
+}
+
+void Bullet::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
+	ObjPos += glm::normalize(Velocity) * MaxSpeed * _DeltaTime;
+	Render();
+}
+#pragma endregion

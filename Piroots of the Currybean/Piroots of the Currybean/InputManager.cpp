@@ -1,10 +1,7 @@
 #include "InputManager.h"
-#include "GameManager.h"
 
 unsigned char InputManager::KeyArray[255];
 unsigned char InputManager::KeySpecialArray[255];
-
-void memes() {};
 
 InputManager::InputManager() {
 	for (int i = 0; i < 255; ++i) {
@@ -13,7 +10,7 @@ InputManager::InputManager() {
 	}
 }
 
-void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
+void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Obj) {
 	glutSpecialFunc(InputManager::SpecialKeyDown);
 	glutSpecialUpFunc(InputManager::SpecialKeyUp);
 	glutKeyboardFunc(InputManager::NormKeyDown);
@@ -21,40 +18,66 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 
 	//RIGHT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_HELD) {
-		glm::vec3 Move = AutoMove::Seek(*_Obj, glm::vec3(0.0f, 0.0f, 0.0f));
+		glm::vec3 Target = { _Obj->GetPos().x - 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
 		_Obj->GetVelocity() += Move;
-		_Obj->GetPos() += _Obj->GetVelocity();
-		//_Obj->GetPos().x += 20.0f;//5.0f;
 	} else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_RIGHT] = KEY_HELD;
 
 	//LEFT KEY INPUT
-	if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
-		_Obj->GetPos().x -= 20.0f;//5.0f;
+	else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x + 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
+		_Obj->GetVelocity() += Move;
 	} else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_LEFT] = KEY_HELD;
 
 	//UP KEY INPUT
-	if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
-		_Obj->GetPos().y += 20.0f;//5.0f;
-
+	else if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y - 100.0f, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
+		_Obj->GetVelocity() += Move;
 	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
 
-	if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
-		_Obj->GetPos().y -= 20.0f;//5.0f;
-
+	else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y + 100.0f, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
+		_Obj->GetVelocity() += Move;
 	} else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_DOWN] = KEY_HELD; 
+
+	#pragma region WASD INPUT
+	//RIGHT KEY INPUT
+	if (KeyArray['d'] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x - 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
+		_Obj->GetVelocity() += Move;
+	} else if (KeyArray['d'] == KEY_FIRST_PRESS) KeyArray['d'] = KEY_HELD;
+
+	//LEFT KEY INPUT
+	else if (KeyArray['a'] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x + 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
+		_Obj->GetVelocity() += Move;
+	} else if (KeyArray['a'] == KEY_FIRST_PRESS) KeyArray['a'] = KEY_HELD;
+
+	//UP KEY INPUT
+	else if (KeyArray['w'] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y - 100.0f, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
+		_Obj->GetVelocity() += Move;
+	} else if (KeyArray['w'] == KEY_FIRST_PRESS) KeyArray['w'] = KEY_HELD;
+
+	else if (KeyArray['s'] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y + 100.0f, _Obj->GetPos().z };
+		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
+		_Obj->GetVelocity() += Move;
+	} else if (KeyArray['s'] == KEY_FIRST_PRESS) KeyArray['s'] = KEY_HELD;
+	#pragma endregion
+
 
 	//SPACE BAR INPUT
 	if (KeyArray[32] == KEY_FIRST_PRESS) {
 		KeyArray[32] = KEY_HELD;
-		/*GameManager::GetInstance()->Level1.EntityVect.push_back(std::make_shared<Entity>(
-			ENEMY_ENTITY,
-			PLAYER_SPRITE,
-			GameManager::GetInstance()->Level1.ObjectShader,
-			glm::vec3(_Obj->GetPos().x, _Obj->GetPos().y, _Obj->GetPos().z),
-			glm::vec3(0.1f, 0.1f, 0.1f),
-			glm::vec3(90.0f, 0.0f, 0.0f)
-			)
-		);*/
+		//Calculating bullet direction
+		GameManager::GetInstance()->Level1.CreateBullet();
 	}
 	else {
 		KeyArray[32] = KEY_HELD;
@@ -72,14 +95,15 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Entity> _Obj) {
 
 	//Setting Camera Pos
 	Camera::GetPos().x = _Obj->GetPos().x / 375.0f * -1.0f;
-	Camera::GetPos().y = ((_Obj->GetPos().y - 375.0f) / 375.0f) * -1.0f;
+	Camera::GetPos().y = ((_Obj->GetPos().y + 375.0f) / 375.0f) * -1.0f;
 	Camera::GetPos().z = _Obj->GetPos().z - 0.8f;
 
 }
 
 void InputManager::NormKeyDown(unsigned char key, int x, int y) {
 	int num = key;
-	switch (key) {
+	KeyArray[key] = KEY_FIRST_PRESS;
+	/*switch (key) {
 		case 32: {
 			KeyArray[32] = KEY_FIRST_PRESS;
 			break;
@@ -88,21 +112,22 @@ void InputManager::NormKeyDown(unsigned char key, int x, int y) {
 			KeyArray[27] = KEY_FIRST_PRESS;
 			break;
 		}
-	}
+	}*/
 }
 
 void InputManager::NormKeyUp(unsigned char key, int x, int y) {
-	switch (key) {
+	KeyArray[key] = KEY_RELEASED;
+	/*switch (key) {
 		case 32: {
 			KeyArray[32] = KEY_RELEASED;
 			break;
-		}
+		}d
 		case 27: {
 			KeyArray[27] = KEY_RELEASED;
 			break;
 		}
 		default:break;
-	}
+	}*/
 }
 
 void InputManager::SpecialKeyDown(int key, int x, int y) {

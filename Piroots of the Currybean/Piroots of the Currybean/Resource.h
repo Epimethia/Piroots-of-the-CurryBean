@@ -60,6 +60,9 @@ namespace UTILS {
 #define PLAYER_SPRITE			"Assets/Sprite/Rayman.jpg"
 #define BOSS_SPRITE				"Assets/Sprite/AwesomeFace.png"
 #define POWER_UP_1				"Assets/Sprite/Power_Up_1.png"
+#define POWER_UP_2				"Assets/Sprite/Power_Up_2.png"
+#define BULLET_SPRITE			"Assets/Sprite/Bullet.png"
+
 //CubeMap Macro
 #define CUBEMAP_FILE_PATH		"Assets/Sprite/"
 
@@ -73,7 +76,7 @@ namespace UTILS {
 #define WALLTOGRAPHUI			"Assets/Fonts/waltographUI.ttf"
 
 //Model Macros					
-#define MODEL_A					"Assets/Models/PlayerBoat/Boat1.obj"
+#define PLAYER_MODEL			"Assets/Models/PlayerBoat/Boat1.obj"
 #define WAVE_MODEL				"Assets/Models/wave/Wave2.obj"
 
 //Keyboard Macros
