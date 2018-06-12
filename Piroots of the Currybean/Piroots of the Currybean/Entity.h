@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "EntityManager.h"
 #include "Clock.h"
+#include "AutonomousMove.h"
 
 class Entity {
 public:

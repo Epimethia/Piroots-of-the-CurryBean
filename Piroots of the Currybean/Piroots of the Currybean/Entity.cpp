@@ -202,16 +202,18 @@ Player::Player(glm::vec3 _Pos, GLuint _Shader) {
 
 void Player::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
+	Velocity += AutoMove::Seek(ObjPos, Velocity, Target);
 	ObjPos += Velocity * 10.0f * _DeltaTime;
 	Render();
 }
 
 void Player::Render() {
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(ObjPos.x, ObjPos.y, ObjPos.z + 30.0f) / 375.0f);
+
 	float PI = 3.14159265359f;
 	float angle;
 	angle = atan2f(Velocity.x, Velocity.y) * (180.0f/PI);
-	/*if (angle < 0.0f) angle += 360.0f;*/
+
 	//X Rotation
 	glm::mat4 RotateX =
 		glm::rotate(

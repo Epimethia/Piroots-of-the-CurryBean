@@ -16,59 +16,52 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Obj) {
 	glutKeyboardFunc(InputManager::NormKeyDown);
 	glutKeyboardUpFunc(InputManager::NormKeyUp);
 
+	glm::vec3 Target;
 	//RIGHT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x - 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+		glm::vec3 Target = { _Obj->GetPos().x - 200.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_RIGHT] = KEY_HELD;
 
 	//LEFT KEY INPUT
-	else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x + 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+	if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x + 200.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_LEFT] = KEY_HELD;
 
 	//UP KEY INPUT
-	else if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y - 100.0f, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+	if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y - 200.0f, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
 
-	else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y + 100.0f, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+	if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y + 200.0f, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) KeySpecialArray[GLUT_KEY_DOWN] = KEY_HELD; 
 
 	#pragma region WASD INPUT
 	//RIGHT KEY INPUT
 	if (KeyArray['d'] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x - 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+		glm::vec3 Target = { _Obj->GetPos().x - 200.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeyArray['d'] == KEY_FIRST_PRESS) KeyArray['d'] = KEY_HELD;
 
 	//LEFT KEY INPUT
 	else if (KeyArray['a'] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x + 100.0f,_Obj->GetPos().y, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+		glm::vec3 Target = { _Obj->GetPos().x + 200.0f,_Obj->GetPos().y, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeyArray['a'] == KEY_FIRST_PRESS) KeyArray['a'] = KEY_HELD;
 
 	//UP KEY INPUT
 	else if (KeyArray['w'] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y - 100.0f, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y - 200.0f, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeyArray['w'] == KEY_FIRST_PRESS) KeyArray['w'] = KEY_HELD;
 
 	else if (KeyArray['s'] == KEY_HELD) {
-		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y + 100.0f, _Obj->GetPos().z };
-		glm::vec3 Move = AutoMove::Seek(*_Obj, Target);
-		_Obj->GetVelocity() += Move;
+		glm::vec3 Target = { _Obj->GetPos().x,_Obj->GetPos().y + 200.0f, _Obj->GetPos().z };
+		_Obj->GetTarget() = Target;
 	} else if (KeyArray['s'] == KEY_FIRST_PRESS) KeyArray['s'] = KEY_HELD;
 	#pragma endregion
 
