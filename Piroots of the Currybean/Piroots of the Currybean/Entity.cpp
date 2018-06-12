@@ -102,6 +102,51 @@ void Entity::Process(float _DeltaTime) {
 }
 #pragma endregion
 
+
+#pragma region PICKUP FUNCTION DEFINITIONS
+PickUp::PickUp(glm::vec3 _Pos, GLuint _Shader) {
+	Shader = _Shader;
+	Velocity = { 0.0f, 0.0f, 0.0f };
+	ObjScale = glm::vec3(0.05f, 0.05f, 0.05f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjPos = _Pos;
+	ZBobbing = 0.0f;
+	VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
+	NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
+	Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
+};
+
+void PickUp::Process(float _DeltaTime) {
+	ObjRotation.z += (75.0f * _DeltaTime);
+	ObjPos.z += (sin(ZBobbing ))* 7.0f;
+	ZBobbing += (10.0f * _DeltaTime);
+	VPMatrix = Camera::GetMatrix();
+	Render();
+}
+#pragma endregion
+
+
+#pragma region BULLET FUNCTION DEFINITIONS
+Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos, GLuint _Shader) {
+	Shader = _Shader;
+	ObjPos = _Pos;
+	ObjScale = glm::vec3(0.04f, 0.04f, 0.04f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	Velocity = _Velocity;
+	MaxSpeed = 1000.0f;
+	VAO = EntityManager::GetMesh(BULLET_ENTITY)->VAO;
+	NumIndices = EntityManager::GetMesh(BULLET_ENTITY)->NumIndices;
+	Texture = EntityManager::GetMesh(BULLET_ENTITY)->Texture;
+}
+
+void Bullet::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
+	ObjPos += glm::normalize(Velocity) * MaxSpeed * _DeltaTime;
+	Render();
+}
+#pragma endregion
+
+
 #pragma region MODEL ENTITY FUNCTION DEFINITIONS
 ModelEntity::ModelEntity() {
 
@@ -138,24 +183,6 @@ void ModelEntity::Process(float _DeltaTime) {
 }
 #pragma endregion
 
-#pragma region PICKUP FUNCTION DEFINITIONS
-PickUp::PickUp(glm::vec3 _Pos, GLuint _Shader) {
-	Shader = _Shader;
-	Velocity = { 0.0f, 1.0f, 0.0f };
-	ObjScale = glm::vec3(0.05f, 0.05f, 0.05f);
-	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	ObjPos = _Pos;
-	VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
-	NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
-	Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
-};
-
-void PickUp::Process(float _DeltaTime) {
-	ObjRotation.z += 5.0f;
-	VPMatrix = Camera::GetMatrix();
-	Render();
-}
-#pragma endregion
 
 #pragma region WAVE FUNCTION DEFINITIONS
 Wave::Wave(glm::vec3 _Pos, GLuint _Shader) {
@@ -189,8 +216,11 @@ void Wave::Render() {
 }
 #pragma endregion
 
+
 #pragma region PLAYER FUNCTION DEFINITIONS
-Player::Player(glm::vec3 _Pos, GLuint _Shader) {
+AutoAgent::AutoAgent() {};
+
+AutoAgent::AutoAgent(glm::vec3 _Pos, GLuint _Shader) {
 	Shader = _Shader;
 	ObjScale = glm::vec3(0.05f, 0.05f, -0.05f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -200,14 +230,14 @@ Player::Player(glm::vec3 _Pos, GLuint _Shader) {
 	model = EntityManager::GetModel(PLAYER_ENTITY, Shader);
 }
 
-void Player::Process(float _DeltaTime) {
+void AutoAgent::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
 	Velocity += AutoMove::Seek(ObjPos, Velocity, Target);
-	ObjPos += Velocity * 10.0f * _DeltaTime;
+	ObjPos += Velocity * 30.0f * _DeltaTime;
 	Render();
 }
 
-void Player::Render() {
+void AutoAgent::Render() {
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(ObjPos.x, ObjPos.y, ObjPos.z + 30.0f) / 375.0f);
 
 	float PI = 3.14159265359f;
@@ -236,22 +266,28 @@ void Player::Render() {
 }
 #pragma endregion
 
-#pragma region BULLET FUNCTION DEFINITIONS
-Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos, GLuint _Shader) {
+
+#pragma region SMALL ENEMY FUNCTION DEFINITIONS
+SmallEnemy::SmallEnemy(glm::vec3 _Pos, GLuint _Shader, std::shared_ptr<Entity> _TargetEntity) {
 	Shader = _Shader;
-	ObjPos = _Pos;
-	ObjScale = glm::vec3(0.04f, 0.04f, 0.04f);
+	ObjScale = glm::vec3(0.03f, 0.03f, -0.03f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	Velocity = _Velocity;
-	MaxSpeed = 1000.0f;
-	VAO = EntityManager::GetMesh(BULLET_ENTITY)->VAO;
-	NumIndices = EntityManager::GetMesh(BULLET_ENTITY)->NumIndices;
-	Texture = EntityManager::GetMesh(BULLET_ENTITY)->Texture;
+	ObjPos = _Pos;
+	Velocity = { 0.0f, 0.0f, 0.0f };
+	TargetEntity = _TargetEntity;
+	MaxForce = 1.0f;
+	MaxSpeed = 7.0f;
+	model = EntityManager::GetModel(PLAYER_ENTITY, Shader);
 }
 
-void Bullet::Process(float _DeltaTime) {
+void SmallEnemy::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-	ObjPos += glm::normalize(Velocity) * MaxSpeed * _DeltaTime;
+	Velocity += AutoMove::Persue(ObjPos, Velocity, TargetEntity->GetPos(), TargetEntity->GetVelocity());
+	ObjPos += Velocity * MaxSpeed * _DeltaTime;
+	//if (Target != nullptr) {
+	//	Velocity += AutoMove::Persue(Target->GetPos(), Target->GetVelocity());
+	//	/*ObjPos += Velocity * 100.0f * _DeltaTime;*/
+	//}
 	Render();
 }
 #pragma endregion

@@ -5,14 +5,13 @@ glm::vec3 AutoMove::Acceleration = { 0.0f, 0.0f, 0.0f };
 float AutoMove::MaxSpeed = 50.0f;
 float AutoMove::MaxForce = 1.0f;
 float AutoMove::ApproachDistance = 300.0f;
+float AutoMove::WanderRadius = 300.0f;
 
-
-glm::vec3 Limit(glm::vec3 _Vec3, float _float) {
-	glm::vec3 temp = glm::normalize(_Vec3);
-	temp * _float;
-	return temp;
-}
-
+//Name:					Seek
+//Parameters:		Object position, Object velocity, Target vector
+//Return Type:		glm::vec3 Steering Velocity
+//Description:		Takes an objects position and velocity and calculates the
+//                             required vector to reach the target point
 glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target) {
 	//Get the objects current Velocity
 	Velocity = _ObjVelocity;
@@ -46,4 +45,35 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 	return (Steering);
 }
 
+//Name:					Seek (Overload)
+//Parameters:		ObjectPos, ObjVelocity, Target, MaxSpeed, MaxForce
+//Return Type:		glm::vec3 Steering Velocity
+//Description:		Overload of the Seek function to take max speed and max force as well
+glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target, float _MaxSpeed, float _MaxForce) {
+	Velocity = _ObjVelocity;
+
+	glm::vec3 DesiredVelocity = _Target - _ObjPos;
+
+	float Distance = glm::length(DesiredVelocity);
+
+	DesiredVelocity = glm::normalize(DesiredVelocity) * _MaxSpeed;
+
+	if (Distance < ApproachDistance) DesiredVelocity *= (Distance / ApproachDistance);
+
+	glm::vec3 Steering = DesiredVelocity - _ObjVelocity;
+
+	if (glm::length(Steering) > _MaxForce) Steering = glm::normalize(Steering) * _MaxForce;
+	Steering.z = 0.0f;
+	return (Steering);
+}
+
+//Name:					Persuit
+//Parameters:		Object Position, ObjectVelocity
+//Return Type:		glm::vec3 Vector to the target
+//Description:		Generates a vector towards a point that the input object
+//							is travelling towards
+glm::vec3 AutoMove::Persue(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _TargetPos, glm::vec3 _TargetVelocity) {
+	glm::vec3 Target = _TargetPos;// +(glm::normalize(_TargetVelocity) * 10.0f);
+	return Seek(_ObjPos, _ObjVelocity, Target);
+}
 

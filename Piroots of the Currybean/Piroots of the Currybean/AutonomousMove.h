@@ -5,6 +5,8 @@
 class AutoMove {
 public:
 	static glm::vec3 Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target);
+	static glm::vec3 Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target, float _MaxSpeed, float MaxForce);
+	static glm::vec3 Persue(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _TargetPos, glm::vec3 _TargetVelocity);
 
 private:
 	static glm::vec3 Location;
@@ -14,5 +16,5 @@ private:
 	static float MaxSpeed;
 	static float MaxForce;
 	static float ApproachDistance;
-
+	static float WanderRadius;
 };

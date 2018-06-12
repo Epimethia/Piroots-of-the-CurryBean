@@ -11,7 +11,7 @@
 struct Level {
 	Model Pug;
 	CubeMap CM;
-	std::shared_ptr<Player> pu;
+	std::shared_ptr<AutoAgent> pu;
 	std::shared_ptr<PickUp> pu1;
 	std::shared_ptr<Entity> Cube;
 
@@ -38,15 +38,15 @@ struct Level {
 		ObjectShader = SL->CreateProgram(VERT_SHADER, FRAG_SHADER);
 		CubeMapShader = SL->CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 
-		pu = std::make_shared<Player>(glm::vec3(1000.0f, 1000.0f, 0.0f), ModelShader);
+		pu = std::make_shared<AutoAgent>(glm::vec3(1000.0f, 1000.0f, 0.0f), ModelShader);
 		//EntityVect.push_back(std::make_shared<PickUp>(glm::vec3(0.0f, 0.0f, 0.0f), ObjectShader));
 
+		EntityVect.push_back(std::make_shared<SmallEnemy>(glm::vec3(0.0f, 0.0f, 30.0f), ModelShader, pu));
 		EntityVect.push_back(std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f), WaveShader));
-		EntityVect.push_back(std::make_shared<PickUp>(glm::vec3(-375.0f, -375.0f, 0.0f), ObjectShader));
+		EntityVect.push_back(std::make_shared<PickUp>(glm::vec3(-375.0f, -375.0f, 60.0f), ObjectShader));
 		
 	}
 	
-
 	void Draw() {
 		float DeltaTime = Clock::GetDeltaTime();
 		CM.Render(CubeMapShader, Camera::GetMatrix());

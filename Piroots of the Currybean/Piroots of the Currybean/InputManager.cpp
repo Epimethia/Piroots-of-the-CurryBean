@@ -10,7 +10,7 @@ InputManager::InputManager() {
 	}
 }
 
-void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Obj) {
+void InputManager::ProcessKeyInput(std::shared_ptr<AutoAgent> _Obj) {
 	glutSpecialFunc(InputManager::SpecialKeyDown);
 	glutSpecialUpFunc(InputManager::SpecialKeyUp);
 	glutKeyboardFunc(InputManager::NormKeyDown);
