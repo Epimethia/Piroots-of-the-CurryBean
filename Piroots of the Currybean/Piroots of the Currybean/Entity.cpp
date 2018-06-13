@@ -105,20 +105,29 @@ void Entity::Process(float _DeltaTime) {
 
 
 #pragma region PICKUP FUNCTION DEFINITIONS
-PickUp::PickUp(glm::vec3 _Pos, GLuint _Shader) {
-	Shader = _Shader;
-	ObjVel = { 0.0f, 0.0f, 0.0f };
+PickUp::PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type) {
 	ObjScale = glm::vec3(0.05f, 0.05f, 0.05f);
-	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjRotation = glm::vec3(90.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
 	ZBobbing = 0.0f;
-	VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
-	NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
-	Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
+	Type = _Type;
+	if (Type == SPEED_POWERUP) {
+		VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
+		NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
+		Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
+		Shader = EntityManager::GetMesh(CUBE_PICKUP)->Shader;
+	}
+	else if (Type == ATTACK_POWERUP) {
+		VAO = EntityManager::GetMesh(ATTACK_POWERUP)->VAO;
+		NumIndices = EntityManager::GetMesh(ATTACK_POWERUP)->NumIndices;
+		Texture = EntityManager::GetMesh(ATTACK_POWERUP)->Texture;
+		Shader = EntityManager::GetMesh(ATTACK_POWERUP)->Shader;
+	}
+	
 };
 
 void PickUp::Process(float _DeltaTime) {
-	ObjRotation.z += (75.0f * _DeltaTime);
+	ObjRotation.y += (75.0f * _DeltaTime);
 	ObjPos.z += (sin(ZBobbing ))* 7.0f;
 	ZBobbing += (10.0f * _DeltaTime);
 	VPMatrix = Camera::GetMatrix();
@@ -355,8 +364,8 @@ void Player::Render() {
 #pragma endregion
 
 
-#pragma region SEEK ENEMY FUNCTION DEFINITIONS
-SeekEnemy::SeekEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
+#pragma region PURSUE ENEMY FUNCTION DEFINITIONS
+PursueEnemy::PursueEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
 	ObjScale = glm::vec3(0.03f, 0.03f, -0.03f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
@@ -368,13 +377,14 @@ SeekEnemy::SeekEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
 	Type = SEEK_ENEMY;
 }
 
-void SeekEnemy::Process(float _DeltaTime) {
+void PursueEnemy::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-	ObjVel += AutoMove::Persue(ObjPos, ObjVel, TargetEntity->GetPos(), TargetEntity->GetVelocity());
+	ObjVel += AutoMove::Pursue(ObjPos, ObjVel, TargetEntity->GetPos(), TargetEntity->GetVelocity());
 	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
 }
 #pragma endregion
+
 
 #pragma region WANDER ENEMY FUNCTIONS
 WanderEnemy::WanderEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {

@@ -38,7 +38,7 @@ void EntityManager::DestroyInstance() {
 }
 
 std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
-	if (_EntityType == CUBE_PICKUP) {
+	if (_EntityType == CUBE_PICKUP ) {
 		if (Cube_Mesh == nullptr) {	//If the cube mesh hasnt been generated yet
 			#pragma region Generating VAO
 			GLfloat CubeVerts[] = {
@@ -182,7 +182,7 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 
 	}
 
-	if (_EntityType == SEEK_ENEMY) {
+	if (_EntityType == ATTACK_POWERUP) {
 		if (Pyramid_Mesh == nullptr) {	//If the Pyramid vao hasnt been generated yet
 			#pragma region Generating VAO
 			GLfloat PyramidVerts[] = {
@@ -472,5 +472,10 @@ EntityManager::EntityManager() {
 //Return Type:		None
 //Description:		Destructor for the entity manager
 EntityManager::~EntityManager() {
+	Cube_Mesh = nullptr;
+	Pyramid_Mesh = nullptr;
+	Sphere_Mesh = nullptr;
 
+	Wave_Model = nullptr;
+	Player_Model = nullptr;
 }

@@ -81,12 +81,6 @@
     <ClCompile Include="EntityManager.cpp">
       <Filter>System\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>System\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelMesh.cpp">
-      <Filter>System\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Clock.cpp">
       <Filter>System\Clock</Filter>
     </ClCompile>

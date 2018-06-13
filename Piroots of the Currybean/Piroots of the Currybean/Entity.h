@@ -38,8 +38,9 @@ protected:
 
 class PickUp : public Entity {
 public:
-	PickUp(glm::vec3 _Pos, GLuint _Shader);
+	PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type);
 	void Process(float _DeltaTime);
+	ENTITY_TYPE Type;
 private:
 	float ZBobbing;
 };
@@ -102,9 +103,9 @@ private:
 	glm::vec3 BulletVelocity;
 };
 
-class SeekEnemy : public AutoAgent {
+class PursueEnemy : public AutoAgent {
 public:
-	SeekEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity);
+	PursueEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity);
 	void Process(float _DeltaTime);
 private:
 	std::shared_ptr<Entity> TargetEntity;

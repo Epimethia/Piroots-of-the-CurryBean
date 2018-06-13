@@ -16,6 +16,9 @@ void GameManager::DrawScene(float _DeltaTime) {
 	//Drawing all other Entities
 	for (auto it : EnemyVect) it->Process(_DeltaTime);
 
+	for (auto it : PickUpVect) it->Process(_DeltaTime);
+
+
 	//Drawing the cube map
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 
@@ -39,7 +42,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 				0.0f
 			};
 			if ((rand() % 2) == 0) {
-				EnemyVect.push_back(std::make_shared<SeekEnemy>(SpawnPos, PlayerObj));
+				EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, PlayerObj));
 				std::cout << "Spawned Seek Ship\n";
 			} else {
 				EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, PlayerObj));
@@ -47,26 +50,41 @@ void GameManager::GameLoop(float _DeltaTime) {
 			}
 		}
 	}
+
+	if (PickUpVect.size() < 10) {
+		glm::vec3 SpawnPos = {
+			static_cast<float>((rand() % 6000) - 3000),
+			static_cast<float>((rand() % 6000) - 3000),
+			0.0f
+		};
+		int num = (rand() % 2) + 6;
+		if (num == 6) {
+			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
+		} 
+		else if (num == 7) {
+			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
+		}
+	}
 	InputManager::ProcessKeyInput(PlayerObj);
 
 	//Checking Collisions !INEFFICIENT BUT DONT KNOW HOW TO DO QUAD MAPS
 	//Checking every entity
 	for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
-
-		//If the Entity is an enemy
-		if (EnemyVect[i]->Type == SEEK_ENEMY || EnemyVect[i]->Type == WANDER_ENEMY) {
-			//Check against every bullet
-			for (unsigned int j = 0; j < PlayerObj->GetBulletVect().size(); ++j) {
-				if (abs(glm::distance(PlayerObj->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= 65.0f) {
-					//Destroy if colliding with a bullet
-					EnemyVect.erase(EnemyVect.begin() + i);
-					PlayerObj->GetBulletVect().erase(PlayerObj->GetBulletVect().begin() + j);
-					break;
-				}
+		//Check against every bullet
+		for (unsigned int j = 0; j < PlayerObj->GetBulletVect().size(); ++j) {
+			if (abs(glm::distance(PlayerObj->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= 65.0f) {
+				//Destroy if colliding with a bullet
+				EnemyVect.erase(EnemyVect.begin() + i);
+				PlayerObj->GetBulletVect().erase(PlayerObj->GetBulletVect().begin() + j);
+				break;
 			}
 		}
-		
-		
+	}
+
+	for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
+		if (abs(glm::distance(PlayerObj->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
+			PickUpVect.erase(PickUpVect.begin() + i);
+		}
 	}
 
 }
@@ -83,7 +101,7 @@ void GameManager::Init() {
 	EntityManager::GetInstance();
 	PlayerObj = std::make_shared<Player>(glm::vec3(1000.0f, 1000.0f, -0.2f));
 	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
-	EnemyVect.push_back(std::make_shared<SeekEnemy>(glm::vec3(0.0f, 0.0f, 0.0f), PlayerObj));
+	EnemyVect.push_back(std::make_shared<PursueEnemy>(glm::vec3(0.0f, 0.0f, 0.0f), PlayerObj));
 
 	CubeMapShader = SL.CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 }

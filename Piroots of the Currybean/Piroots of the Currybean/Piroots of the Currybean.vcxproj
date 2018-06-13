@@ -145,8 +145,6 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ModelMesh.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="SoundManager.cpp" />

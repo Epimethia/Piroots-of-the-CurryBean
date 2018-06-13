@@ -76,8 +76,8 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 //Return Type:		glm::vec3 Vector to the target
 //Description:		Generates a vector towards a point that the input object
 //							is travelling towards
-glm::vec3 AutoMove::Persue(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _TargetPos, glm::vec3 _TargetVelocity) {
-	glm::vec3 Target = _TargetPos + (glm::normalize(_TargetVelocity) * 400.0f);
+glm::vec3 AutoMove::Pursue(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _TargetPos, glm::vec3 _TargetVelocity) {
+	glm::vec3 Target = _TargetPos + (glm::normalize(_TargetVelocity) * 300.0f);
 	return Seek(_ObjPos, _ObjVelocity, Target);
 }
 

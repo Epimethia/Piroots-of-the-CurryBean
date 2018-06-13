@@ -34,9 +34,8 @@ private:
 
 	//Gameplay Elements
 	std::vector<std::shared_ptr<AutoAgent>> EnemyVect;
+	std::vector<std::shared_ptr<PickUp>> PickUpVect;
 
 	float SpawnLimiter = 3.0f;
 	float SpawnTimer = 0.0f;
 };
-
-
