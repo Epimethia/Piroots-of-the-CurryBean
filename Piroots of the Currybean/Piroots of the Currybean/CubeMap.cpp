@@ -1,12 +1,5 @@
 #include "CubeMap.h"
 
-//Name:					CubeMap()
-//Parameters:		None
-//Return Type:		None
-//Description:		Default Constructor overload for the
-//                             CubeMap class
-CubeMap::CubeMap() {};
-
 //Name:					~CubeMap()
 //Parameters:		None
 //Return Type:		None
@@ -19,7 +12,7 @@ CubeMap::~CubeMap() {};
 //Return Type:		None
 //Description:		Default Constructor overload for the
 //                             CubeMap class to create a cubemap with textures
-CubeMap::CubeMap(std::vector<std::string> _TextureFilePaths) {
+CubeMap::CubeMap() {
 	std::vector<std::string> FilePaths;
 	FilePaths.push_back("Right.png");
 	FilePaths.push_back("Left.png");

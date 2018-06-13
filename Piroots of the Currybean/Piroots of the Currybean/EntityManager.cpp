@@ -20,6 +20,10 @@ std::shared_ptr<MESH> EntityManager::Sphere_Mesh = nullptr;
 std::shared_ptr<Model> EntityManager::Wave_Model = nullptr;
 std::shared_ptr<Model> EntityManager::Player_Model = nullptr;
 
+GLuint EntityManager::WaveShader;
+GLuint EntityManager::ObjectShader;
+GLuint EntityManager::ModelShader;
+
 std::shared_ptr<EntityManager> EntityManager::EntityManagerPtr = nullptr;
 
 std::shared_ptr<EntityManager> EntityManager::GetInstance() {
@@ -170,15 +174,15 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			Cube_Mesh->VAO = VAO;
 			Cube_Mesh->NumIndices = sizeof(CubeIndices);
 			Cube_Mesh->Texture = Texture;
+			Cube_Mesh->Shader = ObjectShader;
 			return Cube_Mesh;
 		}
-		else {
-			std::cout << "cube mesh already generated\n";
-			return Cube_Mesh;
-		}
+		
+		return Cube_Mesh;
+
 	}
 
-	if (_EntityType == ENEMY_ENTITY) {
+	if (_EntityType == SEEK_ENEMY) {
 		if (Pyramid_Mesh == nullptr) {	//If the Pyramid vao hasnt been generated yet
 			#pragma region Generating VAO
 			GLfloat PyramidVerts[] = {
@@ -294,6 +298,7 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			Pyramid_Mesh->VAO = VAO;
 			Pyramid_Mesh->NumIndices = sizeof(PyramidIndices);
 			Pyramid_Mesh->Texture = Texture;
+			Pyramid_Mesh->Shader = ObjectShader;
 		}
 		return Pyramid_Mesh;
 	}
@@ -426,29 +431,26 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 			Sphere_Mesh->VAO = VAO;
 			Sphere_Mesh->NumIndices = sizeof(SphereIndices);
 			Sphere_Mesh->Texture = Texture;
-			return Sphere_Mesh;
+			Sphere_Mesh->Shader = ObjectShader;
 		}
-		else {
-			std::cout << "Mesh already generated\n";
-			return Sphere_Mesh;
-		}
+		return Sphere_Mesh;
 	}
 
 	return nullptr;
 }
 
-std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType, GLuint& _Program) {
+std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType) {
 	if (_EntityType == WAVE_ENTITY) {
 		if (Wave_Model == nullptr) {
 			std::cout << "Generating Wave Mesh\n";
-			Wave_Model = std::make_shared<Model>(WAVE_MODEL, _Program);
+			Wave_Model = std::make_shared<Model>(WAVE_MODEL, WaveShader);
 		}
 		return Wave_Model;
 	}
 	if (_EntityType == PLAYER_ENTITY) {
 		if (Player_Model == nullptr) {
 			std::cout << "Generating Player Mesh\n";
-			Player_Model = std::make_shared<Model>(PLAYER_MODEL, _Program);
+			Player_Model = std::make_shared<Model>(PLAYER_MODEL, ModelShader);
 		}
 		return Player_Model;
 	}
@@ -460,6 +462,9 @@ std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType, GLuint& 
 //Return Type:		None
 //Description:		Entity Manager constructor that generates all the verts on startup
 EntityManager::EntityManager() {
+	WaveShader = SL.CreateProgram(WAVE_VERT_SHADER, WAVE_FRAG_SHADER);
+	ModelShader = SL.CreateProgram(MODEL_VERT_SHADER, MODEL_FRAG_SHADER);
+	ObjectShader = SL.CreateProgram(VERT_SHADER, FRAG_SHADER);
 }
 
 //Name:					~EntityManager()

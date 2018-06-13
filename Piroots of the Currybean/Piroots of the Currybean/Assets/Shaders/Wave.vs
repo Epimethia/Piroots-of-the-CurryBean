@@ -13,7 +13,7 @@ uniform mat4 model; // Or ‘normalMatrix’
 uniform float currentTime;
 
 void main(void) {
-	gl_Position = MVP * vec4(position.x, position.y * sin((currentTime / 500)), position.z, 1.0);
+	gl_Position = MVP * vec4(position.x, (position.y * 1.5) * sin((currentTime / 500)), position.z, 1.0);
 
 	//Diffuse
 	fragPos = vec3(model * vec4(position, 1.0f));

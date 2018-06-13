@@ -6,13 +6,13 @@ in vec3 fragPos;
 out vec4 color;
 uniform sampler2D tex;
 
-uniform float ambientStr = 0.4f;
+uniform float ambientStr = 0.6f;
 uniform vec3 ambientColor = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3 lightColor = vec3(0.0f, 0.8f, 1.0f);
+uniform vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
 uniform vec3 lightPos = vec3(1000.0f, 1000.0f, 1000.0f);
-uniform float lightSpecStr = 1.0f;
+uniform float lightSpecStr = 0.8f;
 uniform vec3 camPos;
-uniform float shininess = 1.0f;
+uniform float shininess = 2.0f;
 
 void main() {
 

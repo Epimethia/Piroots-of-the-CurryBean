@@ -4,6 +4,8 @@
 #include "Camera.h"
 #include <cstring>
 
+float g_DeltaTime = 0.0f;
+
 void init() {
 	GameManager::GetInstance()->Init();
 	glEnable(GL_DEPTH_TEST);
@@ -15,12 +17,13 @@ void init() {
 
 void render(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	GameManager::GetInstance()->DrawScene(0);
+	GameManager::GetInstance()->DrawScene(g_DeltaTime);
 	glutSwapBuffers();
 }
 
 void update(void) {
-	GameManager::GetInstance()->GameLoop();
+	g_DeltaTime = Clock::GetDeltaTime();
+	GameManager::GetInstance()->GameLoop(g_DeltaTime);
 	glutPostRedisplay();
 }
 

@@ -11,13 +11,14 @@ Entity::Entity() {
 //							mesh.
 Entity::Entity(ENTITY_TYPE _EntityType, GLuint _Shader, glm::vec3 _Pos) {
 	Shader = _Shader;
-	Velocity = { 0.0f, 1000.0f, 0.0f };
+	ObjVel = { 0.0f, 1000.0f, 0.0f };
 	ObjScale = glm::vec3(1.0f, 1.0f, 1.0f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
-	VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
-	NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
-	Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
+	VAO = EntityManager::GetMesh(_EntityType)->VAO;
+	NumIndices = EntityManager::GetMesh(_EntityType)->NumIndices;
+	Texture = EntityManager::GetMesh(_EntityType)->Texture;
+	Type = _EntityType;
 };
 
 Entity::~Entity() {};
@@ -106,7 +107,7 @@ void Entity::Process(float _DeltaTime) {
 #pragma region PICKUP FUNCTION DEFINITIONS
 PickUp::PickUp(glm::vec3 _Pos, GLuint _Shader) {
 	Shader = _Shader;
-	Velocity = { 0.0f, 0.0f, 0.0f };
+	ObjVel = { 0.0f, 0.0f, 0.0f };
 	ObjScale = glm::vec3(0.05f, 0.05f, 0.05f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
@@ -127,21 +128,23 @@ void PickUp::Process(float _DeltaTime) {
 
 
 #pragma region BULLET FUNCTION DEFINITIONS
-Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos, GLuint _Shader) {
-	Shader = _Shader;
+Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos) {
 	ObjPos = _Pos;
+	ObjPos.z += 25.0f;
 	ObjScale = glm::vec3(0.04f, 0.04f, 0.04f);
-	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	Velocity = _Velocity;
+	ObjRotation = glm::vec3();
+	ObjVel = _Velocity;
 	MaxSpeed = 1000.0f;
 	VAO = EntityManager::GetMesh(BULLET_ENTITY)->VAO;
 	NumIndices = EntityManager::GetMesh(BULLET_ENTITY)->NumIndices;
 	Texture = EntityManager::GetMesh(BULLET_ENTITY)->Texture;
+	Shader = EntityManager::GetMesh(BULLET_ENTITY)->Shader;
+	Type = BULLET_ENTITY;
 }
 
 void Bullet::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-	ObjPos += glm::normalize(Velocity) * MaxSpeed * _DeltaTime;
+	ObjPos += glm::normalize(ObjVel) * MaxSpeed * _DeltaTime;
 	Render();
 }
 #pragma endregion
@@ -152,12 +155,13 @@ ModelEntity::ModelEntity() {
 
 }
 
-ModelEntity::ModelEntity(ENTITY_TYPE _EntityType, GLuint _Shader, glm::vec3 _Pos) {
-	Shader = _Shader;
+ModelEntity::ModelEntity(ENTITY_TYPE _EntityType, glm::vec3 _Pos) {
 	ObjScale = glm::vec3(0.1f, 0.1f, 0.1f);
-	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjRotation = glm::vec3();
 	ObjPos = _Pos;
-	model = EntityManager::GetModel(PLAYER_ENTITY, Shader);
+	ObjVel = glm::vec3();
+	model = EntityManager::GetModel(PLAYER_ENTITY);
+	Type = _EntityType;
 }
 
 void ModelEntity::Render() {
@@ -185,12 +189,12 @@ void ModelEntity::Process(float _DeltaTime) {
 
 
 #pragma region WAVE FUNCTION DEFINITIONS
-Wave::Wave(glm::vec3 _Pos, GLuint _Shader) {
-	Shader = _Shader;
+Wave::Wave(glm::vec3 _Pos) {
 	ObjScale = glm::vec3(0.3f, 0.2f, 0.3f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
-	model = EntityManager::GetModel(WAVE_ENTITY, Shader);
+	model = EntityManager::GetModel(WAVE_ENTITY);
+	Type = WAVE_ENTITY;
 };
 
 void Wave::Process(float _DeltaTime) {
@@ -217,7 +221,7 @@ void Wave::Render() {
 #pragma endregion
 
 
-#pragma region PLAYER FUNCTION DEFINITIONS
+#pragma region AUTONOMOUS AGENT FUNCTION DEFINITIONS
 AutoAgent::AutoAgent() {};
 
 AutoAgent::AutoAgent(glm::vec3 _Pos, GLuint _Shader) {
@@ -225,15 +229,16 @@ AutoAgent::AutoAgent(glm::vec3 _Pos, GLuint _Shader) {
 	ObjScale = glm::vec3(0.05f, 0.05f, -0.05f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
-	Velocity = { 0.0f, 0.0f, 0.0f };
+	ObjVel = { 0.0f, 0.0f, 0.0f };
 	Target = { 0.0f, 0.0f, 0.0f };
-	model = EntityManager::GetModel(PLAYER_ENTITY, Shader);
+	model = EntityManager::GetModel(PLAYER_ENTITY);
+	Type = PLAYER_ENTITY;
 }
 
 void AutoAgent::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-	Velocity += AutoMove::Seek(ObjPos, Velocity, Target);
-	ObjPos += Velocity * 30.0f * _DeltaTime;
+	ObjVel += AutoMove::Seek(ObjPos, ObjVel, Target);
+	ObjPos += ObjVel * 30.0f * _DeltaTime;
 	Render();
 }
 
@@ -242,7 +247,7 @@ void AutoAgent::Render() {
 
 	float PI = 3.14159265359f;
 	float angle;
-	angle = atan2f(Velocity.x, Velocity.y) * (180.0f/PI);
+	angle = atan2f(ObjVel.x, ObjVel.y) * (180.0f/PI);
 
 	//X Rotation
 	glm::mat4 RotateX =
@@ -267,27 +272,128 @@ void AutoAgent::Render() {
 #pragma endregion
 
 
-#pragma region SMALL ENEMY FUNCTION DEFINITIONS
-SmallEnemy::SmallEnemy(glm::vec3 _Pos, GLuint _Shader, std::shared_ptr<Entity> _TargetEntity) {
-	Shader = _Shader;
+#pragma region PLAYER FUNCTION DEFINITIONS
+Player::Player(glm::vec3 _Pos) {
+	ObjPos = _Pos;
+	ObjScale = glm::vec3(0.05f, 0.05f, -0.05f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjVel = { 30.0f, 30.0f, 0.0f };
+	Target = { 0.0f, 0.0f, 0.0f };
+	model = EntityManager::GetModel(PLAYER_ENTITY);
+	Type = PLAYER_ENTITY;
+	ShootCooldown = 3.0f;
+	ShootTimer = 0.0f;
+	bShoot = false;
+}
+
+void Player::CreateBullet(glm::vec3 Velocity) {
+	BulletVelocity = Velocity;
+	bShoot = true;
+}
+
+void Player::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
+	ShootTimer += 10.f * _DeltaTime;
+	
+	if (ShootTimer >= ShootCooldown) {
+		if (bShoot) {
+			ShootTimer = 0.0f;
+			BulletVect.push_back(std::make_shared<Bullet>(
+				BulletVelocity,
+				ObjPos
+				));
+		}
+	}
+
+	//ObjVel += AutoMove::Seek(ObjPos, ObjVel, Target);
+
+	//ObjVel += AutoMove::Wander(ObjPos, ObjVel);
+	ObjVel += AutoMove::Containment(ObjPos, ObjVel, 10.0f, 100.0f);
+	ObjPos += ObjVel * 10.0f * _DeltaTime;
+	Render();
+
+	//Checking that bullets dont go out of range
+	for (unsigned int i = 0; i < BulletVect.size(); ++i) {
+		if (BulletVect[i]->GetPos().y >= 3300.0f ||
+			BulletVect[i]->GetPos().y <= -3300.0f ||
+			BulletVect[i]->GetPos().x >= 3300.0f ||
+			BulletVect[i]->GetPos().x <= -3300.0f) {
+			BulletVect.erase(BulletVect.begin(), BulletVect.begin() + i);
+			continue;
+		} 
+		BulletVect[i]->Process(_DeltaTime);
+	}
+}
+
+void Player::Render() {
+	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(ObjPos.x, ObjPos.y, ObjPos.z + 30.0f) / 375.0f);
+
+	float PI = 3.14159265359f;
+	float angle;
+	angle = atan2f(ObjVel.x, ObjVel.y) * (180.0f / PI);
+
+	//X Rotation
+	glm::mat4 RotateX =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(ObjRotation.x + 90.0f),
+			glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+
+	glm::mat4 RotateY =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(ObjRotation.y + (angle * -1.0f)),
+			glm::vec3(0.0f, 1.0f, 0.0f)
+		);
+
+	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
+	ModelMatrix = TranslationMatrix * (RotateX * RotateY) * ScaleMatrix;
+
+	model->Render(ModelMatrix);
+}
+#pragma endregion
+
+
+#pragma region SEEK ENEMY FUNCTION DEFINITIONS
+SeekEnemy::SeekEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
 	ObjScale = glm::vec3(0.03f, 0.03f, -0.03f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
-	Velocity = { 0.0f, 0.0f, 0.0f };
+	ObjVel = { 1.0f, 0.0f, 0.0f };
 	TargetEntity = _TargetEntity;
 	MaxForce = 1.0f;
-	MaxSpeed = 7.0f;
-	model = EntityManager::GetModel(PLAYER_ENTITY, Shader);
+	MaxSpeed = 10.0f;
+	model = EntityManager::GetModel(PLAYER_ENTITY);
+	Type = SEEK_ENEMY;
 }
 
-void SmallEnemy::Process(float _DeltaTime) {
+void SeekEnemy::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-	Velocity += AutoMove::Persue(ObjPos, Velocity, TargetEntity->GetPos(), TargetEntity->GetVelocity());
-	ObjPos += Velocity * MaxSpeed * _DeltaTime;
-	//if (Target != nullptr) {
-	//	Velocity += AutoMove::Persue(Target->GetPos(), Target->GetVelocity());
-	//	/*ObjPos += Velocity * 100.0f * _DeltaTime;*/
-	//}
+	ObjVel += AutoMove::Persue(ObjPos, ObjVel, TargetEntity->GetPos(), TargetEntity->GetVelocity());
+	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
 }
 #pragma endregion
+
+#pragma region WANDER ENEMY FUNCTIONS
+WanderEnemy::WanderEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
+	ObjScale = glm::vec3(0.06f, 0.06f, -0.06f);
+	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	ObjPos = _Pos;
+	ObjVel = { 1.0f, 0.0f, 0.0f };
+	TargetEntity = _TargetEntity;
+	MaxForce = 1.0f;
+	MaxSpeed = 10.0f;
+	model = EntityManager::GetModel(PLAYER_ENTITY);
+	Type = WANDER_ENEMY;
+}
+
+void WanderEnemy::Process(float _DeltaTime) {
+	VPMatrix = Camera::GetMatrix();
+	ObjVel += AutoMove::Wander(ObjPos, ObjVel);
+	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
+	Render();
+}
+#pragma endregion
+

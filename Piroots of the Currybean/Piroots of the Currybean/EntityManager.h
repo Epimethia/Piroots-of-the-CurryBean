@@ -15,20 +15,23 @@
 
 #include "Resource.h"
 #include "Model.h"
+#include "ShaderLoader.h"
 
 
 enum ENTITY_TYPE {
 	CUBE_PICKUP,
 	PLAYER_ENTITY,
-	ENEMY_ENTITY,
 	BULLET_ENTITY,
 	WAVE_ENTITY,
+	SEEK_ENEMY,
+	WANDER_ENEMY
 };
 
 struct MESH {
 	GLuint VAO;
 	unsigned int NumIndices;
 	GLuint Texture;
+	GLuint Shader;
 };
 
 class EntityManager {
@@ -37,7 +40,7 @@ public:
 	static void DestroyInstance();
 
 	static std::shared_ptr<MESH> GetMesh(ENTITY_TYPE _EntityType);
-	static std::shared_ptr<Model> GetModel(ENTITY_TYPE _EntityType, GLuint& _Program);
+	static std::shared_ptr<Model> GetModel(ENTITY_TYPE _EntityType);
 	~EntityManager();
 
 private:
@@ -45,10 +48,16 @@ private:
 
 	static std::shared_ptr<EntityManager> EntityManagerPtr;
 
+	static GLuint WaveShader;
+	static GLuint ObjectShader;
+	static GLuint ModelShader;
+
 	static std::shared_ptr<MESH> Cube_Mesh;
 	static std::shared_ptr<MESH> Pyramid_Mesh;
 	static std::shared_ptr<MESH> Sphere_Mesh;
 
 	static std::shared_ptr<Model> Wave_Model;
 	static std::shared_ptr<Model> Player_Model;
+
+	ShaderLoader SL;
 };

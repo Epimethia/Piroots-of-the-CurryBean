@@ -13,7 +13,7 @@ enum KeyState {
 class InputManager {
 public:
 	InputManager();
-	static void ProcessKeyInput(std::shared_ptr<AutoAgent> _Obj);
+	static void ProcessKeyInput(std::shared_ptr<Player> _Obj);
 private:	
 	static unsigned char KeyArray[255];
 	static unsigned char KeySpecialArray[255];

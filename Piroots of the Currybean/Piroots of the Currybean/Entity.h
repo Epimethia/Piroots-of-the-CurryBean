@@ -12,8 +12,10 @@ public:
 	virtual glm::vec3& GetPos() { return ObjPos; };
 	virtual glm::vec3& GetScale() { return ObjScale; };
 	virtual glm::vec3& GetRotation() { return ObjRotation; };
-	virtual glm::vec3& GetVelocity() { return Velocity; };
+	virtual glm::vec3& GetVelocity() { return ObjVel; };
 	virtual void Process(float _DeltaTime);
+
+	ENTITY_TYPE Type;
 
 protected:
 	virtual void Render();
@@ -26,11 +28,11 @@ protected:
 	glm::vec3 ObjPos;
 	glm::vec3 ObjScale;
 	glm::vec3 ObjRotation;
-	glm::vec3 Velocity;
+	glm::vec3 ObjVel;
 
 	glm::mat4 ModelMatrix;
 	glm::mat4 VPMatrix;
-	
+
 };
 
 
@@ -43,8 +45,8 @@ private:
 };
 
 class Bullet : public Entity {
-public :
-	Bullet(glm::vec3 _Velocity, glm::vec3 _Pos, GLuint _Shader);
+public:
+	Bullet(glm::vec3 _Velocity, glm::vec3 _Pos);
 	void Process(float _DeltaTime);
 private:
 	float MaxSpeed;
@@ -53,7 +55,7 @@ private:
 class ModelEntity : public Entity {
 public:
 	ModelEntity();
-	ModelEntity(ENTITY_TYPE _EntityType, GLuint _Shader, glm::vec3 _Pos);
+	ModelEntity(ENTITY_TYPE _EntityType, glm::vec3 _Pos);
 	virtual void Process(float _DeltaTime);
 protected:
 	virtual void Render();
@@ -62,7 +64,7 @@ protected:
 
 class Wave : public ModelEntity {
 public:
-	Wave(glm::vec3 _Pos, GLuint _Shader);
+	Wave(glm::vec3 _Pos);
 	void Process(float _DeltaTime);
 private:
 	void Render();
@@ -83,10 +85,36 @@ protected:
 	void Render();
 };
 
-class SmallEnemy : public AutoAgent {
+class Player : public AutoAgent {
 public:
-	SmallEnemy(glm::vec3 _Pos, GLuint _Shader, std::shared_ptr<Entity> _TargetEntity);
+	Player(glm::vec3 _Pos);
+	void CreateBullet(glm::vec3 Velocity);
 	void Process(float _DeltaTime);
-private: 
+	std::vector<std::shared_ptr<Bullet>>& GetBulletVect() { return BulletVect; };
+	bool bShoot;
+
+private:
+	std::vector<std::shared_ptr<Bullet>> BulletVect;
+	void Render();
+
+	float ShootCooldown;
+	float ShootTimer;
+	glm::vec3 BulletVelocity;
+};
+
+class SeekEnemy : public AutoAgent {
+public:
+	SeekEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity);
+	void Process(float _DeltaTime);
+private:
+	std::shared_ptr<Entity> TargetEntity;
+	float ShootTimer = 5.0f;
+};
+
+class WanderEnemy : public AutoAgent {
+public:
+	WanderEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity);
+	void Process(float _DeltaTime);
+private:
 	std::shared_ptr<Entity> TargetEntity;
 };

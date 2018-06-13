@@ -27,6 +27,8 @@
 #include <vector>
 #include <iterator>
 #include <memory>
+#include <stdlib.h>
+#include <time.h>
 
 namespace UTILS {
 	const int WindowWidth = 750;
