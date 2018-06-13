@@ -33,9 +33,9 @@ private:
 	std::shared_ptr<Wave> WaveObj;
 
 	//Gameplay Elements
-	std::vector<std::shared_ptr<Entity>> EntityVect;
+	std::vector<std::shared_ptr<AutoAgent>> EnemyVect;
 
-	float SpawnLimiter = 100.0f;
+	float SpawnLimiter = 3.0f;
 	float SpawnTimer = 0.0f;
 };
 

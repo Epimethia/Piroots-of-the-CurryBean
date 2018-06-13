@@ -8,22 +8,21 @@ float AutoMove::ApproachDistance = 300.0f;
 float AutoMove::WanderRadius = 300.0f;
 float PI = 3.14159265359f;
 
+//Name:					Limit
+//Parameters:		Vector, MaxForce
+//Return Type:		glm::vec3 Vector
+//Description:		Takes a vector and performs a limiting function on it
 glm::vec3 AutoMove::Limit(glm::vec3 _Vec, float _MaxForce) {
+	if (_Vec == glm::vec3(0.0f, 0.0f, 0.0f)) {
+		return glm::vec3();
+	}
 	glm::vec3 v = _Vec;
 	if (glm::length(v) > _MaxForce) {
-		v = glm::normalize(v) * _MaxForce;
+		v = glm::normalize(_Vec) * _MaxForce;
 	}
 	return v;
 }
 
-glm::vec3 Normalize(glm::vec3 _Vec) {
-	if (_Vec.x == 0.0f && _Vec.y == 0.0f && _Vec.z == 0.0f) {
-		return glm::vec3();
-	}
-	else {
-		return glm::normalize(_Vec);
-	}
-}
 //Name:					Seek
 //Parameters:		Object position, Object velocity, Target vector
 //Return Type:		glm::vec3 Steering Velocity
@@ -40,7 +39,7 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 	float Distance = glm::length(DesiredVelocity);
 
 	//Normalizing
-	DesiredVelocity = Normalize(DesiredVelocity) * MaxSpeed;
+	DesiredVelocity = glm::normalize(DesiredVelocity) * MaxSpeed;
 
 	//If the distance to the target is less than the approach distance (is in "approach" mode)
 	if (Distance < ApproachDistance) {
@@ -50,17 +49,9 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 
 	//Calculating the max force that would be applied to the object
 	glm::vec3 Steering = DesiredVelocity - _ObjVelocity;
-
-	//Limiting the steering force buy the MaxForce, to make sure the object doesnt turn too quickly
-	/*if (glm::length(Steering) > MaxForce) {
-		Steering = glm::normalize(Steering) * MaxForce;
-	}*/
-
 	Steering = Limit(Steering, MaxForce);
-
 	//Setting the z component to 0.0f as we don't need it  
 	Steering.z = 0.0f;
-
 	return (Steering);
 }
 
@@ -70,17 +61,11 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 //Description:		Overload of the Seek function to take max speed and max force as well
 glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target, float _MaxSpeed, float _MaxForce) {
 	Velocity = _ObjVelocity;
-
 	glm::vec3 DesiredVelocity = _Target - _ObjPos;
-
 	float Distance = glm::length(DesiredVelocity);
-
-	DesiredVelocity = Normalize(DesiredVelocity) * _MaxSpeed;
-
+	DesiredVelocity = glm::normalize(DesiredVelocity) * _MaxSpeed;
 	if (Distance < ApproachDistance) DesiredVelocity *= (Distance / ApproachDistance);
-
 	glm::vec3 Steering = DesiredVelocity - _ObjVelocity;
-
 	Steering = Limit(Steering, _MaxSpeed);
 	Steering.z = 0.0f;
 	return (Steering);
@@ -92,45 +77,28 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 //Description:		Generates a vector towards a point that the input object
 //							is travelling towards
 glm::vec3 AutoMove::Persue(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _TargetPos, glm::vec3 _TargetVelocity) {
-	glm::vec3 Target = _TargetPos;// +(glm::normalize(_TargetVelocity) * 10.0f);
+	glm::vec3 Target = _TargetPos + (glm::normalize(_TargetVelocity) * 400.0f);
 	return Seek(_ObjPos, _ObjVelocity, Target);
 }
 
-glm::vec3 AutoMove::Wander(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity) {
+//Name:					Wander
+//Parameters:		Object Position, ObjectVelocity, MaxSpeed, MaxForce
+//Return Type:		glm::vec3 Vector to the target
+//Description:		The wander behavior. Generates a point on a circle ahead of the object, and seeks
+//							towards the point.
+glm::vec3 AutoMove::Wander(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, float _MaxSpeed, float _MaxForce) {
 	//Calculating a set amount in front of the object
-	glm::vec3 ForwardVector = _ObjPos + (Normalize(_ObjVelocity) * 1000.0f);
-	
+	glm::vec3 ForwardVector = _ObjPos + (glm::normalize(_ObjVelocity) * 1000.0f);
+
 	//Using the x/y values of the forward vector and using parametric calculations, calculate a point on a circle
 	glm::vec3 TargetPoint;
 
-	//Finding a random angle (in radians)
 	float PiBy180 = PI / 180.0f;
+	//Finding a random angle (in radians)
 	float Theta = (rand() % 360) * PiBy180;
 
 	//Calculating the x/y with respect to the WanderRadius
 	TargetPoint.x = ForwardVector.x + (800.0f * std::cos(Theta));
 	TargetPoint.y = ForwardVector.y + (800.0f * std::sin(Theta));
-
 	return Seek(_ObjPos, _ObjVelocity, TargetPoint);
 }
-
-glm::vec3 AutoMove::Containment(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, float _MaxSpeed, float _MaxForce) {
-	//Making sure that the autonomous agents remain within the walls of the level
-	glm::vec3 DesiredVelocity;
-	if (_ObjPos.x >= 3000.0f) {
-		DesiredVelocity = { _MaxSpeed, _ObjVelocity.y, 0.0f };
-	}
-	else if (_ObjPos.x <= -3000.0f) {
-		DesiredVelocity = { _MaxSpeed, _ObjVelocity.y, 0.0f };
-	}
-	else if (_ObjPos.y >= 3000.0f) DesiredVelocity = { _ObjVelocity.x, _MaxSpeed, 0.0f };
-	else if (_ObjPos.y <= -3000.0f)	DesiredVelocity = { _ObjVelocity.x, _MaxSpeed, 0.0f };
-
-	glm::vec3 Steering = DesiredVelocity - _ObjVelocity;
-
-	//Limiting the steering force
-	Limit(Steering, _MaxForce);
-
-	return Steering;
-}
-

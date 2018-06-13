@@ -7,8 +7,7 @@ public:
 	static glm::vec3 Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target);
 	static glm::vec3 Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target, float _MaxSpeed, float MaxForce);
 	static glm::vec3 Persue(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _TargetPos, glm::vec3 _TargetVelocity);
-	static glm::vec3 Wander(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity);
-	static glm::vec3 Containment(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, float _MaxSpeed, float _MaxForce);
+	static glm::vec3 Wander(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, float _MaxSpeed, float _MaxForce);
 
 private:
 	static glm::vec3 Limit(glm::vec3 _Vec, float _MaxForce);

@@ -144,6 +144,7 @@ Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos) {
 
 void Bullet::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
+	if (ObjVel == glm::vec3(0.0f, 0.0f, 0.0f)) return;
 	ObjPos += glm::normalize(ObjVel) * MaxSpeed * _DeltaTime;
 	Render();
 }
@@ -277,8 +278,10 @@ Player::Player(glm::vec3 _Pos) {
 	ObjPos = _Pos;
 	ObjScale = glm::vec3(0.05f, 0.05f, -0.05f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	ObjVel = { 30.0f, 30.0f, 0.0f };
+	ObjVel = { 0.0f, 0.0f, 0.0f };
 	Target = { 0.0f, 0.0f, 0.0f };
+	MaxSpeed = 20.0f;
+	MaxForce = 0.0f;
 	model = EntityManager::GetModel(PLAYER_ENTITY);
 	Type = PLAYER_ENTITY;
 	ShootCooldown = 3.0f;
@@ -305,11 +308,8 @@ void Player::Process(float _DeltaTime) {
 		}
 	}
 
-	//ObjVel += AutoMove::Seek(ObjPos, ObjVel, Target);
-
-	//ObjVel += AutoMove::Wander(ObjPos, ObjVel);
-	ObjVel += AutoMove::Containment(ObjPos, ObjVel, 10.0f, 100.0f);
-	ObjPos += ObjVel * 10.0f * _DeltaTime;
+	ObjVel += AutoMove::Seek(ObjPos, ObjVel, Target);
+	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
 
 	//Checking that bullets dont go out of range
@@ -363,7 +363,7 @@ SeekEnemy::SeekEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
 	ObjVel = { 1.0f, 0.0f, 0.0f };
 	TargetEntity = _TargetEntity;
 	MaxForce = 1.0f;
-	MaxSpeed = 10.0f;
+	MaxSpeed = 7.0f;
 	model = EntityManager::GetModel(PLAYER_ENTITY);
 	Type = SEEK_ENEMY;
 }
@@ -391,7 +391,7 @@ WanderEnemy::WanderEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) 
 
 void WanderEnemy::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-	ObjVel += AutoMove::Wander(ObjPos, ObjVel);
+	ObjVel += AutoMove::Wander(ObjPos, ObjVel, MaxSpeed, MaxForce);
 	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
 }
