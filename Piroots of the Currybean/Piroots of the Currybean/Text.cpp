@@ -54,9 +54,9 @@ Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shade
 
 		// Now to store character for later use
 		Character character = { texture,
-			glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-			face->glyph->advance.x
+			glm::ivec2(static_cast<GLuint>(face->glyph->bitmap.width), static_cast<GLuint>(face->glyph->bitmap.rows)),
+			glm::ivec2(static_cast<GLuint>(face->glyph->bitmap_left), static_cast<GLuint>(face->glyph->bitmap_top)),
+			static_cast<GLuint>(face->glyph->advance.x)
 		};
 		CharMap.insert(std::pair<GLchar, Character>(c, character));
 	}

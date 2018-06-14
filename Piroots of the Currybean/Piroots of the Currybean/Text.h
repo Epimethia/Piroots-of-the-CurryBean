@@ -16,6 +16,7 @@ public:
 	void SetColor(glm::vec3 _Color) { color = _Color; };
 	void SetScale(GLfloat _Scale) { scale = _Scale; };
 	void SetText(std::string _Text) { text = _Text; };
+	glm::vec2 GetPos() { return position; };
 
 	~Text();
 

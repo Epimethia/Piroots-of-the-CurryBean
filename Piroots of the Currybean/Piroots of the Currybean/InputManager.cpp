@@ -124,21 +124,35 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Menu> _Menu) {
 		switch (int Opt = _Menu->GetCurrentOpt()) {
 			case 0: {
 				if (GameManager::GetState() == START) GameManager::GetState() = GAME;
-				if (GameManager::GetState() == END) {
+
+				else if (GameManager::GetState() == END) {
 					GameManager::GetInstance()->RestartGame();
 					GameManager::GetState() = GAME;
+				}
+
+				else if (GameManager::GetState() == OPTION) {
+					GameManager::GetInstance()->ToggleMusic();
 				}
 				break;
 			}
 			case 1: {
-				if (GameManager::GetState() == END) GameManager::GetInstance()->RestartGame();
-				if (GameManager::GetState() == END) GameManager::GetState() = START;
+				if (GameManager::GetState() == END) {
+					GameManager::GetInstance()->RestartGame();
+					GameManager::GetState() = START;
+				}
 
+				else if (GameManager::GetState() == START) {
+					GameManager::GetState() = OPTION;
+				}
+
+				else if (GameManager::GetState() == OPTION) {
+					GameManager::GetState() = START;
+				}
 				break;
 			}
 			case 2: {
 				if (GameManager::GetState() == START) glutLeaveMainLoop();
-				if (GameManager::GetState() == END) glutLeaveMainLoop();
+				else if (GameManager::GetState() == END) glutLeaveMainLoop();
 				
 				break;
 			}

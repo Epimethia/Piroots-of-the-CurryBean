@@ -5,7 +5,6 @@ GameState GameManager::CurrentState;
 GameManager::~GameManager() {
 	Camera::DestroyInstance();
 	EntityManager::DestroyInstance();
-	TextVect.clear();
 }
 
 GameManager::GameManager() {
@@ -16,8 +15,12 @@ GameManager::GameManager() {
 	Camera::GetInstance();
 	EntityManager::GetInstance();
 	DeltaTime = Clock::GetDeltaTime();
+
+	//Music
 	sm.Init();
-	sm.LoadAudio();	sm.PlayBGM();
+	sm.LoadAudio();
+	sm.PlayBGM();
+	PlayMusic = true;
 
 	//Initializing consisten objects
 	PlayerObj = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
@@ -26,7 +29,7 @@ GameManager::GameManager() {
 	//Other Variables
 	CubeMapShader = SL.CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 	TextShader = SL.CreateProgram(TEXT_VERT_SHADER, TEXT_FRAG_SHADER);
-	CurrentState = END;
+	CurrentState = START;
 	Score = 0;
 
 	//initializing Text and menus
@@ -49,6 +52,12 @@ GameManager::GameManager() {
 
 	EndMenu = std::make_shared<Menu>(EndOpt, glm::vec2(90.0f, 280.0f));
 
+	std::vector<std::string> OptOpt;
+	OptOpt.push_back(std::string("Background Music: "));
+	OptOpt.push_back(std::string("Back--"));
+
+	OptionMenu = std::make_shared<Menu>(OptOpt, glm::vec2(40.0f, 280.0f));
+
 	UIBoat = EntityManager::GetModel(PLAYER_ENTITY);
 	glm::mat4 RotationMatrix =
 		glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
@@ -65,7 +74,15 @@ GameManager::GameManager() {
 	EndMenuMatrix = RotationMatrix * ScaleMatrix;
 }
 
+void GameManager::ToggleMusic() {
+	if (PlayMusic == true) {
+		PlayMusic = false;
+	}
+	else  PlayMusic = true;
+}
+
 void GameManager::DrawMenu() {
+	Camera::GetPos() = { 0.0f, 0.0f, 0.0f };
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(-140.0f + (cos(ZBobbing) * 10.0f), 180.0f, 40.0f + (sin(ZBobbing) * 20.0f)) / 375.0f);
 	UIBoat->Render(TranslationMatrix * StartMenuMatrix);
@@ -88,6 +105,7 @@ void GameManager::DrawGame() {
 }
 
 void GameManager::DrawEnd() {
+	Camera::GetPos() = { 0.0f, 0.0f, 0.0f };
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(-170.0f + (cos(ZBobbing) * 10.0f), 150.0f, 40.0f + (sin(ZBobbing) * 20.0f)) / 375.0f);
 	UIBoat->Render(TranslationMatrix * EndMenuMatrix);
@@ -100,6 +118,24 @@ void GameManager::DrawEnd() {
 	ZBobbing += 0.03f * DeltaTime;
 }
 
+void GameManager::DrawOption() {
+	Camera::GetPos() = { 0.0f, 0.0f, 0.0f };
+	CM.Render(CubeMapShader, Camera::GetMatrix());
+	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(-140.0f + (cos(ZBobbing) * 10.0f), 180.0f, 40.0f + (sin(ZBobbing) * 20.0f)) / 375.0f);
+	WaveObj->Process(DeltaTime);
+	Title0->Render();
+	Title1->Render();
+
+	//If BGM is on
+	if (PlayMusic == true) OptionMenu->ReplaceOption(0, std::string("Background Music: ON"));
+	else OptionMenu->ReplaceOption(0, std::string("Background Music: OFF"));
+
+	OptionMenu->Process();
+
+	ZBobbing += 0.03f * DeltaTime;
+
+}
+
 void GameManager::DrawScene() {
 	switch (CurrentState) {
 		case START: {
@@ -109,10 +145,13 @@ void GameManager::DrawScene() {
 		case GAME: {
 			DrawGame();
 			break;
-
 		}
 		case END: {
 			DrawEnd();
+			break;
+		}
+		case OPTION: {
+			DrawOption();
 			break;
 		}
 		default:break;
@@ -124,8 +163,15 @@ void GameManager::DestroyInstance() {
 }
 
 void GameManager::GameLoop(float _DeltaTime) {
+	if (PlayMusic == true) sm.ResumeBGM();
+	else sm.PauseBGM();
+
 	if (CurrentState == START) {
 		InputManager::ProcessKeyInput(StartMenu);
+		return;
+	}
+	else if (CurrentState == OPTION) {
+		InputManager::ProcessKeyInput(OptionMenu);
 		return;
 	}
 	else if (CurrentState == GAME) {
@@ -160,10 +206,10 @@ void GameManager::GameLoop(float _DeltaTime) {
 					0.0f
 				};
 				int num = (rand() % 10);
-				if (num < 5) {
+				if (num < 4) {
 					PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
 				} 
-				else if (num < 9) {
+				else if (num < 8) {
 					PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
 				}
 				else {
@@ -172,7 +218,6 @@ void GameManager::GameLoop(float _DeltaTime) {
 			}
 			InputManager::ProcessKeyInput(PlayerObj);
 
-			//Checking Collisions !INEFFICIENT BUT DONT KNOW HOW TO DO QUAD MAPS
 			//Checking every entity
 			for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
 				//Check against every bullet

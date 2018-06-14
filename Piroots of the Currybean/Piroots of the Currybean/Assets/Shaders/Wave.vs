@@ -14,9 +14,7 @@ uniform float currentTime;
 
 void main(void) {
 	gl_Position = MVP * vec4(position.x, (position.y * 1.5) * sin((currentTime / 500)), position.z, 1.0);
-
-	//Diffuse
-	fragPos = vec3(model * vec4(position, 1.0f));
 	fragNormal = mat3(transpose(inverse(model))) * normal;
+	fragPos = vec3(model * vec4(position, 1.0f));
 	fragTexCoord = texCoords;
 }

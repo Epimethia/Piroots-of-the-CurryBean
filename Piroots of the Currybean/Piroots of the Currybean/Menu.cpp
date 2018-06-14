@@ -1,7 +1,8 @@
 #include "Menu.h"
 
-Menu::Menu() {
-}
+Menu::Menu() {}
+
+Menu::~Menu() {};
 
 Menu::Menu(std::vector<std::string> _OptVect, glm::vec2 _Pos) {
 	ShaderLoader sl;
@@ -30,6 +31,11 @@ void Menu::DecrementMenu() {
 
 void Menu::Process() {
 	Render();
+}
+
+void Menu::ReplaceOption(int _OptIndex, std::string _OptionText) {
+	if (_OptIndex > NumMenuOptions || _OptIndex < 0) return;
+	OptionVect[_OptIndex] = std::make_shared<Text>(_OptionText, PIRATEFONT, OptionVect[_OptIndex]->GetPos(), TextShader, 60);
 }
 
 void Menu::Render() {

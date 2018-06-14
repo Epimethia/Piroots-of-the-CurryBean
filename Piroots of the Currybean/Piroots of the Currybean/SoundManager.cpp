@@ -38,6 +38,13 @@ void SoundManager::PlayShootFX() {
 	channel->setPitch(4.0f);
 }
 
+void SoundManager::ResumeBGM() {
+	channel->setPaused(false);
+}
+
+void SoundManager::PauseBGM() {
+	channel->setPaused(true);
+}
 
 const bool SoundManager::LoadAudio() {
 	if (audioMgr->createSound(BG_MUSIC_LOOP, FMOD_DEFAULT, 0, &bgmTheme) != FMOD_OK) {

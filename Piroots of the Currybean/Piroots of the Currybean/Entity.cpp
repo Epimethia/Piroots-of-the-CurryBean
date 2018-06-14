@@ -299,6 +299,10 @@ void Wave::Render() {
 	glm::mat4 ModelMatrix = TranslationMatrix * RotateX * ScaleMatrix;
 	glUniform3fv(glGetUniformLocation(Shader, "camPos"), 1, glm::value_ptr(Camera::GetPos()));
 
+	/*glActiveTexture(GL_TEXTURE1);
+	glUniform1i(glGetUniformLocation(Program, "skybox"), 1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, Skybox->GetTextureID());*/
+
 	model->Render(ModelMatrix);
 }
 #pragma endregion
@@ -506,7 +510,7 @@ void PursueEnemy::Process(float _DeltaTime) {
 		if (glm::distance(ObjPos, TargetEntity->GetPos()) <= 500.0f) {
 			//Getting the dir at which to fire the bullet
 			glm::vec3 Dir = TargetEntity->GetPos() - ObjPos;
-			BulletVect.push_back(std::make_shared<Bullet>(glm::normalize(Dir) * 0.6f, ObjPos, glm::vec3(0.03f, 0.03f, 0.03f)));
+			BulletVect.push_back(std::make_shared<Bullet>(glm::normalize(Dir) * 0.4f, ObjPos, glm::vec3(0.03f, 0.03f, 0.03f)));
 			ShootTimer = 0.0f;
 		}
 	}

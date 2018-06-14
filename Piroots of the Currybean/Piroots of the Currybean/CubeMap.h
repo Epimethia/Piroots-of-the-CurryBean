@@ -7,6 +7,7 @@ public:
 	CubeMap();
 	~CubeMap();
 	void Render(GLuint _Program, glm::mat4 _VPMatrix);
+	GLuint GetTexture() { return Texture; };
 
 private:
 	GLuint VAO;

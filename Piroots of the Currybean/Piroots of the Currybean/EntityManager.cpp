@@ -37,6 +37,7 @@ EntityManager::EntityManager() {
 	ModelShader = SL.CreateProgram(MODEL_VERT_SHADER, MODEL_FRAG_SHADER);
 	ObjectShader = SL.CreateProgram(VERT_SHADER, FRAG_SHADER);
 
+
 	GLuint VAO, VBO, EBO, Texture;
 	int width, height;
 

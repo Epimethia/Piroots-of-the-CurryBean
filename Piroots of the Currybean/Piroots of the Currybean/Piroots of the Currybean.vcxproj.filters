@@ -94,7 +94,7 @@
       <Filter>System\Text</Filter>
     </ClCompile>
     <ClCompile Include="Menu.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>System\Menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

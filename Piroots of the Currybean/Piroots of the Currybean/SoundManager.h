@@ -8,6 +8,8 @@ public:
 	bool Init();
 	void PlayBGM();
 	void PlayShootFX();
+	void PauseBGM();
+	void ResumeBGM();
 	const bool LoadAudio();
 private:
 	FMOD::System* audioMgr;
