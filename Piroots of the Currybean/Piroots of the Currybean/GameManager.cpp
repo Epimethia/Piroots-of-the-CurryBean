@@ -32,7 +32,7 @@ void GameManager::DestroyInstance() {
 
 void GameManager::GameLoop(float _DeltaTime) {
 	//Spawning Enemies
-	if (EnemyVect.size() < 10) {
+	if (EnemyVect.size() < 1) {
 		SpawnTimer += 10.0f * _DeltaTime;
 		if (SpawnTimer >= SpawnLimiter) {
 			SpawnTimer = 0.0f;
@@ -43,10 +43,8 @@ void GameManager::GameLoop(float _DeltaTime) {
 			};
 			if ((rand() % 2) == 0) {
 				EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, PlayerObj));
-				std::cout << "Spawned Seek Ship\n";
 			} else {
 				EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, PlayerObj));
-				std::cout << "Spawned Wander Ship\n";
 			}
 		}
 	}
@@ -57,11 +55,11 @@ void GameManager::GameLoop(float _DeltaTime) {
 			static_cast<float>((rand() % 6000) - 3000),
 			0.0f
 		};
-		int num = (rand() % 2) + 6;
-		if (num == 6) {
+		int num = (rand() % 2);
+		if (num == 1) {
 			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
 		} 
-		else if (num == 7) {
+		else if (num == 0) {
 			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
 		}
 	}
@@ -83,10 +81,11 @@ void GameManager::GameLoop(float _DeltaTime) {
 
 	for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
 		if (abs(glm::distance(PlayerObj->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
+			PlayerObj->State = PickUpVect[i]->Type;
+			PlayerObj->PowerUpDuration = 100.0f;
 			PickUpVect.erase(PickUpVect.begin() + i);
 		}
 	}
-
 }
 
 std::shared_ptr<GameManager> GameManager::GetInstance() {

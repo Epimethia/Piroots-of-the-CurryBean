@@ -1,5 +1,13 @@
 #include "Entity.h"
 
+void CheckNan(glm::vec3& _Vec) {
+	for (int i = 0; i < 3; ++i) {
+		if (isnan(_Vec.x)) _Vec.x = 0.0f;
+		if (isnan(_Vec.y)) _Vec.y = 0.0f;
+		if (isnan(_Vec.z)) _Vec.z = 0.0f;
+	}
+}
+
 #pragma region ENTITY BASE CLASS DEFINITIONS
 Entity::Entity() {
 }
@@ -112,10 +120,10 @@ PickUp::PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type) {
 	ZBobbing = 0.0f;
 	Type = _Type;
 	if (Type == SPEED_POWERUP) {
-		VAO = EntityManager::GetMesh(CUBE_PICKUP)->VAO;
-		NumIndices = EntityManager::GetMesh(CUBE_PICKUP)->NumIndices;
-		Texture = EntityManager::GetMesh(CUBE_PICKUP)->Texture;
-		Shader = EntityManager::GetMesh(CUBE_PICKUP)->Shader;
+		VAO = EntityManager::GetMesh(SPEED_POWERUP)->VAO;
+		NumIndices = EntityManager::GetMesh(SPEED_POWERUP)->NumIndices;
+		Texture = EntityManager::GetMesh(SPEED_POWERUP)->Texture;
+		Shader = EntityManager::GetMesh(SPEED_POWERUP)->Shader;
 	}
 	else if (Type == ATTACK_POWERUP) {
 		VAO = EntityManager::GetMesh(ATTACK_POWERUP)->VAO;
@@ -289,13 +297,14 @@ Player::Player(glm::vec3 _Pos) {
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjVel = { 0.0f, 0.0f, 0.0f };
 	Target = { 0.0f, 0.0f, 0.0f };
-	MaxSpeed = 20.0f;
+	MaxSpeed = 15.0f;
 	MaxForce = 0.0f;
 	model = EntityManager::GetModel(PLAYER_ENTITY);
 	Type = PLAYER_ENTITY;
-	ShootCooldown = 3.0f;
+	ShootCooldown = 4.0f;
 	ShootTimer = 0.0f;
 	bShoot = false;
+	State = NONE;
 }
 
 void Player::CreateBullet(glm::vec3 Velocity) {
@@ -306,6 +315,25 @@ void Player::CreateBullet(glm::vec3 Velocity) {
 void Player::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
 	ShootTimer += 10.f * _DeltaTime;
+	PowerUpDuration -= 10.0f * _DeltaTime;
+
+	std::cout << State << std::endl;
+
+	if (PowerUpDuration < 0.0f) {
+		PowerUpDuration = 0.0f;
+		State = NONE;
+		ShootCooldown = 4.0f;
+		MaxSpeed = 15.0f;
+	}
+	
+	if (State == ATTACK_POWERUP) {
+		ShootCooldown = 1.0f;
+		MaxSpeed = 15.0f;
+	}
+	if (State == SPEED_POWERUP) {
+		ShootCooldown = 3.0f;
+		MaxSpeed = 35.0f;
+	}
 	
 	if (ShootTimer >= ShootCooldown) {
 		if (bShoot) {
@@ -313,7 +341,7 @@ void Player::Process(float _DeltaTime) {
 			BulletVect.push_back(std::make_shared<Bullet>(
 				BulletVelocity,
 				ObjPos
-				));
+			));
 		}
 	}
 
@@ -329,7 +357,7 @@ void Player::Process(float _DeltaTime) {
 			BulletVect[i]->GetPos().x <= -3300.0f) {
 			BulletVect.erase(BulletVect.begin(), BulletVect.begin() + i);
 			continue;
-		} 
+		}
 		BulletVect[i]->Process(_DeltaTime);
 	}
 }
@@ -344,16 +372,16 @@ void Player::Render() {
 	//X Rotation
 	glm::mat4 RotateX =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.x + 90.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.x + 90.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 
 	glm::mat4 RotateY =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.y + (angle * -1.0f)),
-			glm::vec3(0.0f, 1.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.y + (angle * -1.0f)),
+		glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
@@ -380,6 +408,7 @@ PursueEnemy::PursueEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) 
 void PursueEnemy::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
 	ObjVel += AutoMove::Pursue(ObjPos, ObjVel, TargetEntity->GetPos(), TargetEntity->GetVelocity());
+	CheckNan(ObjVel);
 	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
 }

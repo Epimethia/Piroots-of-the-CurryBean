@@ -93,6 +93,8 @@ public:
 	void Process(float _DeltaTime);
 	std::vector<std::shared_ptr<Bullet>>& GetBulletVect() { return BulletVect; };
 	bool bShoot;
+	float PowerUpDuration;
+	ENTITY_TYPE State;
 
 private:
 	std::vector<std::shared_ptr<Bullet>> BulletVect;
