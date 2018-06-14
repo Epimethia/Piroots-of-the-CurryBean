@@ -6,24 +6,51 @@ GameManager::~GameManager() {
 }
 
 GameManager::GameManager() {
+	srand(static_cast<int>(time(NULL)));
+	InputManager();
+	Camera::GetInstance();
+	EntityManager::GetInstance();
+	PlayerObj = std::make_shared<Player>(glm::vec3(1000.0f, 1000.0f, -0.2f));
+	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
+	CubeMapShader = SL.CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
+	CurrentState = START;
 }
 
-void GameManager::DrawScene(float _DeltaTime) {
+void GameManager::DrawMenu() {
+	for (auto it : EnemyVect) it->Process(DeltaTime);
+}
 
-	//Drawing the player
-	PlayerObj->Process(_DeltaTime);
-
+void GameManager::DrawGame() {
+	PlayerObj->Process(DeltaTime);
 	//Drawing all other Entities
-	for (auto it : EnemyVect) it->Process(_DeltaTime);
-
-	for (auto it : PickUpVect) it->Process(_DeltaTime);
-
-
-	//Drawing the cube map
+	for (auto it : EnemyVect) it->Process(DeltaTime);
+	for (auto it : PickUpVect) it->Process(DeltaTime);
 	CM.Render(CubeMapShader, Camera::GetMatrix());
+	WaveObj->Process(DeltaTime);
+}
 
-	//Drawing the sea
-	WaveObj->Process(_DeltaTime);
+void GameManager::DrawEnd() {
+
+}
+
+
+void GameManager::DrawScene() {
+	switch (CurrentState) {
+		case START: {
+			DrawMenu();
+			break;
+		}
+		case GAME: {
+			DrawGame();
+			break;
+
+		}
+		case END: {
+			DrawEnd();
+			break;
+		}
+		default:break;
+	}
 }
 
 void GameManager::DestroyInstance() {
@@ -31,6 +58,7 @@ void GameManager::DestroyInstance() {
 }
 
 void GameManager::GameLoop(float _DeltaTime) {
+	DeltaTime = _DeltaTime;
 	//Spawning Enemies
 	if (EnemyVect.size() < 1) {
 		SpawnTimer += 10.0f * _DeltaTime;
@@ -92,19 +120,6 @@ std::shared_ptr<GameManager> GameManager::GetInstance() {
 	if (SceneManagerPtr == nullptr) SceneManagerPtr = std::shared_ptr<GameManager>(new GameManager());
 	return SceneManagerPtr;
 }
-
-void GameManager::Init() {
-	srand(static_cast<int>(time(NULL)));
-	InputManager();
-	Camera::GetInstance();
-	EntityManager::GetInstance();
-	PlayerObj = std::make_shared<Player>(glm::vec3(1000.0f, 1000.0f, -0.2f));
-	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
-	EnemyVect.push_back(std::make_shared<PursueEnemy>(glm::vec3(0.0f, 0.0f, 0.0f), PlayerObj));
-
-	CubeMapShader = SL.CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
-}
-
 
 
 

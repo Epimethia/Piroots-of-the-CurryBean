@@ -8,20 +8,31 @@
 #include "CubeMap.h"
 #include "EntityManager.h"
 
+enum GameState {
+	START,
+	GAME,
+	END
+};
+
 //Singleton scene manager
 class GameManager {
 public:
 	~GameManager();
 	static void DestroyInstance();
 	static std::shared_ptr<GameManager> GetInstance();
-	void DrawScene(float _DeltaTime);
+	void DrawScene();
 
-	void Init();
 	void GameLoop(float _DeltaTime);
 
 private:
 	GameManager();
 	static std::shared_ptr<GameManager> SceneManagerPtr;
+	float DeltaTime;
+	GameState CurrentState;
+
+	void DrawMenu();
+	void DrawGame();
+	void DrawEnd();
 
 	//Shaders
 	ShaderLoader SL;

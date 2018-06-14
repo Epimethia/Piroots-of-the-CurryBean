@@ -327,7 +327,7 @@ void Player::Process(float _DeltaTime) {
 	}
 	
 	if (State == ATTACK_POWERUP) {
-		ShootCooldown = 1.0f;
+		ShootCooldown = 2.0f;
 		MaxSpeed = 15.0f;
 	}
 	if (State == SPEED_POWERUP) {

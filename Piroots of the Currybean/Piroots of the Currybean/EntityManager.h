@@ -57,6 +57,7 @@ private:
 	static GLuint WaveShader;
 	static GLuint ObjectShader;
 	static GLuint ModelShader;
+	static GLuint TextShader;
 
 	static std::shared_ptr<MESH> Cube_Mesh;
 	static std::shared_ptr<MESH> Pyramid_Mesh;

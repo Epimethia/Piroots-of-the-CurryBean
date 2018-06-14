@@ -35,7 +35,6 @@ protected:
 
 };
 
-
 class PickUp : public Entity {
 public:
 	PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type);
@@ -52,6 +51,15 @@ public:
 private:
 	float MaxSpeed;
 };
+
+class Text {
+public:
+
+private:
+
+};
+
+
 
 class ModelEntity : public Entity {
 public:
@@ -70,6 +78,8 @@ public:
 private:
 	void Render();
 };
+
+
 
 class AutoAgent : public ModelEntity {
 public:

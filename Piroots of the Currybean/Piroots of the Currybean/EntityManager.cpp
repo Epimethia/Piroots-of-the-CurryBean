@@ -23,6 +23,7 @@ std::shared_ptr<Model> EntityManager::Player_Model = nullptr;
 GLuint EntityManager::WaveShader;
 GLuint EntityManager::ObjectShader;
 GLuint EntityManager::ModelShader;
+GLuint EntityManager::TextShader;
 
 std::shared_ptr<EntityManager> EntityManager::EntityManagerPtr = nullptr;
 
@@ -40,141 +41,7 @@ void EntityManager::DestroyInstance() {
 std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 	if (_EntityType == ATTACK_POWERUP ) {
 		if (Cube_Mesh == nullptr) {	//If the cube mesh hasnt been generated yet
-			#pragma region Generating VAO
-			GLfloat CubeVerts[] = {
-				// Positions             // Normal Coords        // TexCoords
-				// Front Face            
-				-1.0f, 1.0f, 1.0f,       0.0f, 0.0f, 1.0f,      0.0f, 0.0f,
-				1.0f, 1.0f, 1.0f,        0.0f, 0.0f, 1.0f,      1.0f, 0.0f,
-				1.0f, -1.0f, 1.0f,       0.0f, 0.0f, 1.0f,      1.0f, 1.0f,
-				-1.0f, -1.0f, 1.0f,      0.0f, 0.0f, 1.0f,      0.0f, 1.0f,
-
-				// Right Face            
-				1.0f, 1.0f, 1.0f,        1.0f, 0.0f, 0.0f,      0.0f, 0.0f,
-				1.0f, 1.0f, -1.0f,       1.0f, 0.0f, 0.0f,      1.0f, 0.0f,
-				1.0f, -1.0f, -1.0f,      1.0f, 0.0f, 0.0f,      1.0f, 1.0f,
-				1.0f, -1.0f, 1.0f,       1.0f, 0.0f, 0.0f,      0.0f, 1.0f,
-
-				// Back Face             
-				1.0f, 1.0f, -1.0f,       0.0f, 0.0f, -1.0f,     0.0f, 0.0f,
-				-1.0f, 1.0f, -1.0f,      0.0f, 0.0f, -1.0f,     1.0f, 0.0f,
-				-1.0f, -1.0f, -1.0f,     0.0f, 0.0f, -1.0f,     1.0f, 1.0f,
-				1.0f, -1.0f, -1.0f,      0.0f, 0.0f, -1.0f,     0.0f, 1.0f,
-
-				// Left Face             
-				-1.0f, 1.0f, -1.0f,      -1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
-				-1.0f, 1.0f, 1.0f,       -1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
-				-1.0f, -1.0f, 1.0f,      -1.0f, 0.0f, 0.0f,     1.0f, 1.0f,
-				-1.0f, -1.0f, -1.0f,     -1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
-
-				// Top Face              
-				-1.0f, 1.0f, -1.0f,      0.0f, 1.0f, 0.0f,      0.0f, 0.0f,
-				1.0f, 1.0f, -1.0f,       0.0f, 1.0f, 0.0f,      1.0f, 0.0f,
-				1.0f, 1.0f, 1.0f,        0.0f, 1.0f, 0.0f,      1.0f, 1.0f,
-				-1.0f, 1.0f, 1.0f,       0.0f, 1.0f, 0.0f,      0.0f, 1.0f,
-
-				// Bottom Face           
-				-1.0f, -1.0f, 1.0f,      0.0f, -1.0f, 0.0f,     0.0f, 0.0f,
-				1.0f, -1.0f, 1.0f,       0.0f, -1.0f, 0.0f,     1.0f, 0.0f,
-				1.0f, -1.0f, -1.0f,      0.0f, -1.0f, 0.0f,     1.0f, 1.0f,
-				-1.0f, -1.0f, -1.0f,     0.0f, -1.0f, 0.0f,     0.0f, 1.0f,
-			};
-
-			//Defining Cube Indices
-			GLuint CubeIndices[] = {
-				0, 1, 2,		0, 2, 3,		// Front Face
-				4, 5, 6,		4, 6, 7,		// Right Face
-				8, 9, 10,		8, 10, 11,		// Back Face
-				12, 13, 14,		12, 14, 15,		// Left Face
-				16, 17, 18,		16, 18, 19,		// Top Face
-				20, 21, 22,		20, 22, 23,		// Bottom Face
-			};
-
-			GLuint VAO, VBO, EBO;
-
-			//Generating buffers
-			glGenVertexArrays(1, &VAO);
-			glGenBuffers(1, &VBO);
-			glGenBuffers(1, &EBO);
-
-			glBindVertexArray(VAO);
-
-			//Binding and setting buffer data
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVerts), CubeVerts, GL_STATIC_DRAW);
-
-			//Enabling the positional floats
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
-				(GLvoid*)0);
-			glEnableVertexAttribArray(0);
-
-			//Enabling Normal Floats
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
-				(GLvoid*)(3 * sizeof(GLfloat)));
-			glEnableVertexAttribArray(1);
-
-			//Enabling the Texture floats
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
-				(GLvoid*)(6 * sizeof(GLfloat)));
-			glEnableVertexAttribArray(2);
-
-			//Generating EBO
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
-			#pragma endregion
-
-			#pragma region Generating Textures
-			GLuint Texture;
-			//Generating and binding the texture
-			glGenTextures(1, &Texture);
-			glBindTexture(GL_TEXTURE_2D, Texture);
-
-			//Getting the image from filepath
-			int width, height;
-			unsigned char* image = SOIL_load_image(
-				POWER_UP_1,
-				&width,
-				&height,
-				0,
-				SOIL_LOAD_RGBA
-			);
-
-			//Generating the texture from image data
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RGBA,
-				width, height,
-				0,
-				GL_RGBA,
-				GL_UNSIGNED_BYTE,
-				image
-			);
-
-			//Generating mipmaps
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			//Setting Texture wrap
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			//Setting texture filters
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-							GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			//Freeing up data
-			SOIL_free_image_data(image);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glBindVertexArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			#pragma endregion
-
-			Cube_Mesh = std::make_shared<MESH>();
-			Cube_Mesh->VAO = VAO;
-			Cube_Mesh->NumIndices = sizeof(CubeIndices);
-			Cube_Mesh->Texture = Texture;
-			Cube_Mesh->Shader = ObjectShader;
+			
 			return Cube_Mesh;
 		}
 		
@@ -465,6 +332,147 @@ EntityManager::EntityManager() {
 	WaveShader = SL.CreateProgram(WAVE_VERT_SHADER, WAVE_FRAG_SHADER);
 	ModelShader = SL.CreateProgram(MODEL_VERT_SHADER, MODEL_FRAG_SHADER);
 	ObjectShader = SL.CreateProgram(VERT_SHADER, FRAG_SHADER);
+
+	#pragma region GENERATING CUBE MESH
+	#pragma region Generating VAO
+	GLfloat CubeVerts[] = {
+		// Positions             // Normal Coords        // TexCoords
+		// Front Face            
+		-1.0f, 1.0f, 1.0f,       0.0f, 0.0f, 1.0f,      0.0f, 0.0f,
+		1.0f, 1.0f, 1.0f,        0.0f, 0.0f, 1.0f,      1.0f, 0.0f,
+		1.0f, -1.0f, 1.0f,       0.0f, 0.0f, 1.0f,      1.0f, 1.0f,
+		-1.0f, -1.0f, 1.0f,      0.0f, 0.0f, 1.0f,      0.0f, 1.0f,
+
+		// Right Face            
+		1.0f, 1.0f, 1.0f,        1.0f, 0.0f, 0.0f,      0.0f, 0.0f,
+		1.0f, 1.0f, -1.0f,       1.0f, 0.0f, 0.0f,      1.0f, 0.0f,
+		1.0f, -1.0f, -1.0f,      1.0f, 0.0f, 0.0f,      1.0f, 1.0f,
+		1.0f, -1.0f, 1.0f,       1.0f, 0.0f, 0.0f,      0.0f, 1.0f,
+
+		// Back Face             
+		1.0f, 1.0f, -1.0f,       0.0f, 0.0f, -1.0f,     0.0f, 0.0f,
+		-1.0f, 1.0f, -1.0f,      0.0f, 0.0f, -1.0f,     1.0f, 0.0f,
+		-1.0f, -1.0f, -1.0f,     0.0f, 0.0f, -1.0f,     1.0f, 1.0f,
+		1.0f, -1.0f, -1.0f,      0.0f, 0.0f, -1.0f,     0.0f, 1.0f,
+
+		// Left Face             
+		-1.0f, 1.0f, -1.0f,      -1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+		-1.0f, 1.0f, 1.0f,       -1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+		-1.0f, -1.0f, 1.0f,      -1.0f, 0.0f, 0.0f,     1.0f, 1.0f,
+		-1.0f, -1.0f, -1.0f,     -1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+
+		// Top Face              
+		-1.0f, 1.0f, -1.0f,      0.0f, 1.0f, 0.0f,      0.0f, 0.0f,
+		1.0f, 1.0f, -1.0f,       0.0f, 1.0f, 0.0f,      1.0f, 0.0f,
+		1.0f, 1.0f, 1.0f,        0.0f, 1.0f, 0.0f,      1.0f, 1.0f,
+		-1.0f, 1.0f, 1.0f,       0.0f, 1.0f, 0.0f,      0.0f, 1.0f,
+
+		// Bottom Face           
+		-1.0f, -1.0f, 1.0f,      0.0f, -1.0f, 0.0f,     0.0f, 0.0f,
+		1.0f, -1.0f, 1.0f,       0.0f, -1.0f, 0.0f,     1.0f, 0.0f,
+		1.0f, -1.0f, -1.0f,      0.0f, -1.0f, 0.0f,     1.0f, 1.0f,
+		-1.0f, -1.0f, -1.0f,     0.0f, -1.0f, 0.0f,     0.0f, 1.0f,
+	};
+
+	//Defining Cube Indices
+	GLuint CubeIndices[] = {
+		0, 1, 2,		0, 2, 3,		// Front Face
+		4, 5, 6,		4, 6, 7,		// Right Face
+		8, 9, 10,		8, 10, 11,		// Back Face
+		12, 13, 14,		12, 14, 15,		// Left Face
+		16, 17, 18,		16, 18, 19,		// Top Face
+		20, 21, 22,		20, 22, 23,		// Bottom Face
+	};
+
+	GLuint VAO, VBO, EBO;
+
+	//Generating buffers
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+
+	//Binding and setting buffer data
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVerts), CubeVerts, GL_STATIC_DRAW);
+
+	//Enabling the positional floats
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+		(GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	//Enabling Normal Floats
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+		(GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	//Enabling the Texture floats
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat),
+		(GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
+	//Generating EBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
+	#pragma endregion
+
+	#pragma region Generating Textures
+	GLuint Texture;
+	//Generating and binding the texture
+	glGenTextures(1, &Texture);
+	glBindTexture(GL_TEXTURE_2D, Texture);
+
+	//Getting the image from filepath
+	int width, height;
+	unsigned char* image = SOIL_load_image(
+		POWER_UP_1,
+		&width,
+		&height,
+		0,
+		SOIL_LOAD_RGBA
+	);
+
+	//Generating the texture from image data
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA,
+		width, height,
+		0,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		image
+	);
+
+	//Generating mipmaps
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	//Setting Texture wrap
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	//Setting texture filters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//Freeing up data
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	#pragma endregion
+
+	Cube_Mesh = std::make_shared<MESH>();
+	Cube_Mesh->VAO = VAO;
+	Cube_Mesh->NumIndices = sizeof(CubeIndices);
+	Cube_Mesh->Texture = Texture;
+	Cube_Mesh->Shader = ObjectShader;
+
+	#pragma endregion
+
+
 }
 
 //Name:					~EntityManager()
