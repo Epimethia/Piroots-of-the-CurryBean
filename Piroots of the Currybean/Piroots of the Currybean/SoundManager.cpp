@@ -3,14 +3,14 @@
 SoundManager::SoundManager() {}
 
 SoundManager::~SoundManager() {
-	delete audioMgr;
-	delete fxThump;
+	/*delete audioMgr;
+	delete ShootFX;
 	delete bgmTheme;
 	delete channel;
 	audioMgr = nullptr;
-	fxThump = nullptr;
 	bgmTheme = nullptr;
 	channel = nullptr;
+	ShootFX = nullptr;*/
 }
 
 bool SoundManager::Init() {
@@ -26,16 +26,25 @@ bool SoundManager::Init() {
 	return true;
 }
 
-void SoundManager::PlayMusic() {
+void SoundManager::PlayBGM() {
 	audioMgr->playSound(bgmTheme, 0, false, &channel);
+	channel->setVolume(0.3f);
+	channel->setPitch(1.5f);
 }
 
+void SoundManager::PlayShootFX() {
+	audioMgr->playSound(ShootFX, 0, false, &channel);
+	channel->setVolume(0.6f);
+	channel->setPitch(4.0f);
+}
+
+
 const bool SoundManager::LoadAudio() {
-	if (audioMgr->createSound(THUMP_SOUND, FMOD_DEFAULT, 0, &fxThump) != FMOD_OK) {
-		std::cout << "Failed to create Sound " << THUMP_SOUND << std::endl;
+	if (audioMgr->createSound(BG_MUSIC_LOOP, FMOD_DEFAULT, 0, &bgmTheme) != FMOD_OK) {
+		std::cout << "Failed to create Sound " << BG_MUSIC_LOOP << std::endl;
 		return false;
 	}
-	if (audioMgr->createSound(BG_MUSIC_LOOP, FMOD_DEFAULT, 0, &bgmTheme) != FMOD_OK) {
+	if (audioMgr->createSound(SHOOT_FX, FMOD_DEFAULT, 0, &ShootFX) != FMOD_OK) {
 		std::cout << "Failed to create Sound " << BG_MUSIC_LOOP << std::endl;
 		return false;
 	}

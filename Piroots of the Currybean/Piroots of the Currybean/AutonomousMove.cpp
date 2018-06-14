@@ -90,12 +90,14 @@ glm::vec3 AutoMove::Wander(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, float _Max
 	//Calculating a set amount in front of the object
 	glm::vec3 ForwardVector = _ObjPos + (glm::normalize(_ObjVelocity) * 1000.0f);
 
+	if (_ObjPos.x <= -3000.0f || _ObjPos.x >= 3000.0f || _ObjPos.y >= 3000.0f || _ObjPos.y <= -3000.0f) {
+		return Seek(_ObjPos, _ObjVelocity, glm::vec3());
+	}
 	//Using the x/y values of the forward vector and using parametric calculations, calculate a point on a circle
 	glm::vec3 TargetPoint;
 
-	float PiBy180 = PI / 180.0f;
 	//Finding a random angle (in radians)
-	float Theta = (rand() % 360) * PiBy180;
+	float Theta = (rand() % 360) * (PI / 180.0f);
 
 	//Calculating the x/y with respect to the WanderRadius
 	TargetPoint.x = ForwardVector.x + (800.0f * std::cos(Theta));

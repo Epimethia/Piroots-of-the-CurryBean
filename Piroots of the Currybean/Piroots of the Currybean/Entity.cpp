@@ -17,15 +17,14 @@ Entity::Entity() {
 //Return Type:		None
 //Description:		Overloaded Constructor to create an entity with the specified
 //							mesh.
-Entity::Entity(ENTITY_TYPE _EntityType, GLuint _Shader, glm::vec3 _Pos) {
-	Shader = _Shader;
-	ObjVel = { 0.0f, 1000.0f, 0.0f };
+Entity::Entity(ENTITY_ATTRIBUTE _EntityType, glm::vec3 _Pos) {
 	ObjScale = glm::vec3(1.0f, 1.0f, 1.0f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
 	VAO = EntityManager::GetMesh(_EntityType)->VAO;
 	NumIndices = EntityManager::GetMesh(_EntityType)->NumIndices;
 	Texture = EntityManager::GetMesh(_EntityType)->Texture;
+	Shader = EntityManager::GetMesh(_EntityType)->Shader;
 	Type = _EntityType;
 };
 
@@ -101,7 +100,7 @@ void Entity::Process(float _DeltaTime) {
 
 
 #pragma region PICKUP FUNCTION DEFINITIONS
-PickUp::PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type) {
+PickUp::PickUp(glm::vec3 _Pos, ENTITY_ATTRIBUTE _Type) {
 	ObjScale = glm::vec3(0.05f, 0.05f, 0.05f);
 	ObjRotation = glm::vec3(90.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
@@ -130,7 +129,7 @@ void PickUp::Process(float _DeltaTime) {
 	ZBobbing += (10.0f * _DeltaTime);
 	VPMatrix = Camera::GetMatrix();
 	if (Type == SPECIAL_POWERUP) {
-
+		
 		Render();
 		return;
 	}
@@ -155,7 +154,6 @@ void PickUp::Process(float _DeltaTime) {
 
 		//Sending the texture to the GPU via uniform
 		glUniform1i(glGetUniformLocation(Shader, "tex"), 0);
-
 		//Translating the cube (x,y,z)
 		glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), ObjPos / 375.0f);
 
@@ -215,10 +213,14 @@ Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos) {
 	Type = BULLET_ENTITY;
 }
 
+Bullet::Bullet(glm::vec3 _Velocity, glm::vec3 _Pos, glm::vec3 _Scale) : Bullet(_Velocity, _Pos) {
+	ObjScale = _Scale;
+}
+
 void Bullet::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
 	if (ObjVel == glm::vec3(0.0f, 0.0f, 0.0f)) return;
-	ObjPos += glm::normalize(ObjVel) * MaxSpeed * _DeltaTime;
+	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
 }
 #pragma endregion
@@ -229,7 +231,7 @@ ModelEntity::ModelEntity() {
 
 }
 
-ModelEntity::ModelEntity(ENTITY_TYPE _EntityType, glm::vec3 _Pos) {
+ModelEntity::ModelEntity(ENTITY_ATTRIBUTE _EntityType, glm::vec3 _Pos) {
 	ObjScale = glm::vec3(0.1f, 0.1f, 0.1f);
 	ObjRotation = glm::vec3();
 	ObjPos = _Pos;
@@ -295,6 +297,7 @@ void Wave::Render() {
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
 	glm::mat4 ModelMatrix = TranslationMatrix * RotateX * ScaleMatrix;
+	glUniform3fv(glGetUniformLocation(Shader, "camPos"), 1, glm::value_ptr(Camera::GetPos()));
 
 	model->Render(ModelMatrix);
 }
@@ -310,14 +313,12 @@ AutoAgent::AutoAgent(glm::vec3 _Pos, GLuint _Shader) {
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
 	ObjVel = { 0.0f, 0.0f, 0.0f };
-	Target = { 0.0f, 0.0f, 0.0f };
 	model = EntityManager::GetModel(PLAYER_ENTITY);
 	Type = PLAYER_ENTITY;
 }
 
 void AutoAgent::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-	ObjVel += AutoMove::Seek(ObjPos, ObjVel, Target);
 	ObjPos += ObjVel * 30.0f * _DeltaTime;
 	Render();
 }
@@ -346,7 +347,7 @@ void AutoAgent::Render() {
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
 	glm::mat4 ModelMatrix = TranslationMatrix * (RotateX * RotateY) * ScaleMatrix;
-
+	glUniform3fv(glGetUniformLocation(Shader, "camPos"), 1, glm::value_ptr(Camera::GetPos()));
 	model->Render(ModelMatrix);
 }
 #pragma endregion
@@ -359,10 +360,17 @@ Player::Player(glm::vec3 _Pos) {
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjVel = { 0.0f, 0.0f, 0.0f };
 	Target = { 0.0f, 0.0f, 0.0f };
+
+	sm.Init();
+	sm.LoadAudio();
+
 	MaxSpeed = 15.0f;
 	MaxForce = 0.0f;
-	model = EntityManager::GetModel(PLAYER_ENTITY);
+	HitRadius = 110.0f;
+
 	Type = PLAYER_ENTITY;
+	model = EntityManager::GetModel(Type);
+
 	ShootCooldown = 4.0f;
 	ShootTimer = 0.0f;
 	bShoot = false;
@@ -370,7 +378,8 @@ Player::Player(glm::vec3 _Pos) {
 }
 
 void Player::CreateBullet(glm::vec3 Velocity) {
-	BulletVelocity = Velocity;
+	if (State == SPEED_POWERUP)	BulletVelocity = Velocity * 3.0f;
+	else BulletVelocity = Velocity;
 	bShoot = true;
 }
 
@@ -378,7 +387,6 @@ void Player::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
 	ShootTimer += 10.f * _DeltaTime;
 	PowerUpDuration -= 10.0f * _DeltaTime;
-
 
 	if (PowerUpDuration < 0.0f) {
 		PowerUpDuration = 0.0f;
@@ -405,24 +413,22 @@ void Player::Process(float _DeltaTime) {
 
 	if (ShootTimer >= ShootCooldown) {
 		if (bShoot) {
+			sm.PlayShootFX();
 			if (State == SPECIAL_POWERUP) {
-				float BulletSpeed = 20.0f;
 				for (unsigned int i = 0; i < 8; ++i) {
 					float angle = 45.0f * static_cast<float>(i);
 					glm::vec3 Vel = {
-						sin(glm::radians(angle)) * BulletSpeed,
-						cos(glm::radians(angle)) * BulletSpeed,
+						sin(glm::radians(angle)) * 20.0f,
+						cos(glm::radians(angle)) * 20.0f,
 						0.0f
 					};
-					BulletVect.push_back(std::make_shared<Bullet>(Vel, ObjPos));
+					BulletVect.push_back(std::make_shared<Bullet>(glm::normalize(Vel), ObjPos));
 				}
 			}
 			else {
 				BulletVect.push_back(std::make_shared<Bullet>(BulletVelocity,ObjPos));
 			}
-			
 			ShootTimer = 0.0f;
-
 		}
 	}
 
@@ -467,6 +473,7 @@ void Player::Render() {
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
 	ModelMatrix = TranslationMatrix * (RotateX * RotateY) * ScaleMatrix;
+	glUniform3fv(glGetUniformLocation(Shader, "camPos"), 1, glm::value_ptr(Camera::GetPos()));
 
 	model->Render(ModelMatrix);
 }
@@ -474,46 +481,84 @@ void Player::Render() {
 
 
 #pragma region PURSUE ENEMY FUNCTION DEFINITIONS
-PursueEnemy::PursueEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
+PursueEnemy::PursueEnemy(glm::vec3 _Pos, std::shared_ptr<Player> _TargetEntity) {
 	ObjScale = glm::vec3(0.03f, 0.03f, -0.03f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
 	ObjVel = { 1.0f, 0.0f, 0.0f };
 	TargetEntity = _TargetEntity;
 	MaxForce = 1.0f;
-	MaxSpeed = 7.0f;
+	MaxSpeed = 6.0f;
+	HitRadius = 65.0f;
+	ShootTimer = 0.0f;
+	ShootCooldown = 5.0f;
 	model = EntityManager::GetModel(PLAYER_ENTITY);
 	Type = SEEK_ENEMY;
 }
 
+PursueEnemy::~PursueEnemy() {
+	BulletVect.clear();
+}
+
 void PursueEnemy::Process(float _DeltaTime) {
+	if (TargetEntity == nullptr) return;
+	if (ShootTimer >= ShootCooldown) {
+		if (glm::distance(ObjPos, TargetEntity->GetPos()) <= 500.0f) {
+			//Getting the dir at which to fire the bullet
+			glm::vec3 Dir = TargetEntity->GetPos() - ObjPos;
+			BulletVect.push_back(std::make_shared<Bullet>(glm::normalize(Dir) * 0.6f, ObjPos, glm::vec3(0.03f, 0.03f, 0.03f)));
+			ShootTimer = 0.0f;
+		}
+	}
+	ShootTimer += 10.f * _DeltaTime;
 	VPMatrix = Camera::GetMatrix();
 	ObjVel += AutoMove::Pursue(ObjPos, ObjVel, TargetEntity->GetPos(), TargetEntity->GetVelocity());
 	CheckNan(ObjVel);
 	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
+
+	//Checking that bullets dont go out of range
+	for (unsigned int i = 0; i < BulletVect.size(); ++i) {
+		if (BulletVect[i]->GetPos().y >= 3300.0f ||
+			BulletVect[i]->GetPos().y <= -3300.0f ||
+			BulletVect[i]->GetPos().x >= 3300.0f ||
+			BulletVect[i]->GetPos().x <= -3300.0f) {
+			BulletVect.erase(BulletVect.begin(), BulletVect.begin() + i);
+			continue;
+		}
+		
+		//Check if the player is being hit
+		if (glm::distance(BulletVect[i]->GetPos(), TargetEntity->GetPos()) <= TargetEntity->HitRadius) {
+			TargetEntity->State = DEAD;
+		}
+		//Otherwise process the bullets
+		BulletVect[i]->Process(_DeltaTime);
+	}
 }
 #pragma endregion
 
 
 #pragma region WANDER ENEMY FUNCTIONS
-WanderEnemy::WanderEnemy(glm::vec3 _Pos, std::shared_ptr<Entity> _TargetEntity) {
+WanderEnemy::WanderEnemy(glm::vec3 _Pos, std::shared_ptr<Player> _TargetEntity) {
 	ObjScale = glm::vec3(0.06f, 0.06f, -0.06f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
 	ObjVel = { 1.0f, 0.0f, 0.0f };
-	TargetEntity = _TargetEntity;
 	MaxForce = 1.0f;
-	MaxSpeed = 10.0f;
+	MaxSpeed = 7.0f;
+	HitRadius = 130.0f;
+	TargetEntity = _TargetEntity;
 	model = EntityManager::GetModel(PLAYER_ENTITY);
 	Type = WANDER_ENEMY;
 }
 
 void WanderEnemy::Process(float _DeltaTime) {
+	if (TargetEntity == nullptr) return;
 	VPMatrix = Camera::GetMatrix();
 	ObjVel += AutoMove::Wander(ObjPos, ObjVel, MaxSpeed, MaxForce);
 	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();
 }
 #pragma endregion
+
 

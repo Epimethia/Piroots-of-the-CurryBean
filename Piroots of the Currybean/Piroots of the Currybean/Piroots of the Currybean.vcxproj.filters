@@ -52,6 +52,9 @@
     <Filter Include="System\Text">
       <UniqueIdentifier>{92cd2d52-c10e-48eb-8822-86fedaa28ce3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Menu">
+      <UniqueIdentifier>{96d70541-f74e-46ad-92c6-c6ee7247879d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -89,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="Text.cpp">
       <Filter>System\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>System\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>System\Menu</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

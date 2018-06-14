@@ -6,11 +6,12 @@ public:
 	SoundManager();
 	~SoundManager();
 	bool Init();
-	void PlayMusic();
+	void PlayBGM();
+	void PlayShootFX();
 	const bool LoadAudio();
 private:
 	FMOD::System* audioMgr;
-	FMOD::Sound* fxThump;
 	FMOD::Sound* bgmTheme;
+	FMOD::Sound* ShootFX;
 	FMOD::Channel* channel;
 };

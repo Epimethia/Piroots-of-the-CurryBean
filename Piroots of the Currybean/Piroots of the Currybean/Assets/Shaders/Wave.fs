@@ -17,7 +17,7 @@ uniform float shininess = 2.0f;
 void main() {
 
     /*---------------------------------------*/
-    /*|            PHONG SHADER             |*/
+    /*|          BLINN PHONG SHADER         |*/
     /*---------------------------------------*/
 
     //AMBIENT COLOR

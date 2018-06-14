@@ -69,13 +69,14 @@ namespace UTILS {
 #define CUBEMAP_FILE_PATH		"Assets/Sprite/"
 
 //Sound Macros
-#define THUMP_SOUND				"Assets/Sound/Thump.wav"
-#define BG_MUSIC_LOOP			"Assets/Sound/Background.mp3"
+#define SHOOT_FX				"Assets/Sound/CannonShot.mp3"
+#define BG_MUSIC_LOOP			"Assets/Sound/BGsound.mp3"
 
 //Text Macros
 #define ARIAL					"Assets/Fonts/arial.ttf"
 #define SNACKERCOMIC			"Assets/Fonts/SnackerComic.ttf"
 #define WALLTOGRAPHUI			"Assets/Fonts/waltographUI.ttf"
+#define PIRATEFONT				"Assets/Fonts/PretendPirates-Regular.ttf"
 
 //Model Macros					
 #define PLAYER_MODEL			"Assets/Models/PlayerBoat/Boat1.obj"

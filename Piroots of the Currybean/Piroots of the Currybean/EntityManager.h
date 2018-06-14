@@ -19,19 +19,20 @@
 #include "Text.h"
 
 
-enum ENTITY_TYPE {
+enum ENTITY_ATTRIBUTE {
 	
-	//Entities
+	//Entity Type
 	PLAYER_ENTITY,
 	BULLET_ENTITY,
 	WAVE_ENTITY,
 	SEEK_ENEMY,
 	WANDER_ENEMY,
 
-	//Powerups
+	//Player State
 	ATTACK_POWERUP,
 	SPEED_POWERUP,
 	SPECIAL_POWERUP,
+	DEAD,
 	NONE
 };
 
@@ -47,8 +48,8 @@ public:
 	static std::shared_ptr<EntityManager> GetInstance();
 	static void DestroyInstance();
 
-	static std::shared_ptr<MESH> GetMesh(ENTITY_TYPE _EntityType);
-	static std::shared_ptr<Model> GetModel(ENTITY_TYPE _EntityType);
+	static std::shared_ptr<MESH> GetMesh(ENTITY_ATTRIBUTE _EntityType);
+	static std::shared_ptr<Model> GetModel(ENTITY_ATTRIBUTE _EntityType);
 	~EntityManager();
 
 private:

@@ -456,7 +456,7 @@ void EntityManager::DestroyInstance() {
 	EntityManagerPtr = nullptr;
 }
 
-std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
+std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_ATTRIBUTE _EntityType) {
 	if (_EntityType == ATTACK_POWERUP) return Cube_Mesh;
 
 	if (_EntityType == SPEED_POWERUP) return Pyramid_Mesh;
@@ -466,7 +466,7 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_TYPE _EntityType) {
 	else return nullptr;
 }
 
-std::shared_ptr<Model> EntityManager::GetModel(ENTITY_TYPE _EntityType) {
+std::shared_ptr<Model> EntityManager::GetModel(ENTITY_ATTRIBUTE _EntityType) {
 	if (_EntityType == WAVE_ENTITY) return Wave_Model;
 		
 	if (_EntityType == PLAYER_ENTITY) return Player_Model;
