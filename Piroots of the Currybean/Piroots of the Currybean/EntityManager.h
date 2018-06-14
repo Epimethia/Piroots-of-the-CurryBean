@@ -16,6 +16,7 @@
 #include "Resource.h"
 #include "Model.h"
 #include "ShaderLoader.h"
+#include "Text.h"
 
 
 enum ENTITY_TYPE {
@@ -30,6 +31,7 @@ enum ENTITY_TYPE {
 	//Powerups
 	ATTACK_POWERUP,
 	SPEED_POWERUP,
+	SPECIAL_POWERUP,
 	NONE
 };
 
@@ -65,6 +67,7 @@ private:
 
 	static std::shared_ptr<Model> Wave_Model;
 	static std::shared_ptr<Model> Player_Model;
+	static std::shared_ptr<Model> Special_Model;
 
 	ShaderLoader SL;
 };

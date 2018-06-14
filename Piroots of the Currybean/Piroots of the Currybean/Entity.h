@@ -35,14 +35,7 @@ protected:
 
 };
 
-class PickUp : public Entity {
-public:
-	PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type);
-	void Process(float _DeltaTime);
-	ENTITY_TYPE Type;
-private:
-	float ZBobbing;
-};
+
 
 class Bullet : public Entity {
 public:
@@ -58,8 +51,6 @@ public:
 private:
 
 };
-
-
 
 class ModelEntity : public Entity {
 public:
@@ -79,7 +70,14 @@ private:
 	void Render();
 };
 
-
+class PickUp : public ModelEntity {
+public:
+	PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type);
+	void Process(float _DeltaTime);
+	ENTITY_TYPE Type;
+private:
+	float ZBobbing;
+};
 
 class AutoAgent : public ModelEntity {
 public:

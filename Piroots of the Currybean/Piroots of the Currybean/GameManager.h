@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "CubeMap.h"
 #include "EntityManager.h"
+#include "Text.h"
 
 enum GameState {
 	START,
@@ -49,4 +50,7 @@ private:
 
 	float SpawnLimiter = 3.0f;
 	float SpawnTimer = 0.0f;
+
+	std::shared_ptr<Text> t = std::make_shared<Text>("HEllo", ARIAL, glm::vec3(0.0f, 0.0f, 0.0f));
+
 };

@@ -56,14 +56,6 @@ void Entity::Render() {
 	//Translating the cube (x,y,z)
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), ObjPos / 375.0f);
 
-	//Z Rotation
-	glm::mat4 RotateZ =
-		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.z),
-			glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-
 	//Y Rotation
 	glm::mat4 RotateY =
 		glm::rotate(
@@ -80,7 +72,7 @@ void Entity::Render() {
 			glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 
-	glm::mat4 RotationMatrix = RotateX * RotateY * RotateZ;
+	glm::mat4 RotationMatrix = RotateX * RotateY;
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), ObjScale);
 
 	ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
@@ -103,10 +95,6 @@ void Entity::Render() {
 
 void Entity::Process(float _DeltaTime) {
 	VPMatrix = Camera::GetMatrix();
-
-	//REMOVE
-	//DO OTHER PROCESSING STUFF IN HERE
-
 	Render();
 }
 #pragma endregion
@@ -131,7 +119,9 @@ PickUp::PickUp(glm::vec3 _Pos, ENTITY_TYPE _Type) {
 		Texture = EntityManager::GetMesh(ATTACK_POWERUP)->Texture;
 		Shader = EntityManager::GetMesh(ATTACK_POWERUP)->Shader;
 	}
-	
+	else if (Type == SPECIAL_POWERUP) {
+		model = EntityManager::GetModel(SPECIAL_POWERUP);
+	}
 };
 
 void PickUp::Process(float _DeltaTime) {
@@ -139,7 +129,73 @@ void PickUp::Process(float _DeltaTime) {
 	ObjPos.z += (sin(ZBobbing ))* 7.0f;
 	ZBobbing += (10.0f * _DeltaTime);
 	VPMatrix = Camera::GetMatrix();
-	Render();
+	if (Type == SPECIAL_POWERUP) {
+
+		Render();
+		return;
+	}
+	else {
+		glUseProgram(Shader);
+
+		//Binding the array
+		glBindVertexArray(VAO);
+
+		//Setting back face culling
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CW);
+		glEnable(GL_CULL_FACE);
+
+		//Enable blending
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		//Setting and binding the correct texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, Texture);
+
+		//Sending the texture to the GPU via uniform
+		glUniform1i(glGetUniformLocation(Shader, "tex"), 0);
+
+		//Translating the cube (x,y,z)
+		glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), ObjPos / 375.0f);
+
+		//Y Rotation
+		glm::mat4 RotateY =
+			glm::rotate(
+				glm::mat4(),
+				glm::radians(ObjRotation.y),
+				glm::vec3(0.0f, 1.0f, 0.0f)
+			);
+
+		//X Rotation
+		glm::mat4 RotateX =
+			glm::rotate(
+				glm::mat4(),
+				glm::radians(ObjRotation.x),
+				glm::vec3(1.0f, 0.0f, 0.0f)
+			);
+
+		glm::mat4 RotationMatrix = RotateX * RotateY;
+		glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), ObjScale);
+
+		ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
+
+		glm::mat4 MVP = VPMatrix * ModelMatrix;
+
+		glUniformMatrix4fv(glGetUniformLocation(Shader, "MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+		glUniform3fv(glGetUniformLocation(Shader, "camPos"), 1, glm::value_ptr(Camera::GetPos()));
+		//Drawing the entity
+		glDrawElements(GL_TRIANGLES, NumIndices, GL_UNSIGNED_INT, 0);
+
+		//Disabling backface culling
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+
+		//Clearing the vertex array
+		glBindVertexArray(0);
+		return;
+	}
 }
 #pragma endregion
 
@@ -189,12 +245,18 @@ void ModelEntity::Render() {
 	glm::mat4 RotateX =
 		glm::rotate(
 			glm::mat4(),
-			glm::radians(ObjRotation.x + 90.0f),
+			glm::radians(ObjRotation.x + 0.0f),
 			glm::vec3(1.0f, 0.0f, 0.0f)
+		);
+	glm::mat4 RotateY =
+		glm::rotate(
+			glm::mat4(),
+			glm::radians(ObjRotation.y + 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
-	glm::mat4 ModelMatrix = TranslationMatrix * RotateX * ScaleMatrix;
+	glm::mat4 ModelMatrix = TranslationMatrix * (RotateX * RotateY) * ScaleMatrix;
 
 	model->Render(ModelMatrix);
 }
@@ -317,7 +379,6 @@ void Player::Process(float _DeltaTime) {
 	ShootTimer += 10.f * _DeltaTime;
 	PowerUpDuration -= 10.0f * _DeltaTime;
 
-	std::cout << State << std::endl;
 
 	if (PowerUpDuration < 0.0f) {
 		PowerUpDuration = 0.0f;
@@ -334,16 +395,34 @@ void Player::Process(float _DeltaTime) {
 		ShootCooldown = 3.0f;
 		MaxSpeed = 35.0f;
 	}
+	if (State == SPECIAL_POWERUP) {
+		std::cout << "HELLO\n";
+		ShootCooldown = 4.0f;
+		MaxSpeed = 15.0f;
+	}
 	
 	//memes
 
 	if (ShootTimer >= ShootCooldown) {
 		if (bShoot) {
+			if (State == SPECIAL_POWERUP) {
+				float BulletSpeed = 20.0f;
+				for (unsigned int i = 0; i < 8; ++i) {
+					float angle = 45.0f * static_cast<float>(i);
+					glm::vec3 Vel = {
+						sin(glm::radians(angle)) * BulletSpeed,
+						cos(glm::radians(angle)) * BulletSpeed,
+						0.0f
+					};
+					BulletVect.push_back(std::make_shared<Bullet>(Vel, ObjPos));
+				}
+			}
+			else {
+				BulletVect.push_back(std::make_shared<Bullet>(BulletVelocity,ObjPos));
+			}
+			
 			ShootTimer = 0.0f;
-			BulletVect.push_back(std::make_shared<Bullet>(
-				BulletVelocity,
-				ObjPos
-			));
+
 		}
 	}
 

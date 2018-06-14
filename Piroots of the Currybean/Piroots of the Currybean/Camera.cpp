@@ -37,6 +37,7 @@ glm::mat4& Camera::GetMatrix() {
 		glm::radians(45.0f),
 		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
+
 	glm::mat4 RotationMatrixY =
 		glm::rotate(
 			glm::mat4(),

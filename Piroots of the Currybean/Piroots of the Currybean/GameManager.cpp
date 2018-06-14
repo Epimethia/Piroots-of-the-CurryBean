@@ -17,7 +17,6 @@ GameManager::GameManager() {
 }
 
 void GameManager::DrawMenu() {
-	for (auto it : EnemyVect) it->Process(DeltaTime);
 }
 
 void GameManager::DrawGame() {
@@ -70,9 +69,9 @@ void GameManager::GameLoop(float _DeltaTime) {
 				0.0f
 			};
 			if ((rand() % 2) == 0) {
-				EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, PlayerObj));
+				EnemyVect.push_back(std::make_shared<PursueEnemy>(glm::vec3(), PlayerObj));
 			} else {
-				EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, PlayerObj));
+				EnemyVect.push_back(std::make_shared<WanderEnemy>(glm::vec3(), PlayerObj));
 			}
 		}
 	}
@@ -85,10 +84,10 @@ void GameManager::GameLoop(float _DeltaTime) {
 		};
 		int num = (rand() % 2);
 		if (num == 1) {
-			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
+			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
 		} 
 		else if (num == 0) {
-			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
+			PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
 		}
 	}
 	InputManager::ProcessKeyInput(PlayerObj);

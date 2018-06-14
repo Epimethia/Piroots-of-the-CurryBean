@@ -80,6 +80,7 @@ namespace UTILS {
 //Model Macros					
 #define PLAYER_MODEL			"Assets/Models/PlayerBoat/Boat1.obj"
 #define WAVE_MODEL				"Assets/Models/wave/Wave2.obj"
+#define POWERUP_MODEL			"Assets/Models/PowerUp3/Power_Up_3.obj"
 
 //Keyboard Macros
 #define INPUT_FIRST_RELEASED	0

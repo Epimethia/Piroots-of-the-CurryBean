@@ -49,13 +49,13 @@
     <Filter Include="System\Autonomous Agents">
       <UniqueIdentifier>{c029769e-1725-4040-a6e5-83c8d4ba266c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Text">
+      <UniqueIdentifier>{92cd2d52-c10e-48eb-8822-86fedaa28ce3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource.cpp">
-      <Filter>Resource Files\Global Resources</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>System\Entity</Filter>
@@ -86,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="AutonomousMove.cpp">
       <Filter>System\Autonomous Agents</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>System\Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="AutonomousMove.h">
       <Filter>System\Autonomous Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>System\Text</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
