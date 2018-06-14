@@ -335,6 +335,8 @@ void Player::Process(float _DeltaTime) {
 		MaxSpeed = 35.0f;
 	}
 	
+	//memes
+
 	if (ShootTimer >= ShootCooldown) {
 		if (bShoot) {
 			ShootTimer = 0.0f;
