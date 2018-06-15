@@ -127,16 +127,24 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Menu> _Menu) {
 			switch (int Opt = _Menu->GetCurrentOpt()) {
 				case 0: {	//SINGLEPLAYER
 					GameManager::GetState() = GAME_PLAY;
-				}break;
+					return;
+					break;
+				}
 				case 1: {	//MULTIPLAYER
-					GameManager::GetState() = SERVER_OPTION;
-				}break;
+					GameManager::GetState() = MULTIPLAYER_LOBBY;
+					return;
+					break;
+				}
 				case 2: {	//GAME OPTIONS
 					GameManager::GetState() = OPTION_MENU;
-				}break;
+					return;
+					break;
+				}
 				case 3: {	//QUIT GAME
 					glutLeaveMainLoop();
-				}break;
+					return;
+					break;
+				}
 				default:break;
 			}
 		}
@@ -147,104 +155,92 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Menu> _Menu) {
 			switch (int Opt = _Menu->GetCurrentOpt()) {
 			case 0: {	//TOGGLE SOUND ON/OFF
 				GameManager::GetInstance()->ToggleMusic();
-			}break;
+				return;
+				break;
+			}
 			case 1: {	//BACK TO START MENU
 				GameManager::GetState() = START_MENU;
-			}break;
+				return;
+				break;
+			}
 			default:break;
 			}
 		}
 		#pragma endregion
 
 		#pragma region OPTION MENU
-		if (GameManager::GetState() == SERVER_OPTION) {
+		else if (GameManager::GetState() == MULTIPLAYER_LOBBY) {
 			switch (int Opt = _Menu->GetCurrentOpt()) {
 			case 0: {	//HOST GAME
 				//HOST GAME CODE
-			}break;
+				GameManager::GetState() = HOST_LOBBY;
+				return;
+				break;
+			}
 			case 1: {	//JOIN GAME
 				//JOIN GAME CODE
+				//GameManager::GetState() = START_MENU;
+				return;
+				break;
+			}
+			case 2: {	//BACK TO START MENU
+				GameManager::GetState() = START_MENU;
+				return;
+				break;
+			}
+			default:break;
+			}
+		}
+		#pragma endregion
+
+		#pragma region HOST MENU
+		else if (GameManager::GetState() == HOST_LOBBY) {
+			switch (int Opt = _Menu->GetCurrentOpt()) {
+			case 0: {	//HOST GAME
+						//HOST GAME CODE
+				return;
+				break;
+			}
+			case 1: {	//JOIN GAME
+						//JOIN GAME CODE
 			}break;
 			case 3: {	//BACK TO START MENU
 				GameManager::GetState() = START_MENU;
-			}break;
+				return;
+				break;
+			}
 			default:break;
 			}
 		}
 		#pragma endregion
 
 		#pragma region OPTION MENU
-		if (GameManager::GetState() == SERVER_HOST_LOBBY) {
+		else if (GameManager::GetState() == CLIENT_LOBBY) {
 			switch (int Opt = _Menu->GetCurrentOpt()) {
 			case 0: {	//HOST GAME
 						//HOST GAME CODE
-			}break;
+				return;
+				break;
+			}
 			case 1: {	//JOIN GAME
 						//JOIN GAME CODE
-			}break;
+				return;
+				break;
+			}
 			case 3: {	//BACK TO START MENU
 				GameManager::GetState() = START_MENU;
-			}break;
+				return;
+				break;
+			}
 			default:break;
 			}
 		}
 		#pragma endregion
-
-		#pragma region OPTION MENU
-		if (GameManager::GetState() == SERVER_JOIN_LOBBY) {
-			switch (int Opt = _Menu->GetCurrentOpt()) {
-			case 0: {	//HOST GAME
-						//HOST GAME CODE
-			}break;
-			case 1: {	//JOIN GAME
-						//JOIN GAME CODE
-			}break;
-			case 3: {	//BACK TO START MENU
-				GameManager::GetState() = START_MENU;
-			}break;
-			default:break;
-			}
-		}
-		#pragma endregion
-
-		switch (int Opt = _Menu->GetCurrentOpt()) {
-			case 0: {
-				if (GameManager::GetState() == END_MENU) {
-					GameManager::GetInstance()->RestartGame();
-					GameManager::GetState() = GAME_PLAY;
-				}
-
-				else if (GameManager::GetState() == OPTION_MENU) {
-					GameManager::GetInstance()->ToggleMusic();
-				}
-				break;
-			}
-			case 1: {
-				if (GameManager::GetState() == END_MENU) {
-					GameManager::GetInstance()->RestartGame();
-					GameManager::GetState() = START_MENU;
-				}
-
-				else if (GameManager::GetState() == OPTION_MENU) {
-					GameManager::GetState() = START_MENU;
-				}
-				break;
-			}
-			case 2: {
-				if (GameManager::GetState() == START_MENU) glutLeaveMainLoop();
-				else if (GameManager::GetState() == END_MENU) glutLeaveMainLoop();
-				
-				break;
-			}
-			default: break;
-		}
 	}
 
 }
 
 void InputManager::NormKeyDown(unsigned char key, int x, int y) {
-	int num = key;
-	std::cout << key;
 	KeyArray[key] = KEY_FIRST_PRESS;
 }
 
@@ -254,46 +250,8 @@ void InputManager::NormKeyUp(unsigned char key, int x, int y) {
 
 void InputManager::SpecialKeyDown(int key, int x, int y) {
 	KeySpecialArray[key] = KEY_FIRST_PRESS;
-	/*switch (key) {
-		case GLUT_KEY_LEFT: {
-			KeySpecialArray[GLUT_KEY_LEFT] = KEY_FIRST_PRESS;
-			break;
-		}
-		case GLUT_KEY_RIGHT: {
-			KeySpecialArray[GLUT_KEY_RIGHT] = KEY_FIRST_PRESS;
-			break;
-		}
-		case GLUT_KEY_UP: {
-			KeySpecialArray[GLUT_KEY_UP] = KEY_FIRST_PRESS;
-			break;
-		}
-		case GLUT_KEY_DOWN: {
-			KeySpecialArray[GLUT_KEY_DOWN] = KEY_FIRST_PRESS;
-			break;
-		}
-		default:break;
-	}*/
 }
 
 void InputManager::SpecialKeyUp(int key, int x, int y) {
 	KeySpecialArray[key] = KEY_RELEASED;
-	/*switch (key) {
-		case GLUT_KEY_LEFT: {
-			KeySpecialArray[GLUT_KEY_LEFT] = KEY_RELEASED;
-			break;
-		}
-		case GLUT_KEY_RIGHT: {
-			KeySpecialArray[GLUT_KEY_RIGHT] = KEY_RELEASED;
-			break;
-		}
-		case GLUT_KEY_UP: {
-			KeySpecialArray[GLUT_KEY_UP] = KEY_RELEASED;
-			break;
-		}
-		case GLUT_KEY_DOWN: {
-			KeySpecialArray[GLUT_KEY_DOWN] = KEY_RELEASED;
-			break;
-		}
-		default:break;
-	}*/
 }

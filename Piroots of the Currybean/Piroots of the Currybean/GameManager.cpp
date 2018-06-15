@@ -40,7 +40,7 @@ GameManager::GameManager() {
 	MultiplayerTitle = std::make_shared<Text>("Multiplayer", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
 	ScoreText = std::make_shared<Text>(std::to_string(Score), PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
 
-	//START MENU
+	#pragma region StartMenu
 	std::vector<std::string> StartOpt;
 	StartOpt.push_back(std::string("Singleplayer"));
 	StartOpt.push_back(std::string("Multiplayer"));
@@ -48,22 +48,36 @@ GameManager::GameManager() {
 	StartOpt.push_back(std::string("Quit"));
 
 	StartMenu = std::make_shared<Menu>(StartOpt, glm::vec2(90.0f, 300.0f));
+	#pragma endregion
 
-	//END GAME MENU
+	#pragma region EndMenu
 	std::vector<std::string> EndOpt;
 	EndOpt.push_back(std::string("Retry"));
 	EndOpt.push_back(std::string("Main Menu"));
 	EndOpt.push_back(std::string("Quit"));
 
 	EndMenu = std::make_shared<Menu>(EndOpt, glm::vec2(90.0f, 280.0f));
+	#pragma endregion
 
-	//OPTION MENU
+	#pragma region OptionMenu
 	std::vector<std::string> OptOpt;
 	OptOpt.push_back(std::string("Background Music: "));
 	OptOpt.push_back(std::string("Back--"));
 
 	OptionMenu = std::make_shared<Menu>(OptOpt, glm::vec2(40.0f, 280.0f));
+	#pragma endregion
 
+	#pragma region MultiplayerMenu
+	std::vector<std::string> MultiOpt;
+	MultiOpt.push_back(std::string("Host Lobby"));
+	MultiOpt.push_back(std::string("Join Lobby"));
+	MultiOpt.push_back(std::string("Back"));
+
+	MultiplayerMenu = std::make_shared<Menu>(MultiOpt, glm::vec2(90.0f, 300.0f));
+	#pragma endregion
+
+
+	#pragma region Aesthetic Boat Model
 	UIBoat = EntityManager::GetModel(PLAYER_ENTITY);
 	glm::mat4 RotationMatrix =
 		glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
@@ -77,6 +91,8 @@ GameManager::GameManager() {
 		glm::rotate(glm::mat4(), glm::radians(140.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.05f, 0.05f, 0.05f));
 	EndMenuMatrix = RotationMatrix * ScaleMatrix;
+	#pragma endregion
+
 }
 
 void GameManager::ToggleMusic() {
@@ -136,18 +152,25 @@ void GameManager::DrawOption() {
 }
 
 void GameManager::DrawServerOption() {
+	CM.Render(CubeMapShader, Camera::GetMatrix());
+
 	WaveObj->Process(DeltaTime);
 	MultiplayerTitle->Render();
-	//MultiplayerMenu->Process();
+	MultiplayerMenu->Process();
 }
 
 void GameManager::DrawHostLobby() {
+	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-
+	MultiplayerTitle->SetText(std::string("Multiplayer - Host"));
+	MultiplayerTitle->Render();
 }
 
-void GameManager::DrawJoinLobby() {
+void GameManager::DrawClientLobby() {
+	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
+	MultiplayerTitle->SetText(std::string("Multiplayer - Host"));
+	MultiplayerTitle->Render();
 
 }
 
@@ -155,19 +178,28 @@ void GameManager::DrawScene() {
 	switch (CurrentState) {
 		case START_MENU: {
 			DrawMenu();
-		}break;
+			break;
+		}
 		case GAME_PLAY: {
 			DrawGame();
-		}break;
+			break;
+		}
 		case END_MENU: {
 			DrawEnd();
-		}break;
+			break;
+		}
 		case OPTION_MENU: {
 			DrawOption();
-		}break;
-		case SERVER_OPTION: {
+			break;
+		}
+		case MULTIPLAYER_LOBBY: {
 			DrawServerOption();
-		}break;
+			break;
+		}
+		case HOST_LOBBY: {
+			DrawHostLobby();
+			break;
+		}
 		default:break;
 	}
 }
@@ -189,6 +221,10 @@ void GameManager::GameLoop(float _DeltaTime) {
 		//If BGM is on
 		if (PlayMusic == true) OptionMenu->ReplaceOption(0, std::string("Background Music: ON"));
 		else OptionMenu->ReplaceOption(0, std::string("Background Music: OFF"));
+		return;
+	}
+	else if (CurrentState == MULTIPLAYER_LOBBY) {
+		InputManager::ProcessKeyInput(MultiplayerMenu);
 		return;
 	}
 	else if (CurrentState == GAME_PLAY) {

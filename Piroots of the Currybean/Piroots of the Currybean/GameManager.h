@@ -12,9 +12,9 @@ enum GameState {
 	START_MENU,
 	GAME_PLAY,
 	OPTION_MENU,
-	SERVER_OPTION,
-	SERVER_HOST_LOBBY,
-	SERVER_JOIN_LOBBY,
+	MULTIPLAYER_LOBBY,
+	HOST_LOBBY,
+	CLIENT_LOBBY,
 	END_MENU
 };
 
@@ -44,7 +44,7 @@ private:
 	void DrawOption();
 	void DrawServerOption();
 	void DrawHostLobby();
-	void DrawJoinLobby();
+	void DrawClientLobby();
 
 	//Menu Elements
 	std::shared_ptr<Text> Title0;
@@ -52,6 +52,11 @@ private:
 	std::shared_ptr<Text> EndGameTitle;
 	std::shared_ptr<Text> ScoreText;
 	std::shared_ptr<Text> MultiplayerTitle;
+
+	std::vector<std::string> StartOpt;
+	std::vector<std::string> MultiOpt;
+	std::vector<std::string> OptOpt;
+	std::vector<std::string> EndOpt;
 
 	std::shared_ptr<Menu> StartMenu;
 	std::shared_ptr<Menu> EndMenu;
