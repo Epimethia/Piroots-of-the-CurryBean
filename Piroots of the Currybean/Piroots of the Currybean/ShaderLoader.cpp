@@ -2,7 +2,7 @@
 
 ShaderLoader::ShaderLoader() {}
 ShaderLoader::~ShaderLoader() {
-	
+	Shaders.clear();
 }
 
 
@@ -10,12 +10,10 @@ std::string ShaderLoader::ReadShader(std::string filename) {
 	std::string shaderCode;
 	std::string string;
 	std::ifstream file(filename, std::ios::in);
-
 	if (!file.good()) {
 		std::cout << "Can't read file " << filename << std::endl;
 		std::terminate();
 	}
-
 	file.seekg(0, std::ios::end);
 	shaderCode.resize((unsigned int)file.tellg());
 	file.seekg(0, std::ios::beg);
@@ -24,9 +22,7 @@ std::string ShaderLoader::ReadShader(std::string filename) {
 	return shaderCode;
 }
 
-GLuint ShaderLoader::CreateShader(GLenum shaderType, std::string
-	source, std::string shaderName) {
-
+GLuint ShaderLoader::CreateShader(GLenum shaderType, std::string source, std::string shaderName) {
 	int compile_result = 0;
 
 	GLuint shader = glCreateShader(shaderType);
@@ -53,7 +49,7 @@ GLuint ShaderLoader::CreateShader(GLenum shaderType, std::string
 GLuint ShaderLoader::CreateProgram(std::string vertexShaderFilename, std::string fragmentShaderFilename) {
 	std::string vertex_shader_code = ReadShader(vertexShaderFilename);
 	std::string fragment_shader_code = ReadShader(fragmentShaderFilename);
-
+	VLDEnable();
 	GLuint vertex_shader;
 	GLuint fragment_shader;
 

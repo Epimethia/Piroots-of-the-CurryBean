@@ -13,7 +13,7 @@ Menu::Menu(std::vector<std::string> _OptVect, glm::vec2 _Pos) {
 
 	//Iterating through the provided option vect
 	for (unsigned int i = 0; i < _OptVect.size(); ++i) {
-		OptionVect.push_back(std::make_shared<Text>(_OptVect[i], PIRATEFONT, Position, TextShader, 60));
+		OptionVect.push_back(std::make_shared<Text>(_OptVect[i], PIRATEFONT, Position, TextShader, 40));
 		Position.y -= 60.0f;
 	}
 	NumMenuOptions = _OptVect.size() - 1;

@@ -5,6 +5,7 @@ GameState GameManager::CurrentState;
 GameManager::~GameManager() {
 	Camera::DestroyInstance();
 	EntityManager::DestroyInstance();
+	sm.~SoundManager();
 }
 
 GameManager::GameManager() {
@@ -29,22 +30,26 @@ GameManager::GameManager() {
 	//Other Variables
 	CubeMapShader = SL.CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 	TextShader = SL.CreateProgram(TEXT_VERT_SHADER, TEXT_FRAG_SHADER);
-	CurrentState = START;
+	CurrentState = START_MENU;
 	Score = 0;
 
 	//initializing Text and menus
 	Title0 = std::make_shared<Text>("Piroots of", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
 	Title1 = std::make_shared<Text>("the CurryBeans", PIRATEFONT, glm::vec2(90.0f, 550.0f), TextShader, 80);
-	Title2 = std::make_shared<Text>("You Died!", PIRATEFONT, glm::vec2(90.0f, 500.0f), TextShader, 80);
+	EndGameTitle = std::make_shared<Text>("You Died!", PIRATEFONT, glm::vec2(90.0f, 500.0f), TextShader, 80);
+	MultiplayerTitle = std::make_shared<Text>("Multiplayer", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
 	ScoreText = std::make_shared<Text>(std::to_string(Score), PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
 
+	//START MENU
 	std::vector<std::string> StartOpt;
-	StartOpt.push_back(std::string("Play"));
+	StartOpt.push_back(std::string("Singleplayer"));
+	StartOpt.push_back(std::string("Multiplayer"));
 	StartOpt.push_back(std::string("Option"));
 	StartOpt.push_back(std::string("Quit"));
 
 	StartMenu = std::make_shared<Menu>(StartOpt, glm::vec2(90.0f, 300.0f));
 
+	//END GAME MENU
 	std::vector<std::string> EndOpt;
 	EndOpt.push_back(std::string("Retry"));
 	EndOpt.push_back(std::string("Main Menu"));
@@ -52,6 +57,7 @@ GameManager::GameManager() {
 
 	EndMenu = std::make_shared<Menu>(EndOpt, glm::vec2(90.0f, 280.0f));
 
+	//OPTION MENU
 	std::vector<std::string> OptOpt;
 	OptOpt.push_back(std::string("Background Music: "));
 	OptOpt.push_back(std::string("Back--"));
@@ -65,7 +71,6 @@ GameManager::GameManager() {
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.05f, 0.05f, 0.05f));
 	StartMenuMatrix = RotationMatrix * ScaleMatrix;
 
-	
 	RotationMatrix =
 		glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
 		glm::rotate(glm::mat4(), glm::radians(-140.0f), glm::vec3(0.0f, 1.0f, 0.0f))*
@@ -113,7 +118,7 @@ void GameManager::DrawEnd() {
 	ScoreText->SetText(std::string("SCORE: ") + std::to_string(Score));
 	ScoreText->SetPosition(glm::vec2(90.0f, 450.0f));
 	ScoreText->Render();
-	Title2->Render();
+	EndGameTitle->Render();
 	EndMenu->Process();
 	ZBobbing += 0.03f * DeltaTime;
 }
@@ -125,35 +130,44 @@ void GameManager::DrawOption() {
 	WaveObj->Process(DeltaTime);
 	Title0->Render();
 	Title1->Render();
-
-	//If BGM is on
-	if (PlayMusic == true) OptionMenu->ReplaceOption(0, std::string("Background Music: ON"));
-	else OptionMenu->ReplaceOption(0, std::string("Background Music: OFF"));
-
 	OptionMenu->Process();
-
 	ZBobbing += 0.03f * DeltaTime;
+
+}
+
+void GameManager::DrawServerOption() {
+	WaveObj->Process(DeltaTime);
+	MultiplayerTitle->Render();
+	//MultiplayerMenu->Process();
+}
+
+void GameManager::DrawHostLobby() {
+	WaveObj->Process(DeltaTime);
+
+}
+
+void GameManager::DrawJoinLobby() {
+	WaveObj->Process(DeltaTime);
 
 }
 
 void GameManager::DrawScene() {
 	switch (CurrentState) {
-		case START: {
+		case START_MENU: {
 			DrawMenu();
-			break;
-		}
-		case GAME: {
+		}break;
+		case GAME_PLAY: {
 			DrawGame();
-			break;
-		}
-		case END: {
+		}break;
+		case END_MENU: {
 			DrawEnd();
-			break;
-		}
-		case OPTION: {
+		}break;
+		case OPTION_MENU: {
 			DrawOption();
-			break;
-		}
+		}break;
+		case SERVER_OPTION: {
+			DrawServerOption();
+		}break;
 		default:break;
 	}
 }
@@ -166,18 +180,21 @@ void GameManager::GameLoop(float _DeltaTime) {
 	if (PlayMusic == true) sm.ResumeBGM();
 	else sm.PauseBGM();
 
-	if (CurrentState == START) {
+	if (CurrentState == START_MENU) {
 		InputManager::ProcessKeyInput(StartMenu);
 		return;
 	}
-	else if (CurrentState == OPTION) {
+	else if (CurrentState == OPTION_MENU) {
 		InputManager::ProcessKeyInput(OptionMenu);
+		//If BGM is on
+		if (PlayMusic == true) OptionMenu->ReplaceOption(0, std::string("Background Music: ON"));
+		else OptionMenu->ReplaceOption(0, std::string("Background Music: OFF"));
 		return;
 	}
-	else if (CurrentState == GAME) {
+	else if (CurrentState == GAME_PLAY) {
 		//If the player still exists
 		if (PlayerObj->State == DEAD) {
-			CurrentState = END;
+			CurrentState = END_MENU;
 		}
 		if (PlayerObj != nullptr) {
 			DeltaTime = _DeltaTime;
@@ -242,7 +259,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 		}
 	}
 
-	else if (CurrentState == END) {
+	else if (CurrentState == END_MENU) {
 		InputManager::ProcessKeyInput(EndMenu);
 		return;
 	}

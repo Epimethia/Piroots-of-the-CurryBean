@@ -37,10 +37,8 @@ EntityManager::EntityManager() {
 	ModelShader = SL.CreateProgram(MODEL_VERT_SHADER, MODEL_FRAG_SHADER);
 	ObjectShader = SL.CreateProgram(VERT_SHADER, FRAG_SHADER);
 
-
 	GLuint VAO, VBO, EBO, Texture;
 	int width, height;
-
 	#pragma region GENERATING CUBE MESH
 	std::cout << "Generating Cube Mesh\n";
 	#pragma region Generating VAO
@@ -175,6 +173,7 @@ EntityManager::EntityManager() {
 	Cube_Mesh->Texture = Texture;
 	Cube_Mesh->Shader = ObjectShader;
 	#pragma endregion
+
 
 	#pragma region GENERATING PYRAMID MESH
 	std::cout << "Generating Pyramid Mesh\n";
@@ -415,7 +414,6 @@ EntityManager::EntityManager() {
 	Sphere_Mesh->Texture = Texture;
 	Sphere_Mesh->Shader = ObjectShader;
 	#pragma endregion
-
 	#pragma region GENERATING WAVE MESH
 	std::cout << "Generating Wave Mesh\n";
 	Wave_Model = std::make_shared<Model>(WAVE_MODEL, WaveShader);
@@ -428,8 +426,10 @@ EntityManager::EntityManager() {
 
 	#pragma region GENERATING SPECIAL POWERUP MODEL
 	std::cout << "Generating Powerup Mesh\n";
+
 	Special_Model = std::make_shared<Model>(POWERUP_MODEL, ModelShader);
 	#pragma endregion
+
 
 }
 
@@ -441,7 +441,7 @@ EntityManager::~EntityManager() {
 	Cube_Mesh = nullptr;
 	Pyramid_Mesh = nullptr;
 	Sphere_Mesh = nullptr;
-
+	Special_Model = nullptr;
 	Wave_Model = nullptr;
 	Player_Model = nullptr;
 }

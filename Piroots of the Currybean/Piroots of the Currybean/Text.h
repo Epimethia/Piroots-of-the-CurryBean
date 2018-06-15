@@ -31,5 +31,4 @@ private:
 
 	GLuint VAO, VBO, TextShaderProg;
 	std::map<GLchar, Character> CharMap;
-	static ShaderLoader shaderLoader;
 };

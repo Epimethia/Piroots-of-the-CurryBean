@@ -121,38 +121,118 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Menu> _Menu) {
 
 	} else if (KeyArray['\r'] == KEY_FIRST_PRESS) {
 		KeyArray['\r'] = KEY_HELD;
+
+		#pragma region START MENU FUNCTIONS
+		if (GameManager::GetState() == START_MENU) {
+			switch (int Opt = _Menu->GetCurrentOpt()) {
+				case 0: {	//SINGLEPLAYER
+					GameManager::GetState() = GAME_PLAY;
+				}break;
+				case 1: {	//MULTIPLAYER
+					GameManager::GetState() = SERVER_OPTION;
+				}break;
+				case 2: {	//GAME OPTIONS
+					GameManager::GetState() = OPTION_MENU;
+				}break;
+				case 3: {	//QUIT GAME
+					glutLeaveMainLoop();
+				}break;
+				default:break;
+			}
+		}
+		#pragma endregion
+
+		#pragma region OPTION MENU
+		if (GameManager::GetState() == OPTION_MENU) {
+			switch (int Opt = _Menu->GetCurrentOpt()) {
+			case 0: {	//TOGGLE SOUND ON/OFF
+				GameManager::GetInstance()->ToggleMusic();
+			}break;
+			case 1: {	//BACK TO START MENU
+				GameManager::GetState() = START_MENU;
+			}break;
+			default:break;
+			}
+		}
+		#pragma endregion
+
+		#pragma region OPTION MENU
+		if (GameManager::GetState() == SERVER_OPTION) {
+			switch (int Opt = _Menu->GetCurrentOpt()) {
+			case 0: {	//HOST GAME
+				//HOST GAME CODE
+			}break;
+			case 1: {	//JOIN GAME
+				//JOIN GAME CODE
+			}break;
+			case 3: {	//BACK TO START MENU
+				GameManager::GetState() = START_MENU;
+			}break;
+			default:break;
+			}
+		}
+		#pragma endregion
+
+		#pragma region OPTION MENU
+		if (GameManager::GetState() == SERVER_HOST_LOBBY) {
+			switch (int Opt = _Menu->GetCurrentOpt()) {
+			case 0: {	//HOST GAME
+						//HOST GAME CODE
+			}break;
+			case 1: {	//JOIN GAME
+						//JOIN GAME CODE
+			}break;
+			case 3: {	//BACK TO START MENU
+				GameManager::GetState() = START_MENU;
+			}break;
+			default:break;
+			}
+		}
+		#pragma endregion
+
+		#pragma region OPTION MENU
+		if (GameManager::GetState() == SERVER_JOIN_LOBBY) {
+			switch (int Opt = _Menu->GetCurrentOpt()) {
+			case 0: {	//HOST GAME
+						//HOST GAME CODE
+			}break;
+			case 1: {	//JOIN GAME
+						//JOIN GAME CODE
+			}break;
+			case 3: {	//BACK TO START MENU
+				GameManager::GetState() = START_MENU;
+			}break;
+			default:break;
+			}
+		}
+		#pragma endregion
+
 		switch (int Opt = _Menu->GetCurrentOpt()) {
 			case 0: {
-				if (GameManager::GetState() == START) GameManager::GetState() = GAME;
-
-				else if (GameManager::GetState() == END) {
+				if (GameManager::GetState() == END_MENU) {
 					GameManager::GetInstance()->RestartGame();
-					GameManager::GetState() = GAME;
+					GameManager::GetState() = GAME_PLAY;
 				}
 
-				else if (GameManager::GetState() == OPTION) {
+				else if (GameManager::GetState() == OPTION_MENU) {
 					GameManager::GetInstance()->ToggleMusic();
 				}
 				break;
 			}
 			case 1: {
-				if (GameManager::GetState() == END) {
+				if (GameManager::GetState() == END_MENU) {
 					GameManager::GetInstance()->RestartGame();
-					GameManager::GetState() = START;
+					GameManager::GetState() = START_MENU;
 				}
 
-				else if (GameManager::GetState() == START) {
-					GameManager::GetState() = OPTION;
-				}
-
-				else if (GameManager::GetState() == OPTION) {
-					GameManager::GetState() = START;
+				else if (GameManager::GetState() == OPTION_MENU) {
+					GameManager::GetState() = START_MENU;
 				}
 				break;
 			}
 			case 2: {
-				if (GameManager::GetState() == START) glutLeaveMainLoop();
-				else if (GameManager::GetState() == END) glutLeaveMainLoop();
+				if (GameManager::GetState() == START_MENU) glutLeaveMainLoop();
+				else if (GameManager::GetState() == END_MENU) glutLeaveMainLoop();
 				
 				break;
 			}

@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\apps\vld\2.5\include;$(ProjectDir)\Dependencies\;$(ProjectDir)\Dependencies\freeglut;$(ProjectDir)\Dependencies\glew;$(ProjectDir)\Dependencies\glm;$(ProjectDir)\Dependencies\FMOD;$(ProjectDir)\Dependencies\soil;$(ProjectDir)\Dependencies\assimp;D:\Users\james.dev7362\Documents\GitHub\Piroots-of-the-CurryBean\Piroots of the Currybean\Piroots of the Currybean\Dependencies\Visual Leak Detector\include;$(ProjectDir)\Dependencies\freetype;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Dependencies\Visual Leak Detector\lib\Win32;$(ProjectDir)\Dependencies\;$(ProjectDir)\Dependencies\freeglut;$(ProjectDir)\Dependencies\glew;$(ProjectDir)\Dependencies\glm;$(ProjectDir)\Dependencies\FMOD;$(ProjectDir)\Dependencies\soil;$(ProjectDir)\Dependencies\assimp;$(ProjectDir)\Dependencies\Visual Leak Detector\include;$(ProjectDir)\Dependencies\freetype;$(IncludePath)</IncludePath>
     <LibraryPath>C:\apps\vld\2.5\lib\Win32;$(ProjectDir)\Dependencies\assimp;$(ProjectDir)\Dependencies\;$(ProjectDir)\Dependencies\freeglut;$(ProjectDir)\Dependencies\glew;$(ProjectDir)\Dependencies\glm;$(ProjectDir)\Dependencies\FMOD;$(ProjectDir)\Dependencies\soil;$(ProjectDir)\Dependencies\freetype;D:\Users\james.dev7362\Documents\GitHub\Piroots-of-the-CurryBean\Piroots of the Currybean\Piroots of the Currybean\Dependencies\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

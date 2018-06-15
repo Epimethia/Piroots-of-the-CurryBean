@@ -7,10 +7,15 @@
 Text::Text() {};      
 
 Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shader, int size) {
-	static ShaderLoader shaderLoader;
+	VLDDisable();
+	VLDEnable();
+
+	ShaderLoader shaderLoader;
+
 	TextShaderProg = Shader;
 	text = newText;
 	color = glm::vec3(1.0, 1.0, 1.0);
+
 	scale = 1.0;
 	SetPosition(pos);
 
@@ -23,6 +28,7 @@ Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shade
 	if (FT_Init_FreeType(&ft)) {
 		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
 	}
+
 	// Each character is called a glyph and Face is the collection of glyphs
 	FT_Face face;
 	// Load font as face;
@@ -33,6 +39,7 @@ Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shade
 	FT_Set_Pixel_Sizes(face, 0, size);
 	// Disable byte-alignment restriction
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 
 	// Load the first 128 characters of the ASCII set
 	for (GLubyte c = 0; c < 128; c++) {

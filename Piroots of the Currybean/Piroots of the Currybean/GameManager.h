@@ -9,11 +9,13 @@
 
 
 enum GameState {
-	START,
-	GAME,
-	OPTION,
-	PAUSE,
-	END
+	START_MENU,
+	GAME_PLAY,
+	OPTION_MENU,
+	SERVER_OPTION,
+	SERVER_HOST_LOBBY,
+	SERVER_JOIN_LOBBY,
+	END_MENU
 };
 
 //Singleton scene manager
@@ -40,16 +42,21 @@ private:
 	void DrawGame();
 	void DrawEnd();
 	void DrawOption();
+	void DrawServerOption();
+	void DrawHostLobby();
+	void DrawJoinLobby();
 
 	//Menu Elements
 	std::shared_ptr<Text> Title0;
 	std::shared_ptr<Text> Title1;
-	std::shared_ptr<Text> Title2;
+	std::shared_ptr<Text> EndGameTitle;
 	std::shared_ptr<Text> ScoreText;
+	std::shared_ptr<Text> MultiplayerTitle;
 
 	std::shared_ptr<Menu> StartMenu;
 	std::shared_ptr<Menu> EndMenu;
 	std::shared_ptr<Menu> OptionMenu;
+	std::shared_ptr<Menu> MultiplayerMenu;
 
 	//Shaders
 	ShaderLoader SL;
