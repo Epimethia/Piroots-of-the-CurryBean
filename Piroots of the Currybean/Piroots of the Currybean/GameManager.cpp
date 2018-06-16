@@ -30,7 +30,7 @@ GameManager::GameManager() {
 	//Other Variables
 	CubeMapShader = SL.CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 	TextShader = SL.CreateProgram(TEXT_VERT_SHADER, TEXT_FRAG_SHADER);
-	CurrentState = START_MENU;
+	CurrentState = END_MENU;
 	Score = 0;
 
 	//initializing Text and menus
@@ -38,7 +38,7 @@ GameManager::GameManager() {
 	Title1 = std::make_shared<Text>("the CurryBeans", PIRATEFONT, glm::vec2(90.0f, 550.0f), TextShader, 80);
 	EndGameTitle = std::make_shared<Text>("You Died!", PIRATEFONT, glm::vec2(90.0f, 500.0f), TextShader, 80);
 	MultiplayerTitle = std::make_shared<Text>("Multiplayer", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
-	ScoreText = std::make_shared<Text>(std::to_string(Score), PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
+	ScoreText = std::make_shared<Text>("SCORE: 0", PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
 
 	#pragma region StartMenu
 	std::vector<std::string> StartOpt;
@@ -61,8 +61,8 @@ GameManager::GameManager() {
 
 	#pragma region OptionMenu
 	std::vector<std::string> OptOpt;
-	OptOpt.push_back(std::string("Background Music: "));
-	OptOpt.push_back(std::string("Back--"));
+	OptOpt.push_back(std::string(""));
+	OptOpt.push_back(std::string("Back"));
 
 	OptionMenu = std::make_shared<Menu>(OptOpt, glm::vec2(40.0f, 280.0f));
 	#pragma endregion
@@ -75,7 +75,6 @@ GameManager::GameManager() {
 
 	MultiplayerMenu = std::make_shared<Menu>(MultiOpt, glm::vec2(90.0f, 300.0f));
 	#pragma endregion
-
 
 	#pragma region Aesthetic Boat Model
 	UIBoat = EntityManager::GetModel(PLAYER_ENTITY);
@@ -105,13 +104,16 @@ void GameManager::ToggleMusic() {
 void GameManager::DrawMenu() {
 	Camera::GetPos() = { 0.0f, 0.0f, 0.0f };
 	CM.Render(CubeMapShader, Camera::GetMatrix());
+
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(-140.0f + (cos(ZBobbing) * 10.0f), 180.0f, 40.0f + (sin(ZBobbing) * 20.0f)) / 375.0f);
 	UIBoat->Render(TranslationMatrix * StartMenuMatrix);
+	ZBobbing += 0.03f * DeltaTime;
+
 	WaveObj->Process(DeltaTime);
+
 	Title0->Render();
 	Title1->Render();
-	StartMenu->Process();
-	ZBobbing += 0.03f * DeltaTime;
+	StartMenu->Render();
 }
 
 void GameManager::DrawGame() {
@@ -121,7 +123,6 @@ void GameManager::DrawGame() {
 	for (auto it : PickUpVect) it->Process(DeltaTime);
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	ScoreText->SetText(std::string("SCORE: ") + std::to_string(Score));
 	ScoreText->Render();
 }
 
@@ -131,11 +132,10 @@ void GameManager::DrawEnd() {
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(-170.0f + (cos(ZBobbing) * 10.0f), 150.0f, 40.0f + (sin(ZBobbing) * 20.0f)) / 375.0f);
 	UIBoat->Render(TranslationMatrix * EndMenuMatrix);
 	WaveObj->Process(DeltaTime);
-	ScoreText->SetText(std::string("SCORE: ") + std::to_string(Score));
 	ScoreText->SetPosition(glm::vec2(90.0f, 450.0f));
 	ScoreText->Render();
 	EndGameTitle->Render();
-	EndMenu->Process();
+	EndMenu->Render();
 	ZBobbing += 0.03f * DeltaTime;
 }
 
@@ -146,17 +146,16 @@ void GameManager::DrawOption() {
 	WaveObj->Process(DeltaTime);
 	Title0->Render();
 	Title1->Render();
-	OptionMenu->Process();
+	OptionMenu->Render();
 	ZBobbing += 0.03f * DeltaTime;
 
 }
 
 void GameManager::DrawServerOption() {
 	CM.Render(CubeMapShader, Camera::GetMatrix());
-
 	WaveObj->Process(DeltaTime);
 	MultiplayerTitle->Render();
-	MultiplayerMenu->Process();
+	MultiplayerMenu->Render();
 }
 
 void GameManager::DrawHostLobby() {
@@ -209,28 +208,107 @@ void GameManager::DestroyInstance() {
 }
 
 void GameManager::GameLoop(float _DeltaTime) {
-	if (PlayMusic == true) sm.ResumeBGM();
-	else sm.PauseBGM();
+	/*if (PlayMusic == true) sm.ResumeBGM();
+	else sm.PauseBGM();*/
 
 	if (CurrentState == START_MENU) {
-		InputManager::ProcessKeyInput(StartMenu);
+		int TempOutput = NULL;
+		StartMenu->Process(TempOutput);
+		InputManager::ProcessKeyInput();
+
+		switch (TempOutput) {
+			case 0: {
+				CurrentState = GAME_PLAY;
+				break;
+			}
+			case 1: {
+				CurrentState = MULTIPLAYER_LOBBY;
+				break;
+			}
+			case 2: {
+				CurrentState = OPTION_MENU;
+				break;
+			}
+			case 3: {
+				glutLeaveMainLoop();
+				break;
+			}
+			default:break;
+		}
 		return;
 	}
+
 	else if (CurrentState == OPTION_MENU) {
-		InputManager::ProcessKeyInput(OptionMenu);
 		//If BGM is on
-		if (PlayMusic == true) OptionMenu->ReplaceOption(0, std::string("Background Music: ON"));
-		else OptionMenu->ReplaceOption(0, std::string("Background Music: OFF"));
+		if (PlayMusic == true) OptionMenu->ReplaceOption(0, "Background Music: ON");
+		else OptionMenu->ReplaceOption(0, "Background Music: OFF");
+		int TempOutput = NULL;
+		OptionMenu->Process(TempOutput);
+		InputManager::ProcessKeyInput();
+
+		switch (TempOutput) {
+			case 0: {
+				ToggleMusic();
+				break;
+			}
+			case 1: {
+				CurrentState = START_MENU;
+				break;
+			}
+
+			default:break;
+		}
+		return;
+		
+	}
+	else if (CurrentState == END_MENU) {
+		int TempOutput = NULL;
+		EndMenu->Process(TempOutput);
+		InputManager::ProcessKeyInput();
+
+		switch (TempOutput) {
+			case 0: {
+				CurrentState = GAME_PLAY;
+				RestartGame();
+				break;
+			}
+			case 1: {
+				CurrentState = START_MENU;
+				RestartGame();
+				break;
+			}
+			default:break;
+		}
 		return;
 	}
+
 	else if (CurrentState == MULTIPLAYER_LOBBY) {
-		InputManager::ProcessKeyInput(MultiplayerMenu);
+		int TempOutput = NULL;
+		MultiplayerMenu->Process(TempOutput);
+		InputManager::ProcessKeyInput();
+
+		switch (TempOutput) {
+			case 0: {
+				//
+				break;
+			}
+			case 1: {
+				//
+				break;
+			}
+			case 2: {
+				CurrentState = START_MENU;
+				break;
+			}
+			default:break;
+		}
 		return;
 	}
 	else if (CurrentState == GAME_PLAY) {
 		//If the player still exists
 		if (PlayerObj->State == DEAD) {
 			CurrentState = END_MENU;
+			return;
 		}
 		if (PlayerObj != nullptr) {
 			DeltaTime = _DeltaTime;
@@ -280,6 +358,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 						EnemyVect.erase(EnemyVect.begin() + i);
 						PlayerObj->GetBulletVect().erase(PlayerObj->GetBulletVect().begin() + j);
 						Score += 10;
+						ScoreText->SetText("SCORE: " + std::to_string(Score));
 						break;
 					}
 				}
@@ -295,10 +374,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 		}
 	}
 
-	else if (CurrentState == END_MENU) {
-		InputManager::ProcessKeyInput(EndMenu);
-		return;
-	}
+
 }
 
 std::shared_ptr<GameManager> GameManager::GetInstance() {
@@ -317,6 +393,7 @@ void GameManager::RestartGame() {
 
 	Score = 0;
 	ScoreText->SetPosition(glm::vec2(20.0f, 700.0f));
+	ScoreText->SetText("SCORE: " + std::to_string(Score));
 }
 
 

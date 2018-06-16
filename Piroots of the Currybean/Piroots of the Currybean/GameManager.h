@@ -8,15 +8,7 @@
 #include "Menu.h"
 
 
-enum GameState {
-	START_MENU,
-	GAME_PLAY,
-	OPTION_MENU,
-	MULTIPLAYER_LOBBY,
-	HOST_LOBBY,
-	CLIENT_LOBBY,
-	END_MENU
-};
+
 
 //Singleton scene manager
 class GameManager {

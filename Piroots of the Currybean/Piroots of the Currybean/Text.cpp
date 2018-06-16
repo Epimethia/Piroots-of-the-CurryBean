@@ -13,7 +13,7 @@ Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shade
 	text = newText;
 	color = glm::vec3(1.0, 1.0, 1.0);
 
-	scale = 1.0;
+	scale = 0.5;
 	SetPosition(pos);
 
 	glm::mat4 proj = glm::ortho(0.0f, static_cast<float>(UTILS::WindowWidth), 0.0f, static_cast<float>(UTILS::WindowHeight));
@@ -33,7 +33,7 @@ Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shade
 		std::cout << "ERROR::FREETYPE: Failed to Load font" << std::endl;
 	}
 	// Set size to load glyph as
-	FT_Set_Pixel_Sizes(face, 0, size);
+	FT_Set_Pixel_Sizes(face, 0, size * 2);
 	// Disable byte-alignment restriction
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
