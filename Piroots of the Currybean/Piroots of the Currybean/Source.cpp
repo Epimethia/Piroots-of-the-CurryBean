@@ -7,6 +7,7 @@
 float g_DeltaTime = 0.0f;
 
 void init() {
+	glutSetCursor(GLUT_CURSOR_NONE);
 	GameManager::GetInstance();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);

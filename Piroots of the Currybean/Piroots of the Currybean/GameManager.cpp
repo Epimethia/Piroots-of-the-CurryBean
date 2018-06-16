@@ -11,69 +11,87 @@ GameManager::~GameManager() {
 GameManager::GameManager() {
 	//Seeding the random number generator
 	srand(static_cast<int>(time(NULL)));
-	//Initializing singletons
 	InputManager();
 	Camera::GetInstance();
 	EntityManager::GetInstance();
 	DeltaTime = Clock::GetDeltaTime();
 
-	//Music
+	#pragma region Music
 	sm.Init();
 	sm.LoadAudio();
 	sm.PlayBGM();
 	PlayMusic = true;
+	#pragma endregion
 
-	//Initializing consisten objects
+
+	//Initializing consistent objects
 	PlayerObj = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
 	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	//Other Variables
 	CubeMapShader = SL.CreateProgram(CUBEMAP_VERT_SHADER, CUBEMAP_FRAG_SHADER);
 	TextShader = SL.CreateProgram(TEXT_VERT_SHADER, TEXT_FRAG_SHADER);
-	CurrentState = END_MENU;
+	CurrentState = START_MENU;
 	Score = 0;
 
+	#pragma region Text and Menu Initializing
 	//initializing Text and menus
 	Title0 = std::make_shared<Text>("Piroots of", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
 	Title1 = std::make_shared<Text>("the CurryBeans", PIRATEFONT, glm::vec2(90.0f, 550.0f), TextShader, 80);
 	EndGameTitle = std::make_shared<Text>("You Died!", PIRATEFONT, glm::vec2(90.0f, 500.0f), TextShader, 80);
-	MultiplayerTitle = std::make_shared<Text>("Multiplayer", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
+	MultiplayerTitle0 = std::make_shared<Text>("Multiplayer", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
+	MultiplayerTitle1 = std::make_shared<Text>("Server List", PIRATEFONT, glm::vec2(90.0f, 540.0f), TextShader, 60);
 	ScoreText = std::make_shared<Text>("SCORE: 0", PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
+	WaitingForParty = std::make_shared<Text>("Waiting for Party...", PIRATEFONT, glm::vec2(200.0f, 570.0f), TextShader, 40);
+	#pragma endregion
+
 
 	#pragma region StartMenu
 	std::vector<std::string> StartOpt;
-	StartOpt.push_back(std::string("Singleplayer"));
-	StartOpt.push_back(std::string("Multiplayer"));
-	StartOpt.push_back(std::string("Option"));
-	StartOpt.push_back(std::string("Quit"));
+	StartOpt.push_back("Singleplayer");
+	StartOpt.push_back("Multiplayer");
+	StartOpt.push_back("Option");
+	StartOpt.push_back("Quit");
 
 	StartMenu = std::make_shared<Menu>(StartOpt, glm::vec2(90.0f, 300.0f));
 	#pragma endregion
 
 	#pragma region EndMenu
 	std::vector<std::string> EndOpt;
-	EndOpt.push_back(std::string("Retry"));
-	EndOpt.push_back(std::string("Main Menu"));
-	EndOpt.push_back(std::string("Quit"));
+	EndOpt.push_back("Retry");
+	EndOpt.push_back("Main Menu");
+	EndOpt.push_back("Quit");
 
 	EndMenu = std::make_shared<Menu>(EndOpt, glm::vec2(90.0f, 280.0f));
 	#pragma endregion
 
 	#pragma region OptionMenu
 	std::vector<std::string> OptOpt;
-	OptOpt.push_back(std::string(""));
-	OptOpt.push_back(std::string("Back"));
+	OptOpt.push_back("");
+	OptOpt.push_back("Back");
 
 	OptionMenu = std::make_shared<Menu>(OptOpt, glm::vec2(40.0f, 280.0f));
 	#pragma endregion
 
 	#pragma region MultiplayerMenu
 	std::vector<std::string> MultiOpt;
-	MultiOpt.push_back(std::string("Host Lobby"));
-	MultiOpt.push_back(std::string("Join Lobby"));
-	MultiOpt.push_back(std::string("Back"));
+	MultiOpt.push_back("Host Lobby");
+	MultiOpt.push_back("Join Lobby");
+	MultiOpt.push_back("Back");
 
 	MultiplayerMenu = std::make_shared<Menu>(MultiOpt, glm::vec2(90.0f, 300.0f));
+	#pragma endregion
+
+	#pragma region ServerList
+	std::vector<std::string> ServerListOpt;
+	ServerListOpt.push_back("----");
+	ServerListOpt.push_back("----");
+	ServerListOpt.push_back("----");
+	ServerListOpt.push_back("----");
+	ServerListOpt.push_back("----");
+	ServerListOpt.push_back("----");
+	ServerListOpt.push_back("Back");
+	ServerList = std::make_shared<Menu>(ServerListOpt, glm::vec2(90.0f, 460.0f));
 	#pragma endregion
 
 	#pragma region Aesthetic Boat Model
@@ -148,29 +166,30 @@ void GameManager::DrawOption() {
 	Title1->Render();
 	OptionMenu->Render();
 	ZBobbing += 0.03f * DeltaTime;
-
 }
 
 void GameManager::DrawServerOption() {
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	MultiplayerTitle->Render();
+	MultiplayerTitle0->Render();
 	MultiplayerMenu->Render();
 }
 
 void GameManager::DrawHostLobby() {
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	MultiplayerTitle->SetText(std::string("Multiplayer - Host"));
-	MultiplayerTitle->Render();
+	MultiplayerTitle0->SetText("Multiplayer - Host");
+	MultiplayerTitle0->Render();
+	WaitingForParty->Render();
 }
 
-void GameManager::DrawClientLobby() {
+void GameManager::DrawServerList() {
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	MultiplayerTitle->SetText(std::string("Multiplayer - Host"));
-	MultiplayerTitle->Render();
-
+	MultiplayerTitle0->SetText("Multiplayer");
+	MultiplayerTitle0->Render();
+	MultiplayerTitle1->Render();
+	ServerList->Render();
 }
 
 void GameManager::DrawScene() {
@@ -197,6 +216,10 @@ void GameManager::DrawScene() {
 		}
 		case HOST_LOBBY: {
 			DrawHostLobby();
+			break;
+		}
+		case CLIENT_LOBBY: {
+			DrawServerList();
 			break;
 		}
 		default:break;
@@ -259,8 +282,9 @@ void GameManager::GameLoop(float _DeltaTime) {
 			default:break;
 		}
 		return;
-		
+
 	}
+
 	else if (CurrentState == END_MENU) {
 		int TempOutput = NULL;
 		EndMenu->Process(TempOutput);
@@ -277,6 +301,10 @@ void GameManager::GameLoop(float _DeltaTime) {
 				RestartGame();
 				break;
 			}
+			case 2: {
+				glutLeaveMainLoop();
+				break;
+			}
 			default:break;
 		}
 		return;
@@ -289,11 +317,11 @@ void GameManager::GameLoop(float _DeltaTime) {
 
 		switch (TempOutput) {
 			case 0: {
-				//
+				CurrentState = HOST_LOBBY;
 				break;
 			}
 			case 1: {
-				//
+				CurrentState = CLIENT_LOBBY;
 				break;
 			}
 			case 2: {
@@ -304,6 +332,34 @@ void GameManager::GameLoop(float _DeltaTime) {
 		}
 		return;
 	}
+
+	else if (CurrentState == CLIENT_LOBBY) {
+		int TempOutput = NULL;
+		ServerList->Process(TempOutput);
+		InputManager::ProcessKeyInput();
+
+		switch (TempOutput) {
+			case 0: {
+				//ServerPort 0
+				break;
+			}
+			case 1: {
+				//ServerPort 1
+				break;
+			}
+			case 2: {
+				//ServerPort 2
+				break;
+			}
+			case 6: {
+				CurrentState = MULTIPLAYER_LOBBY;
+				break;
+			}
+			default:break;
+		}
+		return;
+	}
+
 	else if (CurrentState == GAME_PLAY) {
 		//If the player still exists
 		if (PlayerObj->State == DEAD) {
@@ -324,7 +380,8 @@ void GameManager::GameLoop(float _DeltaTime) {
 					};
 					if ((rand() % 5) == 0) {
 						EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, PlayerObj));
-					} else {
+					}
+					else {
 						EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, PlayerObj));
 					}
 				}
@@ -339,7 +396,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 				int num = (rand() % 10);
 				if (num < 4) {
 					PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
-				} 
+				}
 				else if (num < 8) {
 					PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
 				}

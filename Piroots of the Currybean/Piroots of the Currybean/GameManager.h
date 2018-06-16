@@ -36,14 +36,16 @@ private:
 	void DrawOption();
 	void DrawServerOption();
 	void DrawHostLobby();
-	void DrawClientLobby();
+	void DrawServerList();
 
 	//Menu Elements
 	std::shared_ptr<Text> Title0;
 	std::shared_ptr<Text> Title1;
 	std::shared_ptr<Text> EndGameTitle;
 	std::shared_ptr<Text> ScoreText;
-	std::shared_ptr<Text> MultiplayerTitle;
+	std::shared_ptr<Text> MultiplayerTitle0;
+	std::shared_ptr<Text> MultiplayerTitle1;
+	std::shared_ptr<Text> WaitingForParty;
 
 	std::vector<std::string> StartOpt;
 	std::vector<std::string> MultiOpt;
@@ -54,6 +56,7 @@ private:
 	std::shared_ptr<Menu> EndMenu;
 	std::shared_ptr<Menu> OptionMenu;
 	std::shared_ptr<Menu> MultiplayerMenu;
+	std::shared_ptr<Menu> ServerList;
 
 	//Shaders
 	ShaderLoader SL;
