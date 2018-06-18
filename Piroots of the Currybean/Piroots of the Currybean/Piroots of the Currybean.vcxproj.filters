@@ -55,6 +55,15 @@
     <Filter Include="System\Menu">
       <UniqueIdentifier>{96d70541-f74e-46ad-92c6-c6ee7247879d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Network System">
+      <UniqueIdentifier>{8feb4b62-a06f-4ac6-a8a2-a4cbc40cb478}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Network System\Socket">
+      <UniqueIdentifier>{e49ed657-10b4-4f99-b190-f6580609b086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Network System\Server">
+      <UniqueIdentifier>{9ded88d6-cc6b-457a-82cb-d1a7af967c5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -95,6 +104,12 @@
     </ClCompile>
     <ClCompile Include="Menu.cpp">
       <Filter>System\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>System\Network System\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>System\Network System\Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +157,15 @@
     </ClInclude>
     <ClInclude Include="Menu.h">
       <Filter>System\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkQueue.h">
+      <Filter>System\Network System</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>System\Network System\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>System\Network System\Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

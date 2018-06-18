@@ -146,7 +146,9 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
+    <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Text.cpp" />
@@ -163,10 +165,13 @@
     <ClInclude Include="ModelMesh.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="Socket.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Text.h" />
+    <ClInclude Include="WorkQueue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
