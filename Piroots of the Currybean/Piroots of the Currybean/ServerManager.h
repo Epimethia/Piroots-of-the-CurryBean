@@ -8,7 +8,7 @@ class ServerManager {
 public:
 	void HostServer();
 	void ProcessServer();
-	std::vector<std::string> ConnectToServer();
+	void ConnectToServer();
 
 	//Singleton Methods
 	static std::shared_ptr<ServerManager> GetInstance();
@@ -19,7 +19,7 @@ private:
 	static std::shared_ptr<ServerManager> ServerManagerPtr;
 
 	//Network instance
-	std::shared_ptr<Network> NetworkPtr;
+	Network& _rNetwork = Network::GetInstance();
 
 	//Client and server
 	Client* ClientPtr;
@@ -30,5 +30,5 @@ private:
 	char* PacketData = 0; //A local buffer to receive packet data info
 
 	char IPAddressArray[MAX_ADDRESS_LENGTH]; // An array to hold the IP Address as a string
-										  //ZeroMemory(&_cIPAddress, strlen(_cIPAddress));
+	//ZeroMemory(&_cIPAddress, strlen(_cIPAddress));
 };

@@ -29,6 +29,7 @@ public:
 	virtual void ProcessData(char* _pcDataReceived);
 	virtual void GetRemoteIPAddress(char* _pcSendersIP);
 	virtual unsigned short GetRemotePort();
+	std::vector<sockaddr_in> GetServers() { return m_vecServerAddr; };
 
 	void GetPacketData(char* _pcLocalBuffer);
 	CWorkQueue<std::string>* GetWorkQueue();

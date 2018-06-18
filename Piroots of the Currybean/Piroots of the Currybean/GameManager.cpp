@@ -15,7 +15,7 @@ GameManager::GameManager() {
 	Camera::GetInstance();
 	EntityManager::GetInstance();
 	DeltaTime = Clock::GetDeltaTime();
-	//ServerManager::GetInstance();
+	ServerManager::GetInstance();
 
 	#pragma region Music
 	sm.Init();
@@ -336,6 +336,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 	}
 
 	else if (CurrentState == CLIENT_LOBBY) {
+		ServerManager::GetInstance()->ConnectToServer();
 		int TempOutput = NULL;
 		ServerList->Process(TempOutput);
 		InputManager::ProcessKeyInput();

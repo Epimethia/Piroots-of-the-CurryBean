@@ -83,77 +83,52 @@ bool Client::Initialise() {
 	m_bOnline = true;
 
 	//Use a boolean flag to determine if a valid server has been chosen by the client or not
-	bool _bServerChosen = false;
+	//Question 7: Broadcast to detect server
+	m_bDoBroadcast = true;
+	m_pClientSocket->EnableBroadcast();
+	BroadcastForServers();
+	if (m_vecServerAddr.size() == 0) {
+		std::cout << "No Servers Found " << std::endl;
+	}
+	
+	//do {
+	//	//Question 7: Broadcast to detect server
+	//	m_bDoBroadcast = true;
+	//	m_pClientSocket->EnableBroadcast();
+	//	BroadcastForServers();
+	//	if (m_vecServerAddr.size() == 0) {
+	//		std::cout << "No Servers Found " << std::endl;
+	//		continue;
+	//	}
+	//	//else {
 
-	do {
-		unsigned char _ucChoice = 'B';
+	//	//	//Give a list of servers for the user to choose from :
+	//	//	for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
+	//	//		std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
+	//	//	}
+	//	//	std::cout << "Choose a server number to connect to :";
+	//	//	gets_s(_cServerChosen);
 
-		switch (_ucChoice) {
-				//B = connect to existing server
-			case 'B': {
-				//Question 7: Broadcast to detect server
-				m_bDoBroadcast = true;
-				m_pClientSocket->EnableBroadcast();
-				BroadcastForServers();
-				if (m_vecServerAddr.size() == 0) {
-					std::cout << "No Servers Found " << std::endl;
-					continue;
-				}
-				else {
-
-					//Give a list of servers for the user to choose from :
-					for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
-						std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
-					}
-					std::cout << "Choose a server number to connect to :";
-					gets_s(_cServerChosen);
-
-					_uiServerIndex = atoi(_cServerChosen);
-					m_ServerSocketAddress.sin_family = AF_INET;
-					m_ServerSocketAddress.sin_port = m_vecServerAddr[_uiServerIndex].sin_port;
-					m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[_uiServerIndex].sin_addr.S_un.S_addr;
-					std::string _strServerAddress = ToString(m_vecServerAddr[_uiServerIndex]);
-					std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
-					_bServerChosen = true;
-				}
-				m_bDoBroadcast = false;
-				m_pClientSocket->DisableBroadcast();
-				break;
-			}
-
-				//M is to host a server
-			case 'M': {
-			
-				//Getting default ip address
-				strcpy_s(_cServerIPAddress, "127.0.0.1");
-
-				//Getting default server port
-				_usServerPort = DEFAULT_SERVER_PORT;
-
-				//Fill in the details of the server's socket address structure.
-				//This will be used when stamping address on outgoing packets
-				m_ServerSocketAddress.sin_family = AF_INET;
-				m_ServerSocketAddress.sin_port = htons(_usServerPort);
-				inet_pton(AF_INET, _cServerIPAddress, &m_ServerSocketAddress.sin_addr);
-				_bServerChosen = true;
-				std::cout << "Attempting to connect to server at " << _cServerIPAddress << ":" << _usServerPort << std::endl;
-				break;
-			}
-			default: {
-				return false;
-				break;
-			}
-		}
-
-	} while (_bServerChosen == false);
+	//	//	_uiServerIndex = atoi(_cServerChosen);
+	//	//	m_ServerSocketAddress.sin_family = AF_INET;
+	//	//	m_ServerSocketAddress.sin_port = m_vecServerAddr[_uiServerIndex].sin_port;
+	//	//	m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[_uiServerIndex].sin_addr.S_un.S_addr;
+	//	//	std::string _strServerAddress = ToString(m_vecServerAddr[_uiServerIndex]);
+	//	//	std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
+	//	//	_bServerChosen = true;
+	//	//}
+	//	m_bDoBroadcast = false;
+	//	m_pClientSocket->DisableBroadcast();
+	//	
+	//} while (_bServerChosen == false);
 
 	//Send a handshake message to the server as part of the Client's Initialization process.
 	//Step1: Create a handshake packet
 
-	do {
-		std::cout << "Please enter a username : ";
-		gets_s(_cUserName);
-	} while (_cUserName[0] == 0);
+	//do {
+	//	std::cout << "Please enter a username : ";
+	//	gets_s(_cUserName);
+	//} while (_cUserName[0] == 0);
 
 	//sending the packet
 	TPacket _packet;
