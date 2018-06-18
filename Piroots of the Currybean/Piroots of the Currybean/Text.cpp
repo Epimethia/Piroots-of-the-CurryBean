@@ -7,6 +7,9 @@
 Text::Text() {};      
 
 Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shader, int size) {
+<<<<<<< HEAD
+
+>>>>>>> Networking
 	ShaderLoader shaderLoader;
 
 	TextShaderProg = Shader;

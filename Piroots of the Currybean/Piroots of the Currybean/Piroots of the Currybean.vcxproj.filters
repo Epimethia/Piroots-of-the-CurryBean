@@ -55,6 +55,21 @@
     <Filter Include="System\Menu">
       <UniqueIdentifier>{96d70541-f74e-46ad-92c6-c6ee7247879d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="System\Network System">
+      <UniqueIdentifier>{8feb4b62-a06f-4ac6-a8a2-a4cbc40cb478}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Network System\Socket">
+      <UniqueIdentifier>{e49ed657-10b4-4f99-b190-f6580609b086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Network System\Network">
+      <UniqueIdentifier>{9ded88d6-cc6b-457a-82cb-d1a7af967c5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Network System\Client">
+      <UniqueIdentifier>{17b2b3fd-5875-41e8-860e-a2ecc18d6dd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Network System\Server">
+      <UniqueIdentifier>{823f7efb-d351-4a93-a8c4-888ff7eddbd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -95,6 +110,18 @@
     </ClCompile>
     <ClCompile Include="Menu.cpp">
       <Filter>System\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>System\Network System\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>System\Network System\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>System\Network System\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>System\Network System\Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +169,24 @@
     </ClInclude>
     <ClInclude Include="Menu.h">
       <Filter>System\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkQueue.h">
+      <Filter>System\Network System</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>System\Network System\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>System\Network System\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>System\Network System\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>System\Network System\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkEntity.h">
+      <Filter>System\Network System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
