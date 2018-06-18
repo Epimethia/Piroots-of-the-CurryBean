@@ -21,9 +21,9 @@ namespace ErrorRoutines {
 //Forward Decalarations
 class INetworkEntity;
 
-class CNetwork {
+class Network {
 public:
-	~CNetwork();
+	~Network();
 
 	bool Initialise(EEntityType _eType);
 	void StartUp(); //A network has an ability to start up
@@ -33,18 +33,18 @@ public:
 	INetworkEntity* GetNetworkEntity();
 
 	// Singleton Methods
-	static CNetwork& GetInstance();
+	static Network& GetInstance();
 	static void DestroyInstance();
 
 private:
-	CNetwork();
-	CNetwork(const CNetwork& _kr);
-	CNetwork& operator= (const CNetwork& _kr);
+	Network();
+	Network(const Network& _kr);
+	Network& operator= (const Network& _kr);
 
 protected:
 
 	INetworkEntity* m_pNetworkEntity;
 	bool m_bOnline;
 
-	static CNetwork* s_pNetwork;
+	static Network* s_pNetwork;
 };

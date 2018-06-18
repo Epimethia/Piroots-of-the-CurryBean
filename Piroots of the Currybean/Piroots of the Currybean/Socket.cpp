@@ -24,19 +24,19 @@
 #include "socket.h"
 
 
-CSocket::CSocket()
+Socket::Socket()
 	:m_hSocket(0)
 {
 	ZeroMemory(&m_SocketAddress, sizeof(m_SocketAddress));
 }
 
-CSocket::~CSocket()
+Socket::~Socket()
 {
 	closesocket(m_hSocket);
 }
 
 //Implicit Assumption: We are creating only UDP sockets.....
-bool CSocket::Initialise(unsigned short _usPortNumber)
+bool Socket::Initialise(unsigned short _usPortNumber)
 {
 	int _iError;
 	//Create a UDP socket 
@@ -72,12 +72,12 @@ bool CSocket::Initialise(unsigned short _usPortNumber)
 	return true;
 }
 
-SOCKET CSocket::GetSocketHandle()
+SOCKET Socket::GetSocketHandle()
 {
 	return m_hSocket;
 }
 
-std::string CSocket::GetLocalAddress()
+std::string Socket::GetLocalAddress()
 {
 	char _pcLocalHostName[256];
 	char _pcLocalAddress[256];
@@ -104,7 +104,7 @@ std::string CSocket::GetLocalAddress()
 	return std::string(_pcLocalAddress);
 }
 
-int CSocket::EnableBroadcast()
+int Socket::EnableBroadcast()
 {
 	int _iBroadCastOption = 1;
 	int _iResult = setsockopt(m_hSocket, SOL_SOCKET, SO_BROADCAST,
@@ -121,7 +121,7 @@ int CSocket::EnableBroadcast()
 }
 
 
-int CSocket::DisableBroadcast()
+int Socket::DisableBroadcast()
 {
 	int _iBroadCastOption = 0;
 	int _iResult = setsockopt(m_hSocket, SOL_SOCKET, SO_BROADCAST,
@@ -137,12 +137,12 @@ int CSocket::DisableBroadcast()
 	return _iResult;
 }
 
-void CSocket::SetRemotePort(unsigned short _usRemotePort)
+void Socket::SetRemotePort(unsigned short _usRemotePort)
 {
 	m_usRemotePort = _usRemotePort;
 }
 
-void CSocket::SetRemoteAddress(unsigned long _ulRemoteAddress)
+void Socket::SetRemoteAddress(unsigned long _ulRemoteAddress)
 {
 	m_ulRemoteIPAddress = _ulRemoteAddress;
 }

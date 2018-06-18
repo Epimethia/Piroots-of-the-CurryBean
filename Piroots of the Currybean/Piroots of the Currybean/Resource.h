@@ -16,7 +16,7 @@
 #include FT_FREETYPE_H
 
 //VLD
-#include "Dependencies\Visual Leak Detector\include\vld.h"
+//#include "Dependencies\Visual Leak Detector\include\vld.h"
 
 //Main Includes
 #include <iostream>
@@ -32,11 +32,10 @@
 #include <Windows.h>
 #include <strstream>
 
-
 //Network Programming
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-
+#pragma comment(lib, "Ws2_32.lib")
 
 namespace UTILS {
 	const int WindowWidth = 750;

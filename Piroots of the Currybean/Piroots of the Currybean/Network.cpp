@@ -1,62 +1,41 @@
-#include "Network.h"
 
-//
-// Bachelor of Software Engineering
-// Media Design School
-// Auckland
-// New Zealand
-//
-// (c) 2015 Media Design School
-//
-// File Name	: 
-// Description	: 
-// Author		: Your Name
-// Mail			: your.name@mediadesign.school.nz
-//
-
+#include "Resource.h"
 //Library Includes
-#include <WinSock2.h>
-#include <Windows.h>
-#include <iostream>
+
 
 //Local Includes
-#include "utils.h"
-#include "consoletools.h"
-#include "server.h"
-#include "client.h"
+#include "Server.h"
+#include "Client.h"
 
 //This includes
-#include "network.h"
+#include "Network.h"
 
 // Static Variables
-CNetwork* CNetwork::s_pNetwork = 0;
+Network* Network::s_pNetwork = 0;
 
-
-CNetwork::CNetwork()
-	: m_pNetworkEntity(0)
-	, m_bOnline(false)
-{
-
+Network::Network() {
+	m_pNetworkEntity = 0;
+	m_bOnline = false;
 }
 
 
-CNetwork::~CNetwork() {
+Network::~Network() {
 	delete m_pNetworkEntity;
 	m_pNetworkEntity = 0;
 }
 
 bool
-CNetwork::Initialise(EEntityType _eType) {
+Network::Initialise(EEntityType _eType) {
 	switch (_eType)
 	{
 	case CLIENT:
 	{
-		m_pNetworkEntity = new CClient();
+		m_pNetworkEntity = new Client();
 		break;
 	}
 	case SERVER:
 	{
-		m_pNetworkEntity = new CServer();
+		m_pNetworkEntity = new Server();
 		break;
 	}
 	default:
@@ -70,7 +49,7 @@ CNetwork::Initialise(EEntityType _eType) {
 }
 
 void
-CNetwork::StartUp() {
+Network::StartUp() {
 	// startup windows sockets:
 	WSADATA wsaData;
 	int _iError;
@@ -83,7 +62,7 @@ CNetwork::StartUp() {
 }
 
 void
-CNetwork::ShutDown() {
+Network::ShutDown() {
 	int _iError;
 	if (WSACleanup() != 0)
 	{
@@ -93,28 +72,28 @@ CNetwork::ShutDown() {
 	m_bOnline = false;
 }
 
-CNetwork&
-CNetwork::GetInstance() {
+Network&
+Network::GetInstance() {
 	if (s_pNetwork == 0)
 	{
-		s_pNetwork = new CNetwork();
+		s_pNetwork = new Network();
 	}
 
 	return (*s_pNetwork);
 }
 
 void
-CNetwork::DestroyInstance() {
+Network::DestroyInstance() {
 	delete s_pNetwork;
 	s_pNetwork = 0;
 }
 
 
-INetworkEntity* CNetwork::GetNetworkEntity() {
+INetworkEntity* Network::GetNetworkEntity() {
 	return m_pNetworkEntity;
 }
 
-bool CNetwork::IsOnline() {
+bool Network::IsOnline() {
 	return m_bOnline;
 }
 

@@ -2,10 +2,10 @@
 
 #include "Resource.h"
 
-class CSocket {
+class Socket {
 public:
-	CSocket();
-	~CSocket();
+	Socket();
+	~Socket();
 
 	bool Initialise(unsigned short _usPortNumber);
 
