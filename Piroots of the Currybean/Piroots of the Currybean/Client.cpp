@@ -126,18 +126,9 @@ bool Client::Initialise() {
 			
 				//Getting default ip address
 				strcpy_s(_cServerIPAddress, "127.0.0.1");
-				/*if (_cServerIPAddress[0] == 0) {
-				
-				}*/
 
 				//Getting default server port
 				_usServerPort = DEFAULT_SERVER_PORT;
-				//if (_cServerPort[0] == 0) {
-				//	
-				//}
-				//else {
-				//	_usServerPort = atoi(_cServerPort);
-				//}
 
 				//Fill in the details of the server's socket address structure.
 				//This will be used when stamping address on outgoing packets

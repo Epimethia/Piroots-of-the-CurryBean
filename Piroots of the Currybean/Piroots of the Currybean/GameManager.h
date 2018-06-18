@@ -6,9 +6,9 @@
 #include "EntityManager.h"
 #include "Text.h"
 #include "Menu.h"
-
-
-
+#include "Server.h"
+#include "Client.h"
+#include "ServerManager.h"
 
 //Singleton scene manager
 class GameManager {
@@ -79,6 +79,9 @@ private:
 	//Sound
 	SoundManager sm;
 	bool PlayMusic;
+
+	//Networking
+	std::shared_ptr<ServerManager> ServerManagerPtr;
 
 	//Other
 	std::shared_ptr<Model> UIBoat;

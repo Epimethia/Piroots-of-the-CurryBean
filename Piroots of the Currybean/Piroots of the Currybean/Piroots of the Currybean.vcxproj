@@ -148,6 +148,7 @@
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="ServerManager.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SoundManager.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="NetworkEntity.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerManager.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="SoundManager.h" />
