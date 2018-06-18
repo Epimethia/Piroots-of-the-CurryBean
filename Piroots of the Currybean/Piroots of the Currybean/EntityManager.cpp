@@ -40,7 +40,7 @@ EntityManager::EntityManager() {
 	GLuint VAO, VBO, EBO, Texture;
 	int width, height;
 	#pragma region GENERATING CUBE MESH
-	std::cout << "Generating Cube Mesh\n";
+	//std::cout << "Generating Cube Mesh\n";
 	#pragma region Generating VAO
 	GLfloat CubeVerts[] = {
 		// Positions             // Normal Coords        // TexCoords
@@ -176,7 +176,7 @@ EntityManager::EntityManager() {
 
 
 	#pragma region GENERATING PYRAMID MESH
-	std::cout << "Generating Pyramid Mesh\n";
+	//std::cout << "Generating Pyramid Mesh\n";
 	#pragma region Generating VAO
 	GLfloat PyramidVerts[] = {
 		// Positions          	// Colors			// Tex Coords
@@ -290,7 +290,7 @@ EntityManager::EntityManager() {
 	#pragma endregion
 
 	#pragma region GENERATING SPHERE MESH
-	std::cout << "Generating Sphere Mesh\n";
+	//std::cout << "Generating Sphere Mesh\n";
 	#pragma region Generating VAO
 	float radius = 1.0f;
 	const int sections = 8;
@@ -415,17 +415,17 @@ EntityManager::EntityManager() {
 	Sphere_Mesh->Shader = ObjectShader;
 	#pragma endregion
 	#pragma region GENERATING WAVE MESH
-	std::cout << "Generating Wave Mesh\n";
+	//std::cout << "Generating Wave Mesh\n";
 	Wave_Model = std::make_shared<Model>(WAVE_MODEL, WaveShader);
 	#pragma endregion
 
 	#pragma region GENERATING BOAT MESH
-	std::cout << "Generating Boat Mesh\n";
+	//std::cout << "Generating Boat Mesh\n";
 	Player_Model = std::make_shared<Model>(PLAYER_MODEL, ModelShader);
 	#pragma endregion
 
 	#pragma region GENERATING SPECIAL POWERUP MODEL
-	std::cout << "Generating Powerup Mesh\n";
+	//std::cout << "Generating Powerup Mesh\n";
 
 	Special_Model = std::make_shared<Model>(POWERUP_MODEL, ModelShader);
 	#pragma endregion

@@ -67,11 +67,11 @@ GLuint ShaderLoader::CreateProgram(std::string vertexShaderFilename, std::string
 	}
 	vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
 	Shaders[vertexShaderFilename] = vertex_shader;
-	std::cout << "Vertex Shader created. Assigned ID: " << Shaders[vertexShaderFilename] << std::endl;
+	//std::cout << "Vertex Shader created. Assigned ID: " << Shaders[vertexShaderFilename] << std::endl;
 
 	fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader");
 	Shaders[fragmentShaderFilename] = fragment_shader;
-	std::cout << "Fragment Shader created. Assigned ID: " << Shaders[fragmentShaderFilename] << std::endl;
+	//std::cout << "Fragment Shader created. Assigned ID: " << Shaders[fragmentShaderFilename] << std::endl;
 
 	//read the shader files and save the code
 

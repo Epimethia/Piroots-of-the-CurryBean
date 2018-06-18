@@ -124,7 +124,7 @@
       <Filter>System\Network System\Server</Filter>
     </ClCompile>
     <ClCompile Include="ServerManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>System\Network System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,7 @@ bool SoundManager::Init() {
 		std::cout << "Failed to initialize Audio Manager \n";
 		return false;
 	}
-	std::cout << "Audio Manager created successfully \n";
+	//std::cout << "Audio Manager created successfully \n";
 	return true;
 }
 
@@ -56,6 +56,6 @@ const bool SoundManager::LoadAudio() {
 		return false;
 	}
 	bgmTheme->setMode(FMOD_LOOP_NORMAL);
-	std::cout << "Music Loaded Successfully\n";
+	//std::cout << "Music Loaded Successfully\n";
 	return true;
 }

@@ -408,7 +408,7 @@ void Player::Process(float _DeltaTime) {
 		MaxSpeed = 35.0f;
 	}
 	if (State == SPECIAL_POWERUP) {
-		std::cout << "HELLO\n";
+		//std::cout << "HELLO\n";
 		ShootCooldown = 4.0f;
 		MaxSpeed = 15.0f;
 	}

@@ -19,13 +19,13 @@ Camera::~Camera() {
 
 std::shared_ptr<Camera> Camera::GetInstance() {
 	if (CameraPtr == nullptr) CameraPtr = std::shared_ptr<Camera>(new Camera);
-	std::cout << "Camera Created\n";
+	//std::cout << "Camera Created\n";
 	return CameraPtr;
 }
 
 void Camera::DestroyInstance() {
 	CameraPtr = nullptr;
-	std::cout << "Camera Destroyed\n";
+	//std::cout << "Camera Destroyed\n";
 }
 
 glm::mat4& Camera::GetMatrix() {

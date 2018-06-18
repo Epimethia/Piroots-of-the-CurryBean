@@ -15,6 +15,7 @@ GameManager::GameManager() {
 	Camera::GetInstance();
 	EntityManager::GetInstance();
 	DeltaTime = Clock::GetDeltaTime();
+	//ServerManager::GetInstance();
 
 	#pragma region Music
 	sm.Init();
@@ -215,6 +216,7 @@ void GameManager::DrawScene() {
 			break;
 		}
 		case HOST_LOBBY: {
+			ServerManager::GetInstance();
 			DrawHostLobby();
 			break;
 		}

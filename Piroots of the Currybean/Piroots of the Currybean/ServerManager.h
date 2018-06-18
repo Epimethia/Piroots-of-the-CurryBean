@@ -11,7 +11,7 @@ public:
 	std::vector<std::string> ConnectToServer();
 
 	//Singleton Methods
-	std::shared_ptr<ServerManager> GetInstance();
+	static std::shared_ptr<ServerManager> GetInstance();
 	void DestroyInstance();
 
 private:
