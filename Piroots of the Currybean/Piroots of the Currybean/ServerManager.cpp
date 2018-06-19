@@ -21,28 +21,11 @@ void ServerManager::ProcessServer() {
 				ServerPtr->GetWorkQueue()->pop(PacketData);
 				ServerPtr->ProcessData(PacketData);
 			}
-
-			//Keep Alive Functionality
-			//If 5 seconds has elapsed, send a handshake message to the user to see if the user is still there
-			//Pushing a Keep Alive packet to the server
-
-			//TO DO
-
-			//Clock.Process();
-			//Sleep(1);
-			//TimeSinceLastCheck += Clock.GetDeltaTick();
-			////If 2 seconds have gone by, perform a keep alive check
-			//if (TimeSinceLastCheck >= 5000.0f) {
-
-			//	ServerPtr->KeepAliveCheck();
-			//	TimeSinceLastCheck = 0.0f;
-			//}
-
 		}
 	}
 }
 
-void ServerManager::ConnectToServer() {
+void ServerManager::StartClient() {
 	if (!_rNetwork.GetInstance().Initialise(CLIENT)) {
 		std::cout << "Unable to initialzie the network.\n";
 	}
@@ -50,11 +33,10 @@ void ServerManager::ConnectToServer() {
 	_ClientReceiveThread = std::thread(&Client::ReceiveData, ClientPtr, std::ref(PacketData));
 
 	Sleep(16);
-	std::vector<std::string> ServerAddresses;
+}
 
-	for (auto it : ClientPtr->GetServers()) {
-		ServerAddresses.push_back(ToString(it));
-	}
+void ServerManager::SelectServer(unsigned int _Opt) {
+	ClientPtr->ChooseServer(_Opt);
 }
 
 std::shared_ptr<ServerManager> ServerManager::GetInstance() {

@@ -87,40 +87,28 @@ bool Client::Initialise() {
 	m_bDoBroadcast = true;
 	m_pClientSocket->EnableBroadcast();
 	BroadcastForServers();
-	if (m_vecServerAddr.size() == 0) {
-		std::cout << "No Servers Found " << std::endl;
-	}
-	
-	//do {
-	//	//Question 7: Broadcast to detect server
-	//	m_bDoBroadcast = true;
-	//	m_pClientSocket->EnableBroadcast();
-	//	BroadcastForServers();
-	//	if (m_vecServerAddr.size() == 0) {
-	//		std::cout << "No Servers Found " << std::endl;
-	//		continue;
-	//	}
-	//	//else {
+	bool _bServerChosen = false;
+	do {
+		//Question 7: Broadcast to detect server
+		m_bDoBroadcast = true;
+		m_pClientSocket->EnableBroadcast();
+		BroadcastForServers();
+		if (m_vecServerAddr.size() == 0) {
+			std::cout << "No Servers Found " << std::endl;
+			continue;
+		}
+		else {
 
-	//	//	//Give a list of servers for the user to choose from :
-	//	//	for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
-	//	//		std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
-	//	//	}
-	//	//	std::cout << "Choose a server number to connect to :";
-	//	//	gets_s(_cServerChosen);
-
-	//	//	_uiServerIndex = atoi(_cServerChosen);
-	//	//	m_ServerSocketAddress.sin_family = AF_INET;
-	//	//	m_ServerSocketAddress.sin_port = m_vecServerAddr[_uiServerIndex].sin_port;
-	//	//	m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[_uiServerIndex].sin_addr.S_un.S_addr;
-	//	//	std::string _strServerAddress = ToString(m_vecServerAddr[_uiServerIndex]);
-	//	//	std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
-	//	//	_bServerChosen = true;
-	//	//}
-	//	m_bDoBroadcast = false;
-	//	m_pClientSocket->DisableBroadcast();
-	//	
-	//} while (_bServerChosen == false);
+			////Give a list of servers for the user to choose from :
+			for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
+				std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
+			}
+			std::cout << "Servers Found\n";
+			_bServerChosen = true;
+		}
+		m_pClientSocket->DisableBroadcast();
+		
+	} while (_bServerChosen == false);
 
 	//Send a handshake message to the server as part of the Client's Initialization process.
 	//Step1: Create a handshake packet
@@ -131,6 +119,10 @@ bool Client::Initialise() {
 	//} while (_cUserName[0] == 0);
 
 	//sending the packet
+	//gets_s(_cUserName);
+
+
+	strcpy_s(_cUserName, "Hello");
 	TPacket _packet;
 	_packet.Serialize(HANDSHAKE, _cUserName);
 	SendData(_packet.PacketData);
@@ -140,13 +132,12 @@ bool Client::Initialise() {
 bool Client::BroadcastForServers() {
 	//Make a broadcast packet
 	TPacket _packet;
-	_packet.Serialize(BROADCAST, "Broadcast to Detect Server");
+	_packet.Serialize(BROADCAST, "Hello");
 
 	char _pcTempBuffer[MAX_MESSAGE_LENGTH];
 	//Send out a broadcast message using the broadcast address
 	m_pClientSocket->SetRemoteAddress(INADDR_BROADCAST);
 	m_pClientSocket->SetRemotePort(DEFAULT_SERVER_PORT);
-
 	m_ServerSocketAddress.sin_family = AF_INET;
 	m_ServerSocketAddress.sin_addr.S_un.S_addr = INADDR_BROADCAST;
 	for (int i = 0; i < 10; i++) //Just try  a series of 10 ports to detect a running server; this is needed since we are testing multiple servers on the same local machine
@@ -154,7 +145,6 @@ bool Client::BroadcastForServers() {
 		m_ServerSocketAddress.sin_port = htons(DEFAULT_SERVER_PORT + i);
 		SendData(_packet.PacketData);
 	}
-	Sleep(16);
 	ReceiveBroadcastMessages(_pcTempBuffer);
 
 	return true;
@@ -163,7 +153,7 @@ bool Client::BroadcastForServers() {
 void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
 	//set a timer on the socket for one second
 	struct timeval timeValue;
-	timeValue.tv_sec = 1;
+	timeValue.tv_sec = 30;
 	timeValue.tv_usec = 0;
 	setsockopt(m_pClientSocket->GetSocketHandle(), SOL_SOCKET, SO_RCVTIMEO,
 		(char*)&timeValue, sizeof(timeValue));
@@ -191,7 +181,7 @@ void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
 			//std::cout << "recvfrom failed with error " << _iError;
 			if (_iError == WSAETIMEDOUT) // Socket timed out on Receive
 			{
-				std::cout << "hello\n";
+				//ErrorRoutines::PrintWSAErrorInfo(_iError);
 				m_bDoBroadcast = false; //Do not broadcast any more
 				break;
 			}
@@ -204,8 +194,19 @@ void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
 		else {
 			//There is valid data received.
 			strcpy_s(_pcBufferToReceiveData, strlen(_buffer) + 1, _buffer);
-			m_ServerSocketAddress = _FromAddress;
-			m_vecServerAddr.push_back(m_ServerSocketAddress);
+			if (
+				//Lambda to check if the server address is already in the server address vector
+				[&]()->bool {
+				for (auto it : m_vecServerAddr) {
+					if (ToString(_FromAddress) == ToString(it)) {
+						return true;
+					}
+					else return false;
+				}
+			}() == false) {
+				m_ServerSocketAddress = _FromAddress;
+				m_vecServerAddr.push_back(m_ServerSocketAddress);
+			}
 		}
 	}//End of while loop
 }
@@ -215,7 +216,6 @@ bool Client::SendData(char* _pcDataToSend) {
 
 	char _RemoteIP[MAX_ADDRESS_LENGTH];
 	inet_ntop(AF_INET, &m_ServerSocketAddress.sin_addr, _RemoteIP, sizeof(_RemoteIP));
-	//std::cout << "Trying to send " << _pcDataToSend << " to " << _RemoteIP << ":" << ntohs(m_ServerSocketAddress.sin_port) << std::endl;
 	char _message[MAX_MESSAGE_LENGTH];
 	strcpy_s(_message, strlen(_pcDataToSend) + 1, _pcDataToSend);
 
@@ -270,7 +270,6 @@ void Client::ReceiveData(char* _pcBufferToReceiveData) {
 		else {
 			//There is valid data received.
 			strcpy_s(m_pcPacketData, strlen(_buffer) + 1, _buffer);
-			//strcpy_s(m_pcPacketData, strlen(_buffer) + 1, _buffer);
 			//Put this packet data in the workQ
 			m_ServerSocketAddress = _FromAddress;
 			m_pWorkQueue->push(m_pcPacketData);
@@ -336,6 +335,14 @@ void Client::GetRemoteIPAddress(char *_pcSendersIP) {
 
 unsigned short Client::GetRemotePort() {
 	return ntohs(m_ServerSocketAddress.sin_port);
+}
+
+void Client::ChooseServer(unsigned int _ServerIndex) {
+	m_ServerSocketAddress.sin_family = AF_INET;
+	m_ServerSocketAddress.sin_port = m_vecServerAddr[_ServerIndex].sin_port;
+	m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[_ServerIndex].sin_addr.S_un.S_addr;
+	std::string _strServerAddress = ToString(m_vecServerAddr[_ServerIndex]);
+	std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
 }
 
 void Client::GetPacketData(char* _pcLocalBuffer) {

@@ -220,7 +220,7 @@ void GameManager::DrawScene() {
 			DrawHostLobby();
 			break;
 		}
-		case CLIENT_LOBBY: {
+		case SERVER_SELECT: {
 			DrawServerList();
 			break;
 		}
@@ -323,7 +323,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 				break;
 			}
 			case 1: {
-				CurrentState = CLIENT_LOBBY;
+				CurrentState = SERVER_SELECT;
 				break;
 			}
 			case 2: {
@@ -335,30 +335,84 @@ void GameManager::GameLoop(float _DeltaTime) {
 		return;
 	}
 
-	else if (CurrentState == CLIENT_LOBBY) {
-		ServerManager::GetInstance()->ConnectToServer();
-		int TempOutput = NULL;
-		ServerList->Process(TempOutput);
-		InputManager::ProcessKeyInput();
+	else if (CurrentState == SERVER_SELECT) {
+		if (_Connected == false) {
+			ServerManager::GetInstance()->StartClient();
+			_Connected = true;
+		}
 
-		switch (TempOutput) {
+		if (_ServerChosen == false) {
+			int TempOutput = NULL;
+			std::string LastAddr;
+			std::string ServerAddr;
+			int NumOptions = ServerManager::GetInstance()->GetServerList().size();
+			for (unsigned int i = 0; i < NumOptions; ++i) {
+				ServerAddr = ToString(ServerManager::GetInstance()->GetServerList()[i]);
+				if (ServerAddr != LastAddr) {
+					ServerList->ReplaceOption(i, ServerAddr);
+					LastAddr = ServerAddr;
+				}
+			}
+			ServerList->Process(TempOutput);
+			InputManager::ProcessKeyInput();
+
+			switch (TempOutput) {
 			case 0: {
 				//ServerPort 0
+				if (TempOutput >= NumOptions - 1) break;
+				ServerManager::GetInstance()->SelectServer(0);
+				CurrentState = CLIENT_LOBBY;
+				_ServerChosen = true;
 				break;
 			}
 			case 1: {
 				//ServerPort 1
+				if (TempOutput >= NumOptions - 1) break;
+				ServerManager::GetInstance()->SelectServer(1);
+				CurrentState = CLIENT_LOBBY;
+				_ServerChosen = true;
 				break;
 			}
 			case 2: {
 				//ServerPort 2
+				if (TempOutput >= NumOptions - 1) break;
+				ServerManager::GetInstance()->SelectServer(2);
+				CurrentState = CLIENT_LOBBY;
+				_ServerChosen = true;
+				break;
+			}
+			case 3: {
+				//ServerPort 2
+				if (TempOutput >= NumOptions - 1) break;
+				ServerManager::GetInstance()->SelectServer(3);
+				CurrentState = CLIENT_LOBBY;
+				_ServerChosen = true;
+				break;
+			}
+			case 4: {
+				//ServerPort 2
+				if (TempOutput >= NumOptions - 1) break;
+				ServerManager::GetInstance()->SelectServer(4);
+				CurrentState = CLIENT_LOBBY;
+				_ServerChosen = true;
+				break;
+			}
+			case 5: {
+				//ServerPort 2
+				if (TempOutput >= NumOptions - 1) break;
+				ServerManager::GetInstance()->SelectServer(5);
+				CurrentState = CLIENT_LOBBY;
+				_ServerChosen = true;
 				break;
 			}
 			case 6: {
+
 				CurrentState = MULTIPLAYER_LOBBY;
+
 				break;
 			}
 			default:break;
+			}
 		}
 		return;
 	}

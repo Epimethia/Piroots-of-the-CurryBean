@@ -8,7 +8,9 @@ class ServerManager {
 public:
 	void HostServer();
 	void ProcessServer();
-	void ConnectToServer();
+	void StartClient();
+	void SelectServer(unsigned int _Opt);
+	std::vector<sockaddr_in> GetServerList() { return ClientPtr->GetServers(); };
 
 	//Singleton Methods
 	static std::shared_ptr<ServerManager> GetInstance();

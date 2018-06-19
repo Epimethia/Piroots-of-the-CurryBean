@@ -88,5 +88,7 @@ private:
 	float ZBobbing = 0.0f;
 	glm::mat4 StartMenuMatrix;
 	glm::mat4 EndMenuMatrix;
+
 	bool _Connected = false;
+	bool _ServerChosen = false;
 };

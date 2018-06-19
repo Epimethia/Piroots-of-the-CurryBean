@@ -207,6 +207,9 @@ void Server::ProcessData(char* _pcDataReceived) {
 
 		//Qs 3: To DO : Add the code to do a handshake here
 		std::cout << "Server received a handshake message.\n";
+
+		
+
 		if (_pcDataReceived == "Keep Alive") {
 			std::cout << "Keep Alive Packet\n";
 			return;
@@ -226,44 +229,50 @@ void Server::ProcessData(char* _pcDataReceived) {
 			}
 		}
 
-		//Add the user to the client list and send the Welcome Message
-		AddClient(_packetRecvd.MessageContent);
+		if (_pcDataReceived == "PirootServerReq") {
+
+
+			//Add the user to the client list and send the Welcome Message
+			AddClient(_packetRecvd.MessageContent);
 #pragma region Welcome Message
-		//Sending a message to all users that a new client has joined
-		std::cout << "User " << _pcDataReceived << " joined successfully.\n";
-		//Sending a special message to the client that just joined, containing
-		//the user list
-		std::string UserName(_pcDataReceived);
-		UserName.erase(0, 2);
-		Message = UserName + " joined the server!";
-		_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
-		SendData(_packetToSend.PacketData);
-		Message = "Current User List:";
-		_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
-		SendData(_packetToSend.PacketData);
-		Message = "------------------";
-		_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
-		SendData(_packetToSend.PacketData);
-
-		//Iterating through the user list and sending it to the new client
-		for (const auto& it : *m_pConnectedClients) {
-			Message = it.second.m_strName;
+			//Sending a message to all users that a new client has joined
+			std::cout << "User " << _pcDataReceived << " joined successfully.\n";
+			//Sending a special message to the client that just joined, containing
+			//the user list
+			std::string UserName(_pcDataReceived);
+			UserName.erase(0, 2);
+			Message = UserName + " joined the server!";
 			_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
 			SendData(_packetToSend.PacketData);
-		}
-
-		Message = "------------------";
-		_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
-		SendData(_packetToSend.PacketData);
-
-		//Sending existing users a notification that a new user has joined
-		for (const auto& it : *m_pConnectedClients) {
-			if (it.first == UserName) continue;	//Ignoring if the iterates to the current Client
-			m_ClientAddress = it.second.m_ClientAddress;
-			Message = "[SERVER]> " + UserName + " has joined the room";
+			Message = "Current User List:";
 			_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
 			SendData(_packetToSend.PacketData);
+			Message = "------------------";
+			_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
+			SendData(_packetToSend.PacketData);
+
+			//Iterating through the user list and sending it to the new client
+			for (const auto& it : *m_pConnectedClients) {
+				Message = it.second.m_strName;
+				_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
+				SendData(_packetToSend.PacketData);
+			}
+
+			Message = "------------------";
+			_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
+			SendData(_packetToSend.PacketData);
+
+			//Sending existing users a notification that a new user has joined
+			for (const auto& it : *m_pConnectedClients) {
+				if (it.first == UserName) continue;	//Ignoring if the iterates to the current Client
+				m_ClientAddress = it.second.m_ClientAddress;
+				Message = "[SERVER]> " + UserName + " has joined the room";
+				_packetToSend.Serialize(DATA, const_cast<char*>(Message.c_str()));
+				SendData(_packetToSend.PacketData);
+			}
 		}
+
+		
 #pragma endregion
 		break;
 	}
