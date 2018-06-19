@@ -40,8 +40,8 @@ GameManager::GameManager() {
 	Title0 = std::make_shared<Text>("Piroots of", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
 	Title1 = std::make_shared<Text>("the CurryBeans", PIRATEFONT, glm::vec2(90.0f, 550.0f), TextShader, 80);
 	EndGameTitle = std::make_shared<Text>("You Died!", PIRATEFONT, glm::vec2(90.0f, 500.0f), TextShader, 80);
-	MultiplayerTitle0 = std::make_shared<Text>("Multiplayer", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
-	MultiplayerTitle1 = std::make_shared<Text>("Server List", PIRATEFONT, glm::vec2(90.0f, 540.0f), TextShader, 60);
+	MultiplayerTitle0 = std::make_shared<Text>("Multiplayer", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 75);
+	MultiplayerTitle1 = std::make_shared<Text>("Server List", PIRATEFONT, glm::vec2(90.0f, 540.0f), TextShader, 50);
 	ScoreText = std::make_shared<Text>("SCORE: 0", PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
 	WaitingForParty = std::make_shared<Text>("Waiting for Party...", PIRATEFONT, glm::vec2(200.0f, 570.0f), TextShader, 40);
 	#pragma endregion
@@ -179,15 +179,20 @@ void GameManager::DrawServerOption() {
 void GameManager::DrawHostLobby() {
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	MultiplayerTitle0->SetText("Multiplayer - Host");
 	MultiplayerTitle0->Render();
 	WaitingForParty->Render();
 }
 
-void GameManager::DrawServerList() {
+void GameManager::DrawClientLobby() {
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	MultiplayerTitle0->SetText("Multiplayer");
+	MultiplayerTitle0->Render();
+	WaitingForParty->Render();
+}
+
+void GameManager::DrawServerSelect() {
+	CM.Render(CubeMapShader, Camera::GetMatrix());
+	WaveObj->Process(DeltaTime);
 	MultiplayerTitle0->Render();
 	MultiplayerTitle1->Render();
 	ServerList->Render();
@@ -221,7 +226,11 @@ void GameManager::DrawScene() {
 			break;
 		}
 		case SERVER_SELECT: {
-			DrawServerList();
+			DrawServerSelect();
+			break;
+		}
+		case CLIENT_LOBBY: {
+			DrawClientLobby();
 			break;
 		}
 		default:break;
@@ -247,6 +256,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 				break;
 			}
 			case 1: {
+				MultiplayerTitle0->SetText("Multiplayer");
 				CurrentState = MULTIPLAYER_LOBBY;
 				break;
 			}
@@ -319,10 +329,12 @@ void GameManager::GameLoop(float _DeltaTime) {
 
 		switch (TempOutput) {
 			case 0: {
+				MultiplayerTitle0->SetText("Multiplayer - Host");
 				CurrentState = HOST_LOBBY;
 				break;
 			}
 			case 1: {
+				MultiplayerTitle0->SetText("Multiplayer - Client");
 				CurrentState = SERVER_SELECT;
 				break;
 			}
@@ -359,62 +371,68 @@ void GameManager::GameLoop(float _DeltaTime) {
 			switch (TempOutput) {
 			case 0: {
 				//ServerPort 0
-				if (TempOutput >= NumOptions - 1) break;
-				ServerManager::GetInstance()->SelectServer(0);
-				CurrentState = CLIENT_LOBBY;
-				_ServerChosen = true;
+				if (TempOutput <= NumOptions - 1) {
+					ServerManager::GetInstance()->SelectServer(0);
+					CurrentState = CLIENT_LOBBY;
+					_ServerChosen = true;
+				};
 				break;
 			}
 			case 1: {
 				//ServerPort 1
-				if (TempOutput >= NumOptions - 1) break;
-				ServerManager::GetInstance()->SelectServer(1);
-				CurrentState = CLIENT_LOBBY;
-				_ServerChosen = true;
+				if (TempOutput <= NumOptions - 1) {
+					ServerManager::GetInstance()->SelectServer(1);
+					CurrentState = CLIENT_LOBBY;
+					_ServerChosen = true;
+				};
 				break;
 			}
 			case 2: {
 				//ServerPort 2
-				if (TempOutput >= NumOptions - 1) break;
-				ServerManager::GetInstance()->SelectServer(2);
-				CurrentState = CLIENT_LOBBY;
-				_ServerChosen = true;
+				if (TempOutput <= NumOptions - 1) {
+					ServerManager::GetInstance()->SelectServer(2);
+					CurrentState = CLIENT_LOBBY;
+					_ServerChosen = true;
+				};
 				break;
 			}
 			case 3: {
-				//ServerPort 2
-				if (TempOutput >= NumOptions - 1) break;
-				ServerManager::GetInstance()->SelectServer(3);
-				CurrentState = CLIENT_LOBBY;
-				_ServerChosen = true;
+				if (TempOutput <= NumOptions - 1) {
+					ServerManager::GetInstance()->SelectServer(3);
+					CurrentState = CLIENT_LOBBY;
+					_ServerChosen = true;
+				};
 				break;
 			}
 			case 4: {
-				//ServerPort 2
-				if (TempOutput >= NumOptions - 1) break;
-				ServerManager::GetInstance()->SelectServer(4);
-				CurrentState = CLIENT_LOBBY;
-				_ServerChosen = true;
+				if (TempOutput <= NumOptions - 1) {
+					ServerManager::GetInstance()->SelectServer(4);
+					CurrentState = CLIENT_LOBBY;
+					_ServerChosen = true;
+				};
 				break;
 			}
 			case 5: {
-				//ServerPort 2
-				if (TempOutput >= NumOptions - 1) break;
-				ServerManager::GetInstance()->SelectServer(5);
-				CurrentState = CLIENT_LOBBY;
-				_ServerChosen = true;
+				if (TempOutput <= NumOptions - 1) {
+					ServerManager::GetInstance()->SelectServer(5);
+					CurrentState = CLIENT_LOBBY;
+					_ServerChosen = true;
+				};
 				break;
 			}
 			case 6: {
-
+				MultiplayerTitle0->SetText("Multiplayer");
 				CurrentState = MULTIPLAYER_LOBBY;
-
 				break;
 			}
 			default:break;
 			}
 		}
 		return;
+	}
+
+	else if (CurrentState == CLIENT_LOBBY) {
+		ServerManager::GetInstance()->ProcessServer();
 	}
 
 	else if (CurrentState == GAME_PLAY) {

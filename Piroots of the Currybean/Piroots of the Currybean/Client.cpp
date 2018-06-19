@@ -110,22 +110,8 @@ bool Client::Initialise() {
 		
 	} while (_bServerChosen == false);
 
-	//Send a handshake message to the server as part of the Client's Initialization process.
-	//Step1: Create a handshake packet
-
-	//do {
-	//	std::cout << "Please enter a username : ";
-	//	gets_s(_cUserName);
-	//} while (_cUserName[0] == 0);
-
-	//sending the packet
-	//gets_s(_cUserName);
 
 
-	strcpy_s(_cUserName, "Hello");
-	TPacket _packet;
-	_packet.Serialize(HANDSHAKE, _cUserName);
-	SendData(_packet.PacketData);
 	return true;
 }
 
@@ -338,11 +324,19 @@ unsigned short Client::GetRemotePort() {
 }
 
 void Client::ChooseServer(unsigned int _ServerIndex) {
+	char _cUserName[50];					//Username
+	ZeroMemory(&m_cUserName, 50);
+
 	m_ServerSocketAddress.sin_family = AF_INET;
 	m_ServerSocketAddress.sin_port = m_vecServerAddr[_ServerIndex].sin_port;
 	m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[_ServerIndex].sin_addr.S_un.S_addr;
 	std::string _strServerAddress = ToString(m_vecServerAddr[_ServerIndex]);
 	std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
+
+	strcpy_s(_cUserName, "Henlo dis a hanshek");
+	TPacket _packet;
+	_packet.Serialize(HANDSHAKE, _cUserName);
+	SendData(_packet.PacketData);
 }
 
 void Client::GetPacketData(char* _pcLocalBuffer) {

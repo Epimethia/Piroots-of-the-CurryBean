@@ -22,17 +22,28 @@ void ServerManager::ProcessServer() {
 				ServerPtr->ProcessData(PacketData);
 			}
 		}
+		else if (ClientPtr != nullptr) {
+			//If the message queue is empty 
+			if (ClientPtr->GetWorkQueue()->empty()) {
+				//Don't do anything
+			}
+			else {
+				//Retrieve off a message from the queue and process it
+				std::string temp;
+				ClientPtr->GetWorkQueue()->pop(temp);
+				ClientPtr->ProcessData(const_cast<char*>(temp.c_str()));
+			}
+		}
 	}
+	
 }
 
 void ServerManager::StartClient() {
 	if (!_rNetwork.GetInstance().Initialise(CLIENT)) {
-		std::cout << "Unable to initialzie the network.\n";
+		std::cout << "Unable to initialize the network.\n";
 	}
 	ClientPtr = static_cast<Client*>(_rNetwork.GetInstance().GetNetworkEntity());
 	_ClientReceiveThread = std::thread(&Client::ReceiveData, ClientPtr, std::ref(PacketData));
-
-	Sleep(16);
 }
 
 void ServerManager::SelectServer(unsigned int _Opt) {

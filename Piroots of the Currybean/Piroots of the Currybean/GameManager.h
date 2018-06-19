@@ -36,7 +36,8 @@ private:
 	void DrawOption();
 	void DrawServerOption();
 	void DrawHostLobby();
-	void DrawServerList();
+	void DrawClientLobby();
+	void DrawServerSelect();
 
 	//Menu Elements
 	std::shared_ptr<Text> Title0;
