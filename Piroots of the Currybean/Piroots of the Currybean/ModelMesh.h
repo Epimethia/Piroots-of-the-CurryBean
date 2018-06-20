@@ -72,7 +72,7 @@ public:
 			glActiveTexture(GL_TEXTURE0 + i);					// Active proper texture unit before binding
 			std::stringstream ss;
 			std::string number;
-			std::string name = this->textures[i].type;	
+			std::string name = this->textures[i].type;
 			if (name == "texture_diffuse") ss << diffuseNr++;			// Transfer GLuint to stream
 			else if (name == "texture_specular") ss << specularNr++;	// Transfer GLuint to stream
 			number = ss.str();
@@ -83,7 +83,7 @@ public:
 			//Bind the Texture
 			glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
 		}
-		
+
 		glm::mat4 MVP = _VPMatrix * _TransformMatrix;
 
 		glUniformMatrix4fv(glGetUniformLocation(_Program, "model"), 1, GL_FALSE, glm::value_ptr(_TransformMatrix));

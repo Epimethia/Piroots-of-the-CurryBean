@@ -4,7 +4,7 @@
 #include "Dependencies\glm\gtc\matrix_transform.hpp"
 #include "Dependencies\glm\gtc\type_ptr.hpp"
 
-Text::Text() {};      
+Text::Text() {};
 
 Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shader, int size) {
 	ShaderLoader shaderLoader;
@@ -88,7 +88,7 @@ Text::Text(std::string newText, std::string newFont, glm::vec2 pos, GLuint Shade
 Text::~Text() {
 	CharMap.clear();
 }
-               
+
 void Text::Render() {
 	glm::vec2 textPos = position;
 

@@ -1,10 +1,8 @@
 #pragma once
-
-// Library Includes
 #include "Resource.h"
 
-// Local Includes
 #include "Networkentity.h"
+#include "Socket.h"
 #include "WorkQueue.h"
 
 //Forward Declaration
@@ -32,7 +30,6 @@ public:
 	virtual void GetRemoteIPAddress(char* _pcSendersIP);
 	virtual unsigned short GetRemotePort();
 	void KeepAliveCheck();
-	void IncrimentTimers(float TimeDelta);
 
 	CWorkQueue<char*>* GetWorkQueue();
 
@@ -50,9 +47,8 @@ private:
 
 	//Qs 2 : Make a map to hold the details of all the client who have connected. 
 	//The structure maps client addresses to client details
-	std::map<std::string, TClientDetails>* m_pConnectedClients;
+	std::map<std::string, TClientDetails> m_pConnectedClients;
 
 	//A workQueue to distribute messages between the main thread and Receive thread.
 	CWorkQueue<char*>* m_pWorkQueue;
 };
-

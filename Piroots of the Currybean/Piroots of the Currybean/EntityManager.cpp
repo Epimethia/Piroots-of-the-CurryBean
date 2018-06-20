@@ -39,9 +39,9 @@ EntityManager::EntityManager() {
 
 	GLuint VAO, VBO, EBO, Texture;
 	int width, height;
-	#pragma region GENERATING CUBE MESH
-	//std::cout << "Generating Cube Mesh\n";
-	#pragma region Generating VAO
+#pragma region GENERATING CUBE MESH
+//std::cout << "Generating Cube Mesh\n";
+#pragma region Generating VAO
 	GLfloat CubeVerts[] = {
 		// Positions             // Normal Coords        // TexCoords
 		// Front Face
@@ -120,10 +120,10 @@ EntityManager::EntityManager() {
 	//Generating EBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
-	#pragma endregion
+#pragma endregion
 
-	#pragma region Generating Textures
-	//Generating and binding the texture
+#pragma region Generating Textures
+//Generating and binding the texture
 	glGenTextures(1, &Texture);
 	glBindTexture(GL_TEXTURE_2D, Texture);
 
@@ -157,7 +157,7 @@ EntityManager::EntityManager() {
 
 	//Setting texture filters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-					GL_LINEAR_MIPMAP_LINEAR);
+		GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Freeing up data
@@ -165,19 +165,19 @@ EntityManager::EntityManager() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	#pragma endregion
+#pragma endregion
 
 	Cube_Mesh = std::make_shared<MESH>();
 	Cube_Mesh->VAO = VAO;
 	Cube_Mesh->NumIndices = sizeof(CubeIndices);
 	Cube_Mesh->Texture = Texture;
 	Cube_Mesh->Shader = ObjectShader;
-	#pragma endregion
+#pragma endregion
 
 
-	#pragma region GENERATING PYRAMID MESH
-	//std::cout << "Generating Pyramid Mesh\n";
-	#pragma region Generating VAO
+#pragma region GENERATING PYRAMID MESH
+//std::cout << "Generating Pyramid Mesh\n";
+#pragma region Generating VAO
 	GLfloat PyramidVerts[] = {
 		// Positions          	// Colors			// Tex Coords
 		-1.0f, 0.0f, -1.0f,   	1.0f, 1.0f, 0.0f,	0.0f, 1.0f, // 0	// Base
@@ -234,10 +234,10 @@ EntityManager::EntityManager() {
 	//Generating EBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(PyramidIndices), PyramidIndices, GL_STATIC_DRAW);
-	#pragma endregion
+#pragma endregion
 
-	#pragma region Generating Textures
-	//Generating and binding the texture
+#pragma region Generating Textures
+//Generating and binding the texture
 	glGenTextures(1, &Texture);
 	glBindTexture(GL_TEXTURE_2D, Texture);
 
@@ -271,7 +271,7 @@ EntityManager::EntityManager() {
 
 	//Setting texture filters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-					GL_LINEAR_MIPMAP_LINEAR);
+		GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Freeing up data
@@ -279,19 +279,19 @@ EntityManager::EntityManager() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	#pragma endregion
+#pragma endregion
 
-	//Passing them into the mesh structure
+//Passing them into the mesh structure
 	Pyramid_Mesh = std::make_shared<MESH>();
 	Pyramid_Mesh->VAO = VAO;
 	Pyramid_Mesh->NumIndices = sizeof(PyramidIndices);
 	Pyramid_Mesh->Texture = Texture;
 	Pyramid_Mesh->Shader = ObjectShader;
-	#pragma endregion
+#pragma endregion
 
-	#pragma region GENERATING SPHERE MESH
-	//std::cout << "Generating Sphere Mesh\n";
-	#pragma region Generating VAO
+#pragma region GENERATING SPHERE MESH
+//std::cout << "Generating Sphere Mesh\n";
+#pragma region Generating VAO
 	float radius = 1.0f;
 	const int sections = 8;
 	const int vertexAttrib = 8;
@@ -361,10 +361,10 @@ EntityManager::EntityManager() {
 
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(2);
-	#pragma endregion
+#pragma endregion
 
-	#pragma region Generating Textures
-	//Generating and binding the texture
+#pragma region Generating Textures
+//Generating and binding the texture
 	glGenTextures(1, &Texture);
 	glBindTexture(GL_TEXTURE_2D, Texture);
 
@@ -398,7 +398,7 @@ EntityManager::EntityManager() {
 
 	//Setting texture filters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-					GL_LINEAR_MIPMAP_LINEAR);
+		GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Freeing up data
@@ -406,29 +406,29 @@ EntityManager::EntityManager() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	#pragma endregion
+#pragma endregion
 
 	Sphere_Mesh = std::make_shared<MESH>();
 	Sphere_Mesh->VAO = VAO;
 	Sphere_Mesh->NumIndices = sizeof(SphereIndices);
 	Sphere_Mesh->Texture = Texture;
 	Sphere_Mesh->Shader = ObjectShader;
-	#pragma endregion
-	#pragma region GENERATING WAVE MESH
-	//std::cout << "Generating Wave Mesh\n";
+#pragma endregion
+#pragma region GENERATING WAVE MESH
+//std::cout << "Generating Wave Mesh\n";
 	Wave_Model = std::make_shared<Model>(WAVE_MODEL, WaveShader);
-	#pragma endregion
+#pragma endregion
 
-	#pragma region GENERATING BOAT MESH
-	//std::cout << "Generating Boat Mesh\n";
+#pragma region GENERATING BOAT MESH
+//std::cout << "Generating Boat Mesh\n";
 	Player_Model = std::make_shared<Model>(PLAYER_MODEL, ModelShader);
-	#pragma endregion
+#pragma endregion
 
-	#pragma region GENERATING SPECIAL POWERUP MODEL
-	//std::cout << "Generating Powerup Mesh\n";
+#pragma region GENERATING SPECIAL POWERUP MODEL
+//std::cout << "Generating Powerup Mesh\n";
 
 	Special_Model = std::make_shared<Model>(POWERUP_MODEL, ModelShader);
-	#pragma endregion
+#pragma endregion
 
 
 }
@@ -461,18 +461,18 @@ std::shared_ptr<MESH> EntityManager::GetMesh(ENTITY_ATTRIBUTE _EntityType) {
 	if (_EntityType == ATTACK_POWERUP) return Cube_Mesh;
 
 	if (_EntityType == SPEED_POWERUP) return Pyramid_Mesh;
-	
+
 	if (_EntityType == BULLET_ENTITY) return Sphere_Mesh;
-		
+
 	else return nullptr;
 }
 
 std::shared_ptr<Model> EntityManager::GetModel(ENTITY_ATTRIBUTE _EntityType) {
 	if (_EntityType == WAVE_ENTITY) return Wave_Model;
-		
+
 	if (_EntityType == PLAYER_ENTITY) return Player_Model;
 
 	if (_EntityType == SPECIAL_POWERUP) return Special_Model;
-		
+
 	else return nullptr;
 }

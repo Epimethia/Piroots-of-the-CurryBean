@@ -9,8 +9,7 @@ void CheckNan(glm::vec3& _Vec) {
 }
 
 #pragma region ENTITY BASE CLASS DEFINITIONS
-Entity::Entity() {
-}
+Entity::Entity() {}
 
 //Name:					Entity()
 //Parameters:		SHAPE, const char*, glm::vec3, glm::vec3, glm::vec3,
@@ -30,7 +29,7 @@ Entity::Entity(ENTITY_ATTRIBUTE _EntityType, glm::vec3 _Pos) {
 
 Entity::~Entity() {};
 
-void Entity::Render() {	
+void Entity::Render() {
 	glUseProgram(Shader);
 
 	//Binding the array
@@ -58,17 +57,17 @@ void Entity::Render() {
 	//Y Rotation
 	glm::mat4 RotateY =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.y),
-			glm::vec3(0.0f, 1.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.y),
+		glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 
 	//X Rotation
 	glm::mat4 RotateX =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.x),
-			glm::vec3(1.0f, 0.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.x),
+		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 
 	glm::mat4 RotationMatrix = RotateX * RotateY;
@@ -125,11 +124,11 @@ PickUp::PickUp(glm::vec3 _Pos, ENTITY_ATTRIBUTE _Type) {
 
 void PickUp::Process(float _DeltaTime) {
 	ObjRotation.y += (75.0f * _DeltaTime);
-	ObjPos.z += (sin(ZBobbing ))* 7.0f;
+	ObjPos.z += (sin(ZBobbing))* 7.0f;
 	ZBobbing += (10.0f * _DeltaTime);
 	VPMatrix = Camera::GetMatrix();
 	if (Type == SPECIAL_POWERUP) {
-		
+
 		Render();
 		return;
 	}
@@ -160,17 +159,17 @@ void PickUp::Process(float _DeltaTime) {
 		//Y Rotation
 		glm::mat4 RotateY =
 			glm::rotate(
-				glm::mat4(),
-				glm::radians(ObjRotation.y),
-				glm::vec3(0.0f, 1.0f, 0.0f)
+			glm::mat4(),
+			glm::radians(ObjRotation.y),
+			glm::vec3(0.0f, 1.0f, 0.0f)
 			);
 
 		//X Rotation
 		glm::mat4 RotateX =
 			glm::rotate(
-				glm::mat4(),
-				glm::radians(ObjRotation.x),
-				glm::vec3(1.0f, 0.0f, 0.0f)
+			glm::mat4(),
+			glm::radians(ObjRotation.x),
+			glm::vec3(1.0f, 0.0f, 0.0f)
 			);
 
 		glm::mat4 RotationMatrix = RotateX * RotateY;
@@ -246,15 +245,15 @@ void ModelEntity::Render() {
 	//X Rotation
 	glm::mat4 RotateX =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.x + 0.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.x + 0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 	glm::mat4 RotateY =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.y + 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.y + 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
@@ -290,9 +289,9 @@ void Wave::Render() {
 	//X Rotation
 	glm::mat4 RotateX =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.x + 90.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.x + 90.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
@@ -332,21 +331,21 @@ void AutoAgent::Render() {
 
 	float PI = 3.14159265359f;
 	float angle;
-	angle = atan2f(ObjVel.x, ObjVel.y) * (180.0f/PI);
+	angle = atan2f(ObjVel.x, ObjVel.y) * (180.0f / PI);
 
 	//X Rotation
 	glm::mat4 RotateX =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.x + 90.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.x + 90.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 
 	glm::mat4 RotateY =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(ObjRotation.y + (angle * -1.0f)),
-			glm::vec3(0.0f, 1.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(ObjRotation.y + (angle * -1.0f)),
+		glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 
 	glm::mat4 ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(ObjScale));
@@ -398,7 +397,7 @@ void Player::Process(float _DeltaTime) {
 		ShootCooldown = 4.0f;
 		MaxSpeed = 15.0f;
 	}
-	
+
 	if (State == ATTACK_POWERUP) {
 		ShootCooldown = 2.0f;
 		MaxSpeed = 15.0f;
@@ -412,7 +411,7 @@ void Player::Process(float _DeltaTime) {
 		ShootCooldown = 4.0f;
 		MaxSpeed = 15.0f;
 	}
-	
+
 	//memes
 
 	if (ShootTimer >= ShootCooldown) {
@@ -430,7 +429,7 @@ void Player::Process(float _DeltaTime) {
 				}
 			}
 			else {
-				BulletVect.push_back(std::make_shared<Bullet>(BulletVelocity,ObjPos));
+				BulletVect.push_back(std::make_shared<Bullet>(BulletVelocity, ObjPos));
 			}
 			ShootTimer = 0.0f;
 		}
@@ -530,7 +529,7 @@ void PursueEnemy::Process(float _DeltaTime) {
 			BulletVect.erase(BulletVect.begin(), BulletVect.begin() + i);
 			continue;
 		}
-		
+
 		//Check if the player is being hit
 		if (glm::distance(BulletVect[i]->GetPos(), TargetEntity->GetPos()) <= TargetEntity->HitRadius) {
 			TargetEntity->State = DEAD;

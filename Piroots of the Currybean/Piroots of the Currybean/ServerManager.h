@@ -1,22 +1,28 @@
 #pragma once
 #include "Resource.h"
-#include "Network.h"
 #include "Client.h"
 #include "Server.h"
 
 class ServerManager {
 public:
-	void HostServer();
-	void ProcessServer();
-	void StartClient();
-	void SelectServer(unsigned int _Opt);
-	std::vector<sockaddr_in> GetServerList() { return ClientPtr->GetServers(); };
+	~ServerManager();
 
 	//Singleton Methods
 	static std::shared_ptr<ServerManager> GetInstance();
-	void DestroyInstance();
+	static void DestroyInstance();
+
+	//Server Methods
+	void SelectServer(unsigned int _Opt);
+	void StartHost();
+	void StartClient();
+
+	void ProcessNetworkEntity();
+	void StopNetworkEntity();
+
+	std::vector<sockaddr_in> GetServerList() { return ClientPtr->GetServers(); };
 
 private:
+
 	ServerManager();
 	static std::shared_ptr<ServerManager> ServerManagerPtr;
 
@@ -29,8 +35,9 @@ private:
 
 	//Threads for receive
 	std::thread _ClientReceiveThread, _ServerReceiveThread;
-	char* PacketData = 0; //A local buffer to receive packet data info
 
-	char IPAddressArray[MAX_ADDRESS_LENGTH]; // An array to hold the IP Address as a string
-	//ZeroMemory(&_cIPAddress, strlen(_cIPAddress));
+	//Packet Send/recieve information
+	char* PacketData = 0;
+	// An array to hold the IP Address as a string
+	char IPAddressArray[MAX_ADDRESS_LENGTH];
 };

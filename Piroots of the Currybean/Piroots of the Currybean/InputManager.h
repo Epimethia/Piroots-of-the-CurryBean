@@ -19,7 +19,7 @@ public:
 	static unsigned char KeyArray[255];
 	static unsigned char KeySpecialArray[255];
 
-private:	
+private:
 	static void NormKeyDown(unsigned char key, int x, int y);
 	static void NormKeyUp(unsigned char key, int x, int y);
 	static void SpecialKeyDown(int key, int x, int y);

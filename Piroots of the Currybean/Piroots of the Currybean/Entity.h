@@ -97,7 +97,7 @@ public:
 	std::vector<std::shared_ptr<Bullet>>& GetBulletVect() { return BulletVect; };
 	glm::vec3& GetTarget() { return Target; };
 
-		bool bShoot;
+	bool bShoot;
 	float PowerUpDuration;
 	ENTITY_ATTRIBUTE State;
 

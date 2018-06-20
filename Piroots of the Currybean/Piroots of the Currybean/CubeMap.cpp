@@ -113,7 +113,7 @@ CubeMap::CubeMap() {
 		//Setting Texture wrap
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE); 
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 		//Setting texture filters
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -142,15 +142,15 @@ void CubeMap::Render(GLuint _Program, glm::mat4 _VPMatrix) {
 	glm::mat4 Projection = glm::perspective(1.0f, 1.0f, 0.1f, 10000.0f);
 	glm::mat4 RotationMatrixX =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(-45.0f),
-			glm::vec3(1.0f, 0.0f, 0.0f)
+		glm::mat4(),
+		glm::radians(-45.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f)
 		);
 	glm::mat4 RotationMatrixY =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(-0.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f)
+		glm::mat4(),
+		glm::radians(-0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
 		);
 
 	glm::mat4 VPMat = Camera::GetMatrix() * model;

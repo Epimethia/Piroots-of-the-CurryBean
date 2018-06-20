@@ -42,7 +42,7 @@ void Menu::Process(int& _Option) {
 		SelectOption(CurrentOption);
 		return;
 	}
-	
+
 	SelectOption(CurrentOption);
 
 	_Option = 999;

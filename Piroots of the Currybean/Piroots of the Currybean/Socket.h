@@ -1,6 +1,6 @@
 #pragma once
-
 #include "Resource.h"
+#include "Network.h"
 
 class Socket {
 public:
@@ -19,7 +19,7 @@ public:
 
 private:
 	std::string GetLocalAddress();
-	
+
 	SOCKET m_hSocket;						//The local socket
 	sockaddr_in m_SocketAddress;			//Socket address containing the local address and port of the socket
 

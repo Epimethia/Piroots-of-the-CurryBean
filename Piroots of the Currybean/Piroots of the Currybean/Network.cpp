@@ -20,21 +20,21 @@ Network::Network() {
 
 
 Network::~Network() {
-	delete m_pNetworkEntity;
-	m_pNetworkEntity = 0;
+	m_pNetworkEntity = nullptr;
 }
 
 bool
 Network::Initialise(EEntityType _eType) {
+	//VLDDisable();
 	switch (_eType) {
 		case CLIENT:
 		{
-			m_pNetworkEntity = new Client();
+			m_pNetworkEntity = static_cast<std::shared_ptr<INetworkEntity>>(std::make_shared<Client>());
 			break;
 		}
 		case SERVER:
 		{
-			m_pNetworkEntity = new Server();
+			m_pNetworkEntity = static_cast<std::shared_ptr<INetworkEntity>>(std::make_shared<Server>());
 			break;
 		}
 		default:
@@ -44,6 +44,7 @@ Network::Initialise(EEntityType _eType) {
 		}
 	}
 	VALIDATE(m_pNetworkEntity->Initialise());
+	//VLDEnable();
 	return (true);
 }
 
@@ -80,13 +81,14 @@ Network::GetInstance() {
 
 void
 Network::DestroyInstance() {
+	s_pNetwork->m_bOnline = false;
 	delete s_pNetwork;
 	s_pNetwork = 0;
 }
 
 
 INetworkEntity* Network::GetNetworkEntity() {
-	return m_pNetworkEntity;
+	return m_pNetworkEntity.get();
 }
 
 bool Network::IsOnline() {

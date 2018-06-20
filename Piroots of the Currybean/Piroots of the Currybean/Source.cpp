@@ -29,7 +29,8 @@ void update(void) {
 
 void Exit(void) {
 	GameManager::DestroyInstance();
-} 
+	exit(1);
+}
 
 int main(int argc, char **argv) {
 	glutInit(&argc, argv);
@@ -44,6 +45,7 @@ int main(int argc, char **argv) {
 	glutIdleFunc(update);
 	glutIgnoreKeyRepeat(1);
 	glutCloseFunc(Exit);
+
 	glutMainLoop();
 	return 0;
 }

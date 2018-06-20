@@ -19,7 +19,8 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Player) {
 	//RIGHT KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_HELD) {
 		//Held
-	} else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) {
+	}
+	else if (KeySpecialArray[GLUT_KEY_RIGHT] == KEY_FIRST_PRESS) {
 		_Player->CreateBullet(glm::vec3(-1.0f, 0.0f, 0.0f));
 		KeySpecialArray[GLUT_KEY_RIGHT] = KEY_HELD;
 	}
@@ -27,7 +28,8 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Player) {
 	//LEFT KEY INPUT
 	else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_HELD) {
 		//Held
-	} else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_FIRST_PRESS) {
+	}
+	else if (KeySpecialArray[GLUT_KEY_LEFT] == KEY_FIRST_PRESS) {
 		_Player->CreateBullet(glm::vec3(1.0f, 0.0f, 0.0f));
 		KeySpecialArray[GLUT_KEY_LEFT] = KEY_HELD;
 	}
@@ -35,7 +37,8 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Player) {
 	//UP KEY INPUT
 	else if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
 		//Held Stuff
-	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) {
+	}
+	else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) {
 		_Player->CreateBullet(glm::vec3(0.0f, -1.0f, 0.0f));
 
 		KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
@@ -44,7 +47,8 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Player) {
 	//DOWN KEY INPUT
 	else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
 		//Held Stuff
-	} else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) {
+	}
+	else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) {
 		KeySpecialArray[GLUT_KEY_DOWN] = KEY_HELD;
 		_Player->bShoot = true;
 		_Player->CreateBullet(glm::vec3(0.0f, 1.0f, 0.0f));
@@ -55,34 +59,39 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Player) {
 	else if (KeySpecialArray[GLUT_KEY_UP] == KEY_RELEASED) _Player->bShoot = false;
 	else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_RELEASED) _Player->bShoot = false;
 
-	#pragma region WASD INPUT
-	//RIGHT KEY INPUT
+#pragma region WASD INPUT
+//RIGHT KEY INPUT
 	if (KeyArray['d'] == KEY_HELD) {
 		glm::vec3 Target = { _Player->GetPos().x - 200.0f,_Player->GetPos().y, _Player->GetPos().z };
 		_Player->GetTarget() = Target;
-	} else if (KeyArray['d'] == KEY_FIRST_PRESS) KeyArray['d'] = KEY_HELD;
+	}
+	else if (KeyArray['d'] == KEY_FIRST_PRESS) KeyArray['d'] = KEY_HELD;
 
-	//LEFT KEY INPUT
+ //LEFT KEY INPUT
 	else if (KeyArray['a'] == KEY_HELD) {
 		glm::vec3 Target = { _Player->GetPos().x + 200.0f,_Player->GetPos().y, _Player->GetPos().z };
 		_Player->GetTarget() = Target;
-	} else if (KeyArray['a'] == KEY_FIRST_PRESS) KeyArray['a'] = KEY_HELD;
+	}
+	else if (KeyArray['a'] == KEY_FIRST_PRESS) KeyArray['a'] = KEY_HELD;
 
-	//UP KEY INPUT
+ //UP KEY INPUT
 	else if (KeyArray['w'] == KEY_HELD) {
 		glm::vec3 Target = { _Player->GetPos().x,_Player->GetPos().y - 200.0f, _Player->GetPos().z };
 		_Player->GetTarget() = Target;
-	} else if (KeyArray['w'] == KEY_FIRST_PRESS) KeyArray['w'] = KEY_HELD;
+	}
+	else if (KeyArray['w'] == KEY_FIRST_PRESS) KeyArray['w'] = KEY_HELD;
 
 	else if (KeyArray['s'] == KEY_HELD) {
 		glm::vec3 Target = { _Player->GetPos().x,_Player->GetPos().y + 200.0f, _Player->GetPos().z };
 		_Player->GetTarget() = Target;
-	} else if (KeyArray['s'] == KEY_FIRST_PRESS) KeyArray['s'] = KEY_HELD;
-	#pragma endregion
+	}
+	else if (KeyArray['s'] == KEY_FIRST_PRESS) KeyArray['s'] = KEY_HELD;
+#pragma endregion
 
 	if (KeyArray[27] == KEY_HELD) {
 		//Do esc stuff
-	} else if (KeyArray[27] == KEY_FIRST_PRESS) {
+	}
+	else if (KeyArray[27] == KEY_FIRST_PRESS) {
 		KeyArray[27] = KEY_HELD;
 		//glutLeaveMainLoop();
 		return;
@@ -104,21 +113,24 @@ void InputManager::ProcessKeyInput() {
 	//UP KEY INPUT
 	if (KeySpecialArray[GLUT_KEY_UP] == KEY_HELD) {
 		//Held Stuff
-	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) {
+	}
+	else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) {
 		KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
 	}
 
 	//DOWN KEY INPUT
 	else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_HELD) {
 		//Held Stuff
-	} else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) {
+	}
+	else if (KeySpecialArray[GLUT_KEY_DOWN] == KEY_FIRST_PRESS) {
 		KeySpecialArray[GLUT_KEY_DOWN] = KEY_HELD;
 	}
 
 	//ENTER KEY INPUT
 	if (KeyArray['\r'] == KEY_HELD) {
 
-	} else if (KeyArray['\r'] == KEY_FIRST_PRESS) {
+	}
+	else if (KeyArray['\r'] == KEY_FIRST_PRESS) {
 		KeyArray['\r'] = KEY_HELD;
 	}
 

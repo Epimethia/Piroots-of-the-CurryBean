@@ -1,4 +1,5 @@
 #include "GameManager.h"
+
 std::shared_ptr<GameManager> GameManager::SceneManagerPtr;
 GameState GameManager::CurrentState;
 
@@ -6,7 +7,8 @@ GameManager::~GameManager() {
 	Camera::DestroyInstance();
 	EntityManager::DestroyInstance();
 	sm.~SoundManager();
-}
+	ServerManager::DestroyInstance();
+};
 
 GameManager::GameManager() {
 	//Seeding the random number generator
@@ -17,15 +19,15 @@ GameManager::GameManager() {
 	DeltaTime = Clock::GetDeltaTime();
 	ServerManager::GetInstance();
 
-	#pragma region Music
+#pragma region Music
 	sm.Init();
 	sm.LoadAudio();
 	sm.PlayBGM();
 	PlayMusic = true;
-	#pragma endregion
+#pragma endregion
 
 
-	//Initializing consistent objects
+//Initializing consistent objects
 	PlayerObj = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
 	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -35,8 +37,8 @@ GameManager::GameManager() {
 	CurrentState = START_MENU;
 	Score = 0;
 
-	#pragma region Text and Menu Initializing
-	//initializing Text and menus
+#pragma region Text and Menu Initializing
+//initializing Text and menus
 	Title0 = std::make_shared<Text>("Piroots of", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
 	Title1 = std::make_shared<Text>("the CurryBeans", PIRATEFONT, glm::vec2(90.0f, 550.0f), TextShader, 80);
 	EndGameTitle = std::make_shared<Text>("You Died!", PIRATEFONT, glm::vec2(90.0f, 500.0f), TextShader, 80);
@@ -44,10 +46,10 @@ GameManager::GameManager() {
 	MultiplayerTitle1 = std::make_shared<Text>("Server List", PIRATEFONT, glm::vec2(90.0f, 540.0f), TextShader, 50);
 	ScoreText = std::make_shared<Text>("SCORE: 0", PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
 	WaitingForParty = std::make_shared<Text>("Waiting for Party...", PIRATEFONT, glm::vec2(200.0f, 570.0f), TextShader, 40);
-	#pragma endregion
+#pragma endregion
 
 
-	#pragma region StartMenu
+#pragma region StartMenu
 	std::vector<std::string> StartOpt;
 	StartOpt.push_back("Singleplayer");
 	StartOpt.push_back("Multiplayer");
@@ -55,35 +57,35 @@ GameManager::GameManager() {
 	StartOpt.push_back("Quit");
 
 	StartMenu = std::make_shared<Menu>(StartOpt, glm::vec2(90.0f, 300.0f));
-	#pragma endregion
+#pragma endregion
 
-	#pragma region EndMenu
+#pragma region EndMenu
 	std::vector<std::string> EndOpt;
 	EndOpt.push_back("Retry");
 	EndOpt.push_back("Main Menu");
 	EndOpt.push_back("Quit");
 
 	EndMenu = std::make_shared<Menu>(EndOpt, glm::vec2(90.0f, 280.0f));
-	#pragma endregion
+#pragma endregion
 
-	#pragma region OptionMenu
+#pragma region OptionMenu
 	std::vector<std::string> OptOpt;
 	OptOpt.push_back("");
 	OptOpt.push_back("Back");
 
 	OptionMenu = std::make_shared<Menu>(OptOpt, glm::vec2(40.0f, 280.0f));
-	#pragma endregion
+#pragma endregion
 
-	#pragma region MultiplayerMenu
+#pragma region MultiplayerMenu
 	std::vector<std::string> MultiOpt;
 	MultiOpt.push_back("Host Lobby");
 	MultiOpt.push_back("Join Lobby");
 	MultiOpt.push_back("Back");
 
 	MultiplayerMenu = std::make_shared<Menu>(MultiOpt, glm::vec2(90.0f, 300.0f));
-	#pragma endregion
+#pragma endregion
 
-	#pragma region ServerList
+#pragma region ServerList
 	std::vector<std::string> ServerListOpt;
 	ServerListOpt.push_back("----");
 	ServerListOpt.push_back("----");
@@ -93,9 +95,9 @@ GameManager::GameManager() {
 	ServerListOpt.push_back("----");
 	ServerListOpt.push_back("Back");
 	ServerList = std::make_shared<Menu>(ServerListOpt, glm::vec2(90.0f, 460.0f));
-	#pragma endregion
+#pragma endregion
 
-	#pragma region Aesthetic Boat Model
+#pragma region Aesthetic Boat Model
 	UIBoat = EntityManager::GetModel(PLAYER_ENTITY);
 	glm::mat4 RotationMatrix =
 		glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
@@ -109,16 +111,16 @@ GameManager::GameManager() {
 		glm::rotate(glm::mat4(), glm::radians(140.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.05f, 0.05f, 0.05f));
 	EndMenuMatrix = RotationMatrix * ScaleMatrix;
-	#pragma endregion
+#pragma endregion
 
-}
+};
 
 void GameManager::ToggleMusic() {
 	if (PlayMusic == true) {
 		PlayMusic = false;
 	}
 	else  PlayMusic = true;
-}
+};
 
 void GameManager::DrawMenu() {
 	Camera::GetPos() = { 0.0f, 0.0f, 0.0f };
@@ -133,7 +135,7 @@ void GameManager::DrawMenu() {
 	Title0->Render();
 	Title1->Render();
 	StartMenu->Render();
-}
+};
 
 void GameManager::DrawGame() {
 	PlayerObj->Process(DeltaTime);
@@ -200,36 +202,44 @@ void GameManager::DrawServerSelect() {
 
 void GameManager::DrawScene() {
 	switch (CurrentState) {
-		case START_MENU: {
+		case START_MENU:
+		{
 			DrawMenu();
 			break;
 		}
-		case GAME_PLAY: {
+		case GAME_PLAY:
+		{
 			DrawGame();
 			break;
 		}
-		case END_MENU: {
+		case END_MENU:
+		{
 			DrawEnd();
 			break;
 		}
-		case OPTION_MENU: {
+		case OPTION_MENU:
+		{
 			DrawOption();
 			break;
 		}
-		case MULTIPLAYER_LOBBY: {
+		case MULTIPLAYER_LOBBY:
+		{
 			DrawServerOption();
 			break;
 		}
-		case HOST_LOBBY: {
+		case HOST_LOBBY:
+		{
 			ServerManager::GetInstance();
 			DrawHostLobby();
 			break;
 		}
-		case SERVER_SELECT: {
+		case SERVER_SELECT:
+		{
 			DrawServerSelect();
 			break;
 		}
-		case CLIENT_LOBBY: {
+		case CLIENT_LOBBY:
+		{
 			DrawClientLobby();
 			break;
 		}
@@ -251,20 +261,24 @@ void GameManager::GameLoop(float _DeltaTime) {
 		InputManager::ProcessKeyInput();
 
 		switch (TempOutput) {
-			case 0: {
+			case 0:
+			{
 				CurrentState = GAME_PLAY;
 				break;
 			}
-			case 1: {
+			case 1:
+			{
 				MultiplayerTitle0->SetText("Multiplayer");
 				CurrentState = MULTIPLAYER_LOBBY;
 				break;
 			}
-			case 2: {
+			case 2:
+			{
 				CurrentState = OPTION_MENU;
 				break;
 			}
-			case 3: {
+			case 3:
+			{
 				glutLeaveMainLoop();
 				break;
 			}
@@ -282,11 +296,13 @@ void GameManager::GameLoop(float _DeltaTime) {
 		InputManager::ProcessKeyInput();
 
 		switch (TempOutput) {
-			case 0: {
+			case 0:
+			{
 				ToggleMusic();
 				break;
 			}
-			case 1: {
+			case 1:
+			{
 				CurrentState = START_MENU;
 				break;
 			}
@@ -303,17 +319,20 @@ void GameManager::GameLoop(float _DeltaTime) {
 		InputManager::ProcessKeyInput();
 
 		switch (TempOutput) {
-			case 0: {
+			case 0:
+			{
 				CurrentState = GAME_PLAY;
 				RestartGame();
 				break;
 			}
-			case 1: {
+			case 1:
+			{
 				CurrentState = START_MENU;
 				RestartGame();
 				break;
 			}
-			case 2: {
+			case 2:
+			{
 				glutLeaveMainLoop();
 				break;
 			}
@@ -328,17 +347,20 @@ void GameManager::GameLoop(float _DeltaTime) {
 		InputManager::ProcessKeyInput();
 
 		switch (TempOutput) {
-			case 0: {
+			case 0:
+			{
 				MultiplayerTitle0->SetText("Multiplayer - Host");
 				CurrentState = HOST_LOBBY;
 				break;
 			}
-			case 1: {
+			case 1:
+			{
 				MultiplayerTitle0->SetText("Multiplayer - Client");
 				CurrentState = SERVER_SELECT;
 				break;
 			}
-			case 2: {
+			case 2:
+			{
 				CurrentState = START_MENU;
 				break;
 			}
@@ -358,7 +380,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 			std::string LastAddr;
 			std::string ServerAddr;
 			int NumOptions = ServerManager::GetInstance()->GetServerList().size();
-			for (unsigned int i = 0; i < NumOptions; ++i) {
+			for (int i = 0; i < NumOptions; ++i) {
 				ServerAddr = ToString(ServerManager::GetInstance()->GetServerList()[i]);
 				if (ServerAddr != LastAddr) {
 					ServerList->ReplaceOption(i, ServerAddr);
@@ -369,70 +391,90 @@ void GameManager::GameLoop(float _DeltaTime) {
 			InputManager::ProcessKeyInput();
 
 			switch (TempOutput) {
-			case 0: {
-				//ServerPort 0
-				if (TempOutput <= NumOptions - 1) {
-					ServerManager::GetInstance()->SelectServer(0);
-					CurrentState = CLIENT_LOBBY;
-					_ServerChosen = true;
-				};
-				break;
-			}
-			case 1: {
-				//ServerPort 1
-				if (TempOutput <= NumOptions - 1) {
-					ServerManager::GetInstance()->SelectServer(1);
-					CurrentState = CLIENT_LOBBY;
-					_ServerChosen = true;
-				};
-				break;
-			}
-			case 2: {
-				//ServerPort 2
-				if (TempOutput <= NumOptions - 1) {
-					ServerManager::GetInstance()->SelectServer(2);
-					CurrentState = CLIENT_LOBBY;
-					_ServerChosen = true;
-				};
-				break;
-			}
-			case 3: {
-				if (TempOutput <= NumOptions - 1) {
-					ServerManager::GetInstance()->SelectServer(3);
-					CurrentState = CLIENT_LOBBY;
-					_ServerChosen = true;
-				};
-				break;
-			}
-			case 4: {
-				if (TempOutput <= NumOptions - 1) {
-					ServerManager::GetInstance()->SelectServer(4);
-					CurrentState = CLIENT_LOBBY;
-					_ServerChosen = true;
-				};
-				break;
-			}
-			case 5: {
-				if (TempOutput <= NumOptions - 1) {
-					ServerManager::GetInstance()->SelectServer(5);
-					CurrentState = CLIENT_LOBBY;
-					_ServerChosen = true;
-				};
-				break;
-			}
-			case 6: {
-				MultiplayerTitle0->SetText("Multiplayer");
-				CurrentState = MULTIPLAYER_LOBBY;
-				break;
-			}
-			default:break;
+				case 0:
+				{
+		   //ServerPort 0
+					if (TempOutput <= NumOptions - 1) {
+						ServerManager::GetInstance()->SelectServer(0);
+						CurrentState = CLIENT_LOBBY;
+						_ServerChosen = true;
+					};
+					break;
+				}
+				case 1:
+				{
+		   //ServerPort 1
+					if (TempOutput <= NumOptions - 1) {
+						ServerManager::GetInstance()->SelectServer(1);
+						CurrentState = CLIENT_LOBBY;
+						_ServerChosen = true;
+					};
+					break;
+				}
+				case 2:
+				{
+		   //ServerPort 2
+					if (TempOutput <= NumOptions - 1) {
+						ServerManager::GetInstance()->SelectServer(2);
+						CurrentState = CLIENT_LOBBY;
+						_ServerChosen = true;
+					};
+					break;
+				}
+				case 3:
+				{
+					if (TempOutput <= NumOptions - 1) {
+						ServerManager::GetInstance()->SelectServer(3);
+						CurrentState = CLIENT_LOBBY;
+						_ServerChosen = true;
+					};
+					break;
+				}
+				case 4:
+				{
+					if (TempOutput <= NumOptions - 1) {
+						ServerManager::GetInstance()->SelectServer(4);
+						CurrentState = CLIENT_LOBBY;
+						_ServerChosen = true;
+					};
+					break;
+				}
+				case 5:
+				{
+					if (TempOutput <= NumOptions - 1) {
+						ServerManager::GetInstance()->SelectServer(5);
+						CurrentState = CLIENT_LOBBY;
+						_ServerChosen = true;
+					};
+					break;
+				}
+				case 6:
+				{
+					MultiplayerTitle0->SetText("Multiplayer");
+					CurrentState = MULTIPLAYER_LOBBY;
+					for (int i = 0; i < 6; ++i) {
+						ServerList->ReplaceOption(i, "----");
+					}
+					ServerManager::GetInstance()->StopNetworkEntity();
+					_Connected = false;
+					break;
+				}
+				default:break;
 			}
 		}
 		return;
 	}
 
 	else if (CurrentState == CLIENT_LOBBY) {
-		ServerManager::GetInstance()->ProcessServer();
+		ServerManager::GetInstance()->ProcessNetworkEntity();
+	}
+
+	else if (CurrentState == HOST_LOBBY) {
+		if (_Connected == false) {
+			ServerManager::GetInstance()->StartHost();
+			_Connected = true;
+		}
+		ServerManager::GetInstance()->ProcessNetworkEntity();
 	}
 
 	else if (CurrentState == GAME_PLAY) {

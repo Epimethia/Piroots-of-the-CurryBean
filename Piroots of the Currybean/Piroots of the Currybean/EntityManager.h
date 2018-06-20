@@ -20,7 +20,7 @@
 
 
 enum ENTITY_ATTRIBUTE {
-	
+
 	//Entity Type
 	PLAYER_ENTITY,
 	BULLET_ENTITY,

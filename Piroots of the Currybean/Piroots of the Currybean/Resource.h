@@ -16,7 +16,7 @@
 #include FT_FREETYPE_H
 
 //VLD
-//#include "Dependencies\Visual Leak Detector\include\vld.h"
+#include "Dependencies\Visual Leak Detector\include\vld.h"
 
 //Main Includes
 #include <iostream>
@@ -45,8 +45,7 @@ namespace UTILS {
 #define VALIDATE(a) if (!a) return (false)
 
 namespace {
-	std::string ToString(sockaddr_in _sockAddress)
-	{
+	std::string ToString(sockaddr_in _sockAddress) {
 		//INET_ADDRSTRLEN - maximum length for IPv4 addresses
 		char _pcAddress[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &_sockAddress.sin_addr, _pcAddress, INET_ADDRSTRLEN);
@@ -60,8 +59,7 @@ namespace {
 }
 
 template<typename T>
-std::string ToString(const T& _value)
-{
+std::string ToString(const T& _value) {
 	std::strstream theStream;
 	theStream << _value << std::ends;
 	return (theStream.str());

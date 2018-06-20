@@ -10,26 +10,33 @@
 #include "Client.h"
 #include "ServerManager.h"
 
-//Singleton scene manager
 class GameManager {
 public:
 	~GameManager();
+	//Singleton Methods
 	static void DestroyInstance();
 	static std::shared_ptr<GameManager> GetInstance();
+
+	void GameLoop(float _DeltaTime);
+	void RestartGame();
 	void DrawScene();
 	static GameState& GetState() { return CurrentState; };
-	void RestartGame();
-	void GameLoop(float _DeltaTime);
+
 	void ToggleMusic();
 	bool MusicState() { return PlayMusic; };
 
 private:
 	GameManager();
 	static std::shared_ptr<GameManager> SceneManagerPtr;
+
+	//Game Variables
 	float DeltaTime;
-
+	float SpawnLimiter = 3.0f;
+	float SpawnTimer = 0.0f;
 	static GameState CurrentState;
+	unsigned int Score;
 
+	//Menu Elements
 	void DrawMenu();
 	void DrawGame();
 	void DrawEnd();
@@ -39,7 +46,6 @@ private:
 	void DrawClientLobby();
 	void DrawServerSelect();
 
-	//Menu Elements
 	std::shared_ptr<Text> Title0;
 	std::shared_ptr<Text> Title1;
 	std::shared_ptr<Text> EndGameTitle;
@@ -59,11 +65,15 @@ private:
 	std::shared_ptr<Menu> MultiplayerMenu;
 	std::shared_ptr<Menu> ServerList;
 
+	std::shared_ptr<Model> UIBoat;
+	glm::mat4 StartMenuMatrix;
+	glm::mat4 EndMenuMatrix;
+	float ZBobbing = 0.0f;
+
 	//Shaders
 	ShaderLoader SL;
 	GLuint CubeMapShader;
 	GLuint TextShader;
-	unsigned int Score;
 
 	//World Objects
 	CubeMap CM;
@@ -74,22 +84,13 @@ private:
 	std::vector<std::shared_ptr<AutoAgent>> EnemyVect;
 	std::vector<std::shared_ptr<PickUp>> PickUpVect;
 
-	float SpawnLimiter = 3.0f;
-	float SpawnTimer = 0.0f;
-
 	//Sound
-	SoundManager sm;
 	bool PlayMusic;
+	SoundManager sm;
 
 	//Networking
-	std::shared_ptr<ServerManager> ServerManagerPtr;
-
-	//Other
-	std::shared_ptr<Model> UIBoat;
-	float ZBobbing = 0.0f;
-	glm::mat4 StartMenuMatrix;
-	glm::mat4 EndMenuMatrix;
-
 	bool _Connected = false;
 	bool _ServerChosen = false;
+	std::shared_ptr<ServerManager> ServerManagerPtr;
+
 };

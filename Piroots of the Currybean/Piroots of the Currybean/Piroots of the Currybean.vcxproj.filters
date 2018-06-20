@@ -126,6 +126,9 @@
     <ClCompile Include="ServerManager.cpp">
       <Filter>System\Network System</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkEntity.cpp">
+      <Filter>System\Network System\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -188,11 +191,11 @@
     <ClInclude Include="Server.h">
       <Filter>System\Network System\Server</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkEntity.h">
-      <Filter>System\Network System</Filter>
-    </ClInclude>
     <ClInclude Include="ServerManager.h">
       <Filter>System\Network System</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkEntity.h">
+      <Filter>System\Network System\Network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

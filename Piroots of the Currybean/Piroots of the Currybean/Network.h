@@ -26,8 +26,8 @@ public:
 	~Network();
 
 	bool Initialise(EEntityType _eType);
-	void StartUp(); //A network has an ability to start up
-	void ShutDown(); //& an ability to be shut down
+	void StartUp();
+	void ShutDown();
 	bool IsOnline();
 	//Accessor methods
 	INetworkEntity* GetNetworkEntity();
@@ -39,12 +39,11 @@ public:
 private:
 	Network();
 	Network(const Network& _kr);
-	Network& operator= (const Network& _kr);
+	Network& operator=(const Network& _kr);
 
 protected:
 
-	INetworkEntity* m_pNetworkEntity;
+	std::shared_ptr<INetworkEntity> m_pNetworkEntity;
 	bool m_bOnline;
-
 	static Network* s_pNetwork;
 };

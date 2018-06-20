@@ -63,7 +63,7 @@ GLuint ShaderLoader::CreateProgram(std::string vertexShaderFilename, std::string
 				return 0;
 			}
 		}
-		
+
 	}
 	vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
 	Shaders[vertexShaderFilename] = vertex_shader;

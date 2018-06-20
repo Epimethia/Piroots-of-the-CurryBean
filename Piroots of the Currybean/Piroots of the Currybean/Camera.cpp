@@ -40,9 +40,9 @@ glm::mat4& Camera::GetMatrix() {
 
 	glm::mat4 RotationMatrixY =
 		glm::rotate(
-			glm::mat4(),
-			glm::radians(-30.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f)
+		glm::mat4(),
+		glm::radians(-30.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
 		);
 
 	glm::mat4 TranslationMatrix =
@@ -51,6 +51,6 @@ glm::mat4& Camera::GetMatrix() {
 		CameraPos
 		);
 
-	VPMat = Projection * View * ((RotationMatrixX) * TranslationMatrix);
+	VPMat = Projection * View * ((RotationMatrixX)* TranslationMatrix);
 	return VPMat;
 }

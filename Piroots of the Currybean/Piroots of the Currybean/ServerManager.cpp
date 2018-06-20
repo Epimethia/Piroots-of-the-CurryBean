@@ -3,15 +3,59 @@
 std::shared_ptr<ServerManager> ServerManager::ServerManagerPtr = nullptr;
 
 ServerManager::ServerManager() {
+	ZeroMemory(&IPAddressArray, strlen(IPAddressArray));
 	_rNetwork.StartUp();
 }
 
-void ServerManager::HostServer() {
-	ServerPtr = static_cast<Server*>(_rNetwork.GetInstance().GetNetworkEntity());
-	_ServerReceiveThread = std::thread(&Server::ReceiveData, ServerPtr, std::ref(PacketData));
+ServerManager::~ServerManager() {
+	StopNetworkEntity();
+	_rNetwork.DestroyInstance();
+	delete ClientPtr;
+	ClientPtr = nullptr;
+	delete ServerPtr;
+	ServerPtr = nullptr;
 }
 
-void ServerManager::ProcessServer() {
+std::shared_ptr<ServerManager> ServerManager::GetInstance() {
+	if (ServerManagerPtr == nullptr) ServerManagerPtr = std::shared_ptr<ServerManager>(new ServerManager());
+	return ServerManagerPtr;
+}
+
+void ServerManager::DestroyInstance() {
+	ServerManagerPtr = nullptr;
+}
+
+void ServerManager::SelectServer(unsigned int _Opt) {
+	ClientPtr->ChooseServer(_Opt);
+}
+
+void ServerManager::StartHost() {
+	if (!_rNetwork.GetInstance().Initialise(SERVER)) {
+		std::cout << "Unable to initialize the network.\n";
+	}
+	if (ServerPtr == nullptr) {
+		ServerPtr = static_cast<Server*>(_rNetwork.GetInstance().GetNetworkEntity());
+	}
+	if (_ServerReceiveThread.joinable() == false) {
+		std::cout << "Created Server Thread\n";
+		_ServerReceiveThread = std::thread(&Server::ReceiveData, ServerPtr, std::ref(PacketData));
+	}
+}
+
+void ServerManager::StartClient() {
+	if (!_rNetwork.GetInstance().Initialise(CLIENT)) {
+		std::cout << "Unable to initialize the network.\n";
+	}
+	if (ClientPtr == nullptr) {
+		ClientPtr = static_cast<Client*>(_rNetwork.GetInstance().GetNetworkEntity());
+	}
+	if (_ClientReceiveThread.joinable() == false) {
+		std::cout << "Created Client Thread\n";
+		_ClientReceiveThread = std::thread(&Client::ReceiveData, ClientPtr, std::ref(PacketData));
+	}
+}
+
+void ServerManager::ProcessNetworkEntity() {
 	if (_rNetwork.IsOnline()) {
 		if (ServerPtr != nullptr) {
 			if (!ServerPtr->GetWorkQueue()->empty()) {
@@ -35,26 +79,18 @@ void ServerManager::ProcessServer() {
 			}
 		}
 	}
-	
-}
 
-void ServerManager::StartClient() {
-	if (!_rNetwork.GetInstance().Initialise(CLIENT)) {
-		std::cout << "Unable to initialize the network.\n";
+}
+void ServerManager::StopNetworkEntity() {
+	if (ClientPtr != nullptr) {
+		ClientPtr->GetOnlineState() = false;
+		_ClientReceiveThread.join();
+		ClientPtr = nullptr;
 	}
-	ClientPtr = static_cast<Client*>(_rNetwork.GetInstance().GetNetworkEntity());
-	_ClientReceiveThread = std::thread(&Client::ReceiveData, ClientPtr, std::ref(PacketData));
-}
-
-void ServerManager::SelectServer(unsigned int _Opt) {
-	ClientPtr->ChooseServer(_Opt);
-}
-
-std::shared_ptr<ServerManager> ServerManager::GetInstance() {
-	if (ServerManagerPtr == nullptr) ServerManagerPtr = std::shared_ptr<ServerManager>(new ServerManager());
-	return ServerManagerPtr;
-}
-
-void ServerManager::DestroyInstance() {
-
+	
+	if (ServerPtr != nullptr) {
+		ServerPtr->GetOnlineState() = false;
+		_ServerReceiveThread.join();
+		ServerPtr = nullptr;
+	}
 }
