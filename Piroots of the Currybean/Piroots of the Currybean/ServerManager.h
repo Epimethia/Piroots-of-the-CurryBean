@@ -19,10 +19,12 @@ public:
 	void ProcessNetworkEntity();
 	void StopNetworkEntity();
 
+	EEntityType NetworkEntityType;
+
 	std::vector<sockaddr_in> GetServerList() { return ClientPtr->GetServers(); };
 
 private:
-
+	float TimeSinceLastCheck = 0.0f;
 	ServerManager();
 	static std::shared_ptr<ServerManager> ServerManagerPtr;
 

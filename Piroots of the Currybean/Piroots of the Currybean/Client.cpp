@@ -250,7 +250,7 @@ void Client::ChooseServer(unsigned int _ServerIndex) {
 void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
 	//set a timer on the socket for one second
 	struct timeval timeValue;
-	timeValue.tv_sec = 30;
+	timeValue.tv_sec = 1;
 	timeValue.tv_usec = 0;
 	setsockopt(m_pClientSocket->GetSocketHandle(), SOL_SOCKET, SO_RCVTIMEO,
 		(char*)&timeValue, sizeof(timeValue));
@@ -289,7 +289,6 @@ void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
 		}
 		else {
 			//There is valid data received.
-			strcpy_s(_pcBufferToReceiveData, strlen(_buffer) + 1, _buffer);
 			if (
 				//Lambda to check if the server address is already in the server address vector
 				[&]()->bool {
@@ -300,6 +299,7 @@ void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
 				}
 				return false;
 			}() == false) {
+				strcpy_s(_pcBufferToReceiveData, strlen(_buffer) + 1, _buffer);
 				m_ServerSocketAddress = _FromAddress;
 				m_vecServerAddr.push_back(m_ServerSocketAddress);
 			}

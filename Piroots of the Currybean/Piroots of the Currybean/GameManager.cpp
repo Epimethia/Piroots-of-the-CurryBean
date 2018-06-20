@@ -350,12 +350,14 @@ void GameManager::GameLoop(float _DeltaTime) {
 			case 0:
 			{
 				MultiplayerTitle0->SetText("Multiplayer - Host");
+				ServerManager::GetInstance()->NetworkEntityType = SERVER;
 				CurrentState = HOST_LOBBY;
 				break;
 			}
 			case 1:
 			{
 				MultiplayerTitle0->SetText("Multiplayer - Client");
+				ServerManager::GetInstance()->NetworkEntityType = CLIENT;
 				CurrentState = SERVER_SELECT;
 				break;
 			}
@@ -375,106 +377,23 @@ void GameManager::GameLoop(float _DeltaTime) {
 			_Connected = true;
 		}
 
-		if (_ServerChosen == false) {
-			int TempOutput = NULL;
-			std::string LastAddr;
-			std::string ServerAddr;
-			int NumOptions = ServerManager::GetInstance()->GetServerList().size();
-			for (int i = 0; i < NumOptions; ++i) {
-				ServerAddr = ToString(ServerManager::GetInstance()->GetServerList()[i]);
-				if (ServerAddr != LastAddr) {
-					ServerList->ReplaceOption(i, ServerAddr);
-					LastAddr = ServerAddr;
-				}
-			}
-			ServerList->Process(TempOutput);
-			InputManager::ProcessKeyInput();
-
-			switch (TempOutput) {
-				case 0:
-				{
-		   //ServerPort 0
-					if (TempOutput <= NumOptions - 1) {
-						ServerManager::GetInstance()->SelectServer(0);
-						CurrentState = CLIENT_LOBBY;
-						_ServerChosen = true;
-					};
-					break;
-				}
-				case 1:
-				{
-		   //ServerPort 1
-					if (TempOutput <= NumOptions - 1) {
-						ServerManager::GetInstance()->SelectServer(1);
-						CurrentState = CLIENT_LOBBY;
-						_ServerChosen = true;
-					};
-					break;
-				}
-				case 2:
-				{
-		   //ServerPort 2
-					if (TempOutput <= NumOptions - 1) {
-						ServerManager::GetInstance()->SelectServer(2);
-						CurrentState = CLIENT_LOBBY;
-						_ServerChosen = true;
-					};
-					break;
-				}
-				case 3:
-				{
-					if (TempOutput <= NumOptions - 1) {
-						ServerManager::GetInstance()->SelectServer(3);
-						CurrentState = CLIENT_LOBBY;
-						_ServerChosen = true;
-					};
-					break;
-				}
-				case 4:
-				{
-					if (TempOutput <= NumOptions - 1) {
-						ServerManager::GetInstance()->SelectServer(4);
-						CurrentState = CLIENT_LOBBY;
-						_ServerChosen = true;
-					};
-					break;
-				}
-				case 5:
-				{
-					if (TempOutput <= NumOptions - 1) {
-						ServerManager::GetInstance()->SelectServer(5);
-						CurrentState = CLIENT_LOBBY;
-						_ServerChosen = true;
-					};
-					break;
-				}
-				case 6:
-				{
-					MultiplayerTitle0->SetText("Multiplayer");
-					CurrentState = MULTIPLAYER_LOBBY;
-					for (int i = 0; i < 6; ++i) {
-						ServerList->ReplaceOption(i, "----");
-					}
-					ServerManager::GetInstance()->StopNetworkEntity();
-					_Connected = false;
-					break;
-				}
-				default:break;
-			}
-		}
-		return;
 	}
 
 	else if (CurrentState == CLIENT_LOBBY) {
-		ServerManager::GetInstance()->ProcessNetworkEntity();
+
+
+		
 	}
 
 	else if (CurrentState == HOST_LOBBY) {
-		if (_Connected == false) {
-			ServerManager::GetInstance()->StartHost();
-			_Connected = true;
+
+		{
+			if (_Connected == false) {
+				ServerManager::GetInstance()->StartHost();
+				_Connected = true;
+			}
+			ServerManager::GetInstance()->ProcessNetworkEntity();
 		}
-		ServerManager::GetInstance()->ProcessNetworkEntity();
 	}
 
 	else if (CurrentState == GAME_PLAY) {

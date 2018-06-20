@@ -143,8 +143,7 @@ void Server::ReceiveData(char* _pcBufferToReceiveData) {
 				ErrorRoutines::PrintWSAErrorInfo(_iError);
 			}
 			//return false;
-		}
-		else {
+		} else {
 			_iPacketSize = static_cast<int>(strlen(_buffer)) + 1;
 			strcpy_s(_pcBufferToReceiveData, _iPacketSize, _buffer);
 			char _IPAddress[100];

@@ -60,23 +60,28 @@ void ServerManager::ProcessNetworkEntity() {
 		if (ServerPtr != nullptr) {
 			if (!ServerPtr->GetWorkQueue()->empty()) {
 				_rNetwork.GetInstance().GetNetworkEntity()->GetRemoteIPAddress(IPAddressArray);
+				//std::cout << _cIPAddress
+				//<< ":" << _rNetwork.GetInstance().GetNetworkEntity()->GetRemotePort() << "> " << _pcPacketData << std::endl;
 
 				//Retrieve off a message from the queue and process it
 				ServerPtr->GetWorkQueue()->pop(PacketData);
 				ServerPtr->ProcessData(PacketData);
 			}
+
+			//Keep Alive Functionality
+			//If 5 seconds has elapsed, send a handshake message to the user to see if the user is still there
+			//Pushing a Keep Alive packet to the server
+			Sleep(1);
+			TimeSinceLastCheck++;
+			//If 2 seconds have gone by, perform a keep alive check
+			if (TimeSinceLastCheck >= 10000.0f) {
+				std::cout << "Performing Keep Alive Check\n";
+				ServerPtr->KeepAliveCheck();
+				TimeSinceLastCheck = 0.0f;
+			}
 		}
-		else if (ClientPtr != nullptr) {
-			//If the message queue is empty 
-			if (ClientPtr->GetWorkQueue()->empty()) {
-				//Don't do anything
-			}
-			else {
-				//Retrieve off a message from the queue and process it
-				std::string temp;
-				ClientPtr->GetWorkQueue()->pop(temp);
-				ClientPtr->ProcessData(const_cast<char*>(temp.c_str()));
-			}
+		else {
+			
 		}
 	}
 
