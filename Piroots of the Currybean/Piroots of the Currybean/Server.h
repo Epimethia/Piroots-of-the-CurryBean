@@ -32,6 +32,8 @@ public:
 	virtual unsigned short GetRemotePort();
 	void KeepAliveCheck();
 
+	glm::vec3 Player1Pos;
+
 	bool LobbyReady = false;
 
 	CWorkQueue<char*>* GetWorkQueue();

@@ -19,8 +19,10 @@ public:
 	void ProcessNetworkEntity();
 	void SendPacket(std::string _Data);
 	void StopNetworkEntity();
+	
+	glm::vec3 GetPlayerPos();
 
-	bool LobbyCheck();
+	bool LobbyReady();
 
 
 private:
@@ -42,5 +44,5 @@ private:
 
 	float TimeSinceLastCheck;						//Keep alive message timer
 
-	glm::vec3 Player1Pos;
+	
 };

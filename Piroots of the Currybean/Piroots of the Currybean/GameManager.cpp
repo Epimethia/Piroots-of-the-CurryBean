@@ -7,6 +7,7 @@ GameManager::~GameManager() {
 	Camera::DestroyInstance();
 	EntityManager::DestroyInstance();
 	sm.~SoundManager();
+	ServerManager::GetInstance()->StopNetworkEntity();
 	ServerManager::DestroyInstance();
 };
 
@@ -203,6 +204,16 @@ void GameManager::DrawServerSelect() {
 	ServerList->Render();
 }
 
+void GameManager::DrawMultiplayerGame() {
+	Player0->Process(DeltaTime);
+	Player1->Process(DeltaTime);
+	for (auto it : EnemyVect) it->Process(DeltaTime);
+	for (auto it : PickUpVect) it->Process(DeltaTime);
+	CM.Render(CubeMapShader, Camera::GetMatrix());
+	WaveObj->Process(DeltaTime);
+	ScoreText->Render();
+}
+
 void GameManager::DrawScene() {
 	switch (CurrentState) {
 		case START_MENU:
@@ -221,11 +232,13 @@ void GameManager::DrawScene() {
 			DrawServerOption();
 			break;
 		case HOST_LOBBY:
-			ServerManager::GetInstance();
 			DrawHostLobby();
 			break;
 		case SERVER_SELECT:
 			DrawServerSelect();
+			break;
+		case MULTIPLAYER_GAME:
+			DrawMultiplayerGame();
 			break;
 		case CLIENT_LOBBY:
 			DrawClientLobby();
@@ -277,7 +290,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 			if (Player0 != nullptr) {
 				DeltaTime = _DeltaTime;
 				//Spawning Enemies
-				if (EnemyVect.size() < 10) {
+				if (EnemyVect.size() < 0) {
 					SpawnTimer += 10.0f * _DeltaTime;
 					if (SpawnTimer >= SpawnLimiter) {
 						SpawnTimer = 0.0f;
@@ -389,7 +402,15 @@ void GameManager::GameLoop(float _DeltaTime) {
 		case HOST_LOBBY: {
 			
 			ServerManager::GetInstance()->ProcessNetworkEntity();
+			if (ServerManager::GetInstance()->LobbyReady()) {
+				CurrentState = MULTIPLAYER_GAME;
+			}
 			
+			break;
+		}
+		case MULTIPLAYER_GAME: {
+			ServerManager::GetInstance()->ProcessNetworkEntity();
+			Player1->GetTarget() = ServerManager::GetInstance()->GetPlayerPos();
 			break;
 		}
 
@@ -407,7 +428,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 			if (Player0 != nullptr) {
 				DeltaTime = _DeltaTime;
 				//Spawning Enemies
-				if (EnemyVect.size() < 10) {
+				if (EnemyVect.size() < 0) {
 					SpawnTimer += 10.0f * _DeltaTime;
 					if (SpawnTimer >= SpawnLimiter) {
 						SpawnTimer = 0.0f;

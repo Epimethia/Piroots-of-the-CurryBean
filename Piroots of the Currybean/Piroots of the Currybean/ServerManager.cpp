@@ -81,7 +81,6 @@ void ServerManager::ProcessNetworkEntity() {
 				ServerPtr->GetWorkQueue()->pop(_pcPacketData);
 				ServerPtr->ProcessData(_pcPacketData);
 			}
-
 			//Keep Alive Functionality
 			//If 5 seconds has elapsed, send a handshake message to the user to see if the user is still there
 			//Pushing a Keep Alive packet to the server
@@ -97,7 +96,7 @@ void ServerManager::ProcessNetworkEntity() {
 
 void ServerManager::SendPacket(std::string _Data) {
 	TPacket DataPacket;
-	DataPacket.Serialize(DATA, const_cast<char*>(_Data.c_str()));
+	DataPacket.Serialize(PLAYERPOS, const_cast<char*>(_Data.c_str()));
 	NetworkPtr->GetNetworkEntity()->SendData(DataPacket.PacketData);
 }
 
@@ -115,6 +114,10 @@ void ServerManager::StopNetworkEntity() {
 	}
 }
 
-bool ServerManager::LobbyCheck() {
-	return false;
+glm::vec3 ServerManager::GetPlayerPos() {
+	return ServerPtr->Player1Pos;
+}
+
+bool ServerManager::LobbyReady() {
+	return ServerPtr->LobbyReady;
 }

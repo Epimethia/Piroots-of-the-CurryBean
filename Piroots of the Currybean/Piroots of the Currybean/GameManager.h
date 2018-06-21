@@ -45,6 +45,7 @@ private:
 	void DrawHostLobby();
 	void DrawClientLobby();
 	void DrawServerSelect();
+	void DrawMultiplayerGame();
 
 	std::shared_ptr<Text> Title0;
 	std::shared_ptr<Text> Title1;

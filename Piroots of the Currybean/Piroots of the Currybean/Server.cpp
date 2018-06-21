@@ -48,6 +48,8 @@ bool Server::Initialise() {
 
 	//Starting the server clock
 
+	//Set the client's online status to true
+	m_bOnline = true;
 	return true;
 }
 
@@ -97,9 +99,7 @@ bool Server::AddClient(std::string _strClientName) {
 	std::string _strAddress = ToString(m_ClientAddress);
 	m_pConnectedClients->insert(std::pair < std::string, TClientDetails >(_strAddress, _clientToAdd));
 
-	if (m_pConnectedClients->size() > 0) {
-		LobbyReady = true;
-	}
+	
 	return true;
 }
 
@@ -131,7 +131,7 @@ void Server::ReceiveData(char* _pcBufferToReceiveData) {
 	//Make a thread local buffer to receive data into
 	char _buffer[MAX_MESSAGE_LENGTH];
 
-	while (true) {
+	while (m_bOnline) {
 		// pull off the packet(s) using recvfrom()
 		_iNumOfBytesReceived = recvfrom(			// pulls a packet from a single source...
 										m_pServerSocket->GetSocketHandle(),						// client-end socket being used to read from
@@ -303,7 +303,11 @@ void Server::ProcessData(char* _pcDataReceived) {
 		}
 		
 		case PLAYERPOS: {
-
+			std::string str(_pcDataReceived);
+			std::stringstream ss(str);
+			float x, y;
+			ss >> x >> y;
+			Player1Pos = glm::vec3(x, y, -0.2);
 		}
 
 		default:break;
