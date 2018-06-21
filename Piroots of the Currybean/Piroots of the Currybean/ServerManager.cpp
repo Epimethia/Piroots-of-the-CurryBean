@@ -3,17 +3,27 @@
 std::shared_ptr<ServerManager> ServerManager::ServerManagerPtr = nullptr;
 
 ServerManager::ServerManager() {
+	_pcPacketData = new char[MAX_MESSAGE_LENGTH];
+	strcpy_s(_pcPacketData, strlen("") + 1, "");
+
+	NetworkPtr = Network::GetInstance();
+	NetworkPtr->StartUp();
+
+	ClientPtr = nullptr;
+	ServerPtr = nullptr;
+
 	ZeroMemory(&IPAddressArray, strlen(IPAddressArray));
-	_rNetwork.StartUp();
 }
 
 ServerManager::~ServerManager() {
 	StopNetworkEntity();
-	_rNetwork.DestroyInstance();
-	delete ClientPtr;
+	Network::DestroyInstance();
 	ClientPtr = nullptr;
-	delete ServerPtr;
 	ServerPtr = nullptr;
+	NetworkPtr = nullptr;
+
+	delete[] _pcPacketData;
+	_pcPacketData = nullptr;
 }
 
 std::shared_ptr<ServerManager> ServerManager::GetInstance() {
@@ -26,76 +36,85 @@ void ServerManager::DestroyInstance() {
 }
 
 void ServerManager::SelectServer(unsigned int _Opt) {
-	ClientPtr->ChooseServer(_Opt);
+
 }
 
-void ServerManager::StartHost() {
-	if (!_rNetwork.GetInstance().Initialise(SERVER)) {
-		std::cout << "Unable to initialize the network.\n";
+void ServerManager::StartNetwork(EEntityType _Type) {
+	NetworkEntityType = _Type;
+	if (!NetworkPtr->GetInstance()->Initialise(NetworkEntityType)) {
+		std::cout << "Unable to initialise the Network\n";
+		return;
 	}
-	if (ServerPtr == nullptr) {
-		ServerPtr = static_cast<Server*>(_rNetwork.GetInstance().GetNetworkEntity());
+	//Run receive on a separate thread so that it does not block the main client thread.
+	if (NetworkEntityType == CLIENT) { //if network entity is a client 
+		ClientPtr = static_cast<Client*>(NetworkPtr->GetInstance()->GetNetworkEntity());
+		_ClientReceiveThread = std::thread(&Client::ReceiveData, ClientPtr, std::ref(_pcPacketData));
 	}
-	if (_ServerReceiveThread.joinable() == false) {
-		std::cout << "Created Server Thread\n";
-		_ServerReceiveThread = std::thread(&Server::ReceiveData, ServerPtr, std::ref(PacketData));
-	}
-}
-
-void ServerManager::StartClient() {
-	if (!_rNetwork.GetInstance().Initialise(CLIENT)) {
-		std::cout << "Unable to initialize the network.\n";
-	}
-	if (ClientPtr == nullptr) {
-		ClientPtr = static_cast<Client*>(_rNetwork.GetInstance().GetNetworkEntity());
-	}
-	if (_ClientReceiveThread.joinable() == false) {
-		std::cout << "Created Client Thread\n";
-		_ClientReceiveThread = std::thread(&Client::ReceiveData, ClientPtr, std::ref(PacketData));
+	//Run receive of server also on a separate thread 
+	else if (NetworkEntityType == SERVER) { //if network entity is a server 
+		ServerPtr = static_cast<Server*>(NetworkPtr->GetInstance()->GetNetworkEntity());
+		_ServerReceiveThread = std::thread(&Server::ReceiveData, ServerPtr, std::ref(_pcPacketData));
 	}
 }
 
 void ServerManager::ProcessNetworkEntity() {
-	if (_rNetwork.IsOnline()) {
+	if (NetworkEntityType == CLIENT) {//if network entity is a client
+		if (ClientPtr != nullptr) {
+			//If the message queue is empty 
+			if (ClientPtr->GetWorkQueue()->empty()) {
+				//Don't do anything
+			} else {
+				//Retrieve off a message from the queue and process it
+				std::string temp;
+				ClientPtr->GetWorkQueue()->pop(temp);
+				ClientPtr->ProcessData(const_cast<char*>(temp.c_str()));
+			}
+		}
+	} else { //if you are running a server instance
 		if (ServerPtr != nullptr) {
 			if (!ServerPtr->GetWorkQueue()->empty()) {
-				_rNetwork.GetInstance().GetNetworkEntity()->GetRemoteIPAddress(IPAddressArray);
+				NetworkPtr->GetInstance()->GetNetworkEntity()->GetRemoteIPAddress(IPAddressArray);
 				//std::cout << _cIPAddress
 				//<< ":" << _rNetwork.GetInstance().GetNetworkEntity()->GetRemotePort() << "> " << _pcPacketData << std::endl;
 
 				//Retrieve off a message from the queue and process it
-				ServerPtr->GetWorkQueue()->pop(PacketData);
-				ServerPtr->ProcessData(PacketData);
+				ServerPtr->GetWorkQueue()->pop(_pcPacketData);
+				ServerPtr->ProcessData(_pcPacketData);
 			}
 
 			//Keep Alive Functionality
 			//If 5 seconds has elapsed, send a handshake message to the user to see if the user is still there
 			//Pushing a Keep Alive packet to the server
-			Sleep(1);
 			TimeSinceLastCheck++;
-			//If 2 seconds have gone by, perform a keep alive check
-			if (TimeSinceLastCheck >= 10000.0f) {
+			if (TimeSinceLastCheck >= 500.0f) {
 				std::cout << "Performing Keep Alive Check\n";
 				ServerPtr->KeepAliveCheck();
 				TimeSinceLastCheck = 0.0f;
 			}
 		}
-		else {
-			
-		}
 	}
-
 }
+
+void ServerManager::SendPacket(std::string _Data) {
+	TPacket DataPacket;
+	DataPacket.Serialize(DATA, const_cast<char*>(_Data.c_str()));
+	NetworkPtr->GetNetworkEntity()->SendData(DataPacket.PacketData);
+}
+
 void ServerManager::StopNetworkEntity() {
 	if (ClientPtr != nullptr) {
 		ClientPtr->GetOnlineState() = false;
 		_ClientReceiveThread.join();
 		ClientPtr = nullptr;
 	}
-	
+
 	if (ServerPtr != nullptr) {
 		ServerPtr->GetOnlineState() = false;
 		_ServerReceiveThread.join();
 		ServerPtr = nullptr;
 	}
+}
+
+bool ServerManager::LobbyCheck() {
+	return false;
 }

@@ -31,6 +31,8 @@
 #include <time.h>
 #include <Windows.h>
 #include <strstream>
+#include <sstream>
+#include <iomanip>
 
 //Network Programming
 #include <WinSock2.h>

@@ -1,4 +1,9 @@
+//Local Includes 
+#include "Network.h"
+
+//This Include
 #include "Socket.h"
+
 
 Socket::Socket()
 	:m_hSocket(0) {
@@ -9,6 +14,7 @@ Socket::~Socket() {
 	closesocket(m_hSocket);
 }
 
+//Implicit Assumption: We are creating only UDP sockets.....
 bool Socket::Initialise(unsigned short _usPortNumber) {
 	int _iError;
 	//Create a UDP socket 
@@ -18,8 +24,7 @@ bool Socket::Initialise(unsigned short _usPortNumber) {
 		ErrorRoutines::PrintWSAErrorInfo(_iError);
 		std::cout << "Unable to create socket\n";
 		return false;
-	}
-	else {
+	} else {
 		std::cout << "Successfully created the socket" << std::endl;
 	}
 
@@ -74,7 +79,7 @@ std::string Socket::GetLocalAddress() {
 int Socket::EnableBroadcast() {
 	int _iBroadCastOption = 1;
 	int _iResult = setsockopt(m_hSocket, SOL_SOCKET, SO_BROADCAST,
-		reinterpret_cast<char*>(&_iBroadCastOption), sizeof(_iBroadCastOption));
+							  reinterpret_cast<char*>(&_iBroadCastOption), sizeof(_iBroadCastOption));
 	if (_iResult == SOCKET_ERROR) {
 		int _iError = WSAGetLastError();
 		ErrorRoutines::PrintWSAErrorInfo(_iError);
@@ -85,10 +90,11 @@ int Socket::EnableBroadcast() {
 	return _iResult;
 }
 
+
 int Socket::DisableBroadcast() {
 	int _iBroadCastOption = 0;
 	int _iResult = setsockopt(m_hSocket, SOL_SOCKET, SO_BROADCAST,
-		reinterpret_cast<char*>(&_iBroadCastOption), sizeof(_iBroadCastOption));
+							  reinterpret_cast<char*>(&_iBroadCastOption), sizeof(_iBroadCastOption));
 	if (_iResult == SOCKET_ERROR) {
 		int _iError = WSAGetLastError();
 		ErrorRoutines::PrintWSAErrorInfo(_iError);

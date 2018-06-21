@@ -77,7 +77,8 @@ private:
 
 	//World Objects
 	CubeMap CM;
-	std::shared_ptr<Player> PlayerObj;
+	std::shared_ptr<Player> Player0;
+	std::shared_ptr<Player> Player1;
 	std::shared_ptr<Wave> WaveObj;
 
 	//Entity Vectors
@@ -91,6 +92,5 @@ private:
 	//Networking
 	bool _Connected = false;
 	bool _ServerChosen = false;
-	std::shared_ptr<ServerManager> ServerManagerPtr;
-
+	EEntityType InstanceType;
 };

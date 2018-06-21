@@ -1,5 +1,5 @@
 #pragma once
-#include "Networkentity.h"
+#include "NetworkEntity.h"
 #include "WorkQueue.h"
 #include "Socket.h"
 
@@ -7,34 +7,42 @@ class Socket;
 
 class Client : public INetworkEntity {
 public:
+	// Default Constructors/Destructors
 	Client();
 	~Client();
 
-	virtual bool Initialise();
+	// Methods
 
-	virtual void GetRemoteIPAddress(char* _pcSendersIP);
-	virtual unsigned short GetRemotePort();
-	void GetPacketData(char* _pcLocalBuffer);
-
+	virtual bool Initialise(); //Implicit in the intialization is the creation and binding of the socket
 	virtual bool SendData(char* _pcDataToSend);
 	virtual void ReceiveData(char* _pcBufferToReceiveData);
 	virtual void ProcessData(char* _pcDataReceived);
+	virtual void GetRemoteIPAddress(char* _pcSendersIP);
+	virtual unsigned short GetRemotePort();
 
+	void GetPacketData(char* _pcLocalBuffer);
+	CWorkQueue<std::string>* GetWorkQueue();
+
+	//Qs7 : Broadcast to Detect Servers
 	bool BroadcastForServers();
-	void ChooseServer(unsigned int _ServerIndex);
-	std::vector<sockaddr_in> GetServers() { return m_vecServerAddr; };
-
-	std::shared_ptr<CWorkQueue<std::string>> GetWorkQueue();
 
 private:
+	// Question 7 : Broadcast to Detect Servers
 	void ReceiveBroadcastMessages(char* _pcBufferToReceiveData);
 
-	char* m_pcPacketData;									//Packet to send
-	std::shared_ptr<Socket> m_pClientSocket;								//Client Socket
-	sockaddr_in m_ServerSocketAddress;						//Server details
-	char m_cUserName[50];									//Client Username
-	std::shared_ptr<CWorkQueue<std::string>> m_pWorkQueue;	//WorkQueue to process messages
+private:
+	//A buffer to contain all packet data for the client
+	char* m_pcPacketData;
+	//A client has a socket object to create the UDP socket at its end.
+	Socket* m_pClientSocket;
+	// A Sockaddress structure which will have the details of the server 
+	sockaddr_in m_ServerSocketAddress;
+	//A username to associate with a client
+	char m_cUserName[50];
+	//A workQueue to distribute messages between the main thread and Receive thread.
+	CWorkQueue<std::string>* m_pWorkQueue;
 
-	std::vector<sockaddr_in> m_vecServerAddr;				//Vector to hold server addresses
+
+	std::vector<sockaddr_in> m_vecServerAddr;
 	bool m_bDoBroadcast;
 };

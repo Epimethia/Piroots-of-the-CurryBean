@@ -1,11 +1,12 @@
+//
+// Bachelor of Software Engineering
 #pragma once
 #include "Resource.h"
 
-#include "Networkentity.h"
-#include "Socket.h"
+// Local Includes
+#include "NetworkEntity.h"
 #include "WorkQueue.h"
 
-//Forward Declaration
 class Socket;
 
 //Structure to hold the details of all connected clients
@@ -31,10 +32,11 @@ public:
 	virtual unsigned short GetRemotePort();
 	void KeepAliveCheck();
 
+	bool LobbyReady = false;
+
 	CWorkQueue<char*>* GetWorkQueue();
 
 private:
-	//Qs 2: Function to add clients to the map.
 	bool AddClient(std::string _strClientName);
 
 	//A Buffer to contain all packet data for the server
@@ -47,7 +49,7 @@ private:
 
 	//Qs 2 : Make a map to hold the details of all the client who have connected. 
 	//The structure maps client addresses to client details
-	std::map<std::string, TClientDetails> m_pConnectedClients;
+	std::map<std::string, TClientDetails>* m_pConnectedClients;
 
 	//A workQueue to distribute messages between the main thread and Receive thread.
 	CWorkQueue<char*>* m_pWorkQueue;

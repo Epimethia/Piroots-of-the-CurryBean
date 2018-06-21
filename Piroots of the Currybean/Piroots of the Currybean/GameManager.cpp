@@ -19,16 +19,17 @@ GameManager::GameManager() {
 	DeltaTime = Clock::GetDeltaTime();
 	ServerManager::GetInstance();
 
-#pragma region Music
+	#pragma region Music
 	sm.Init();
 	sm.LoadAudio();
 	sm.PlayBGM();
 	PlayMusic = true;
-#pragma endregion
+	#pragma endregion
 
 
-//Initializing consistent objects
-	PlayerObj = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
+	//Initializing consistent objects
+	Player0 = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
+	Player1 = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
 	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	//Other Variables
@@ -37,8 +38,8 @@ GameManager::GameManager() {
 	CurrentState = START_MENU;
 	Score = 0;
 
-#pragma region Text and Menu Initializing
-//initializing Text and menus
+	#pragma region Text and Menu Initializing
+	//initializing Text and menus
 	Title0 = std::make_shared<Text>("Piroots of", PIRATEFONT, glm::vec2(20.0f, 630.0f), TextShader, 80);
 	Title1 = std::make_shared<Text>("the CurryBeans", PIRATEFONT, glm::vec2(90.0f, 550.0f), TextShader, 80);
 	EndGameTitle = std::make_shared<Text>("You Died!", PIRATEFONT, glm::vec2(90.0f, 500.0f), TextShader, 80);
@@ -46,10 +47,10 @@ GameManager::GameManager() {
 	MultiplayerTitle1 = std::make_shared<Text>("Server List", PIRATEFONT, glm::vec2(90.0f, 540.0f), TextShader, 50);
 	ScoreText = std::make_shared<Text>("SCORE: 0", PIRATEFONT, glm::vec2(20.0f, 700.0f), TextShader, 60);
 	WaitingForParty = std::make_shared<Text>("Waiting for Party...", PIRATEFONT, glm::vec2(200.0f, 570.0f), TextShader, 40);
-#pragma endregion
+	#pragma endregion
 
 
-#pragma region StartMenu
+	#pragma region StartMenu
 	std::vector<std::string> StartOpt;
 	StartOpt.push_back("Singleplayer");
 	StartOpt.push_back("Multiplayer");
@@ -57,35 +58,35 @@ GameManager::GameManager() {
 	StartOpt.push_back("Quit");
 
 	StartMenu = std::make_shared<Menu>(StartOpt, glm::vec2(90.0f, 300.0f));
-#pragma endregion
+	#pragma endregion
 
-#pragma region EndMenu
+	#pragma region EndMenu
 	std::vector<std::string> EndOpt;
 	EndOpt.push_back("Retry");
 	EndOpt.push_back("Main Menu");
 	EndOpt.push_back("Quit");
 
 	EndMenu = std::make_shared<Menu>(EndOpt, glm::vec2(90.0f, 280.0f));
-#pragma endregion
+	#pragma endregion
 
-#pragma region OptionMenu
+	#pragma region OptionMenu
 	std::vector<std::string> OptOpt;
 	OptOpt.push_back("");
 	OptOpt.push_back("Back");
 
 	OptionMenu = std::make_shared<Menu>(OptOpt, glm::vec2(40.0f, 280.0f));
-#pragma endregion
+	#pragma endregion
 
-#pragma region MultiplayerMenu
+	#pragma region MultiplayerMenu
 	std::vector<std::string> MultiOpt;
 	MultiOpt.push_back("Host Lobby");
 	MultiOpt.push_back("Join Lobby");
 	MultiOpt.push_back("Back");
 
 	MultiplayerMenu = std::make_shared<Menu>(MultiOpt, glm::vec2(90.0f, 300.0f));
-#pragma endregion
+	#pragma endregion
 
-#pragma region ServerList
+	#pragma region ServerList
 	std::vector<std::string> ServerListOpt;
 	ServerListOpt.push_back("----");
 	ServerListOpt.push_back("----");
@@ -95,9 +96,9 @@ GameManager::GameManager() {
 	ServerListOpt.push_back("----");
 	ServerListOpt.push_back("Back");
 	ServerList = std::make_shared<Menu>(ServerListOpt, glm::vec2(90.0f, 460.0f));
-#pragma endregion
+	#pragma endregion
 
-#pragma region Aesthetic Boat Model
+	#pragma region Aesthetic Boat Model
 	UIBoat = EntityManager::GetModel(PLAYER_ENTITY);
 	glm::mat4 RotationMatrix =
 		glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
@@ -111,15 +112,14 @@ GameManager::GameManager() {
 		glm::rotate(glm::mat4(), glm::radians(140.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ScaleMatrix = glm::scale(glm::mat4(), glm::vec3(0.05f, 0.05f, 0.05f));
 	EndMenuMatrix = RotationMatrix * ScaleMatrix;
-#pragma endregion
+	#pragma endregion
 
 };
 
 void GameManager::ToggleMusic() {
 	if (PlayMusic == true) {
 		PlayMusic = false;
-	}
-	else  PlayMusic = true;
+	} else  PlayMusic = true;
 };
 
 void GameManager::DrawMenu() {
@@ -138,7 +138,7 @@ void GameManager::DrawMenu() {
 };
 
 void GameManager::DrawGame() {
-	PlayerObj->Process(DeltaTime);
+	Player0->Process(DeltaTime);
 	//Drawing all other Entities
 	for (auto it : EnemyVect) it->Process(DeltaTime);
 	for (auto it : PickUpVect) it->Process(DeltaTime);
@@ -186,10 +186,13 @@ void GameManager::DrawHostLobby() {
 }
 
 void GameManager::DrawClientLobby() {
+	Player0->Process(DeltaTime);
+	Player1->Process(DeltaTime);
+	for (auto it : EnemyVect) it->Process(DeltaTime);
+	for (auto it : PickUpVect) it->Process(DeltaTime);
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	MultiplayerTitle0->Render();
-	WaitingForParty->Render();
+	ScoreText->Render();
 }
 
 void GameManager::DrawServerSelect() {
@@ -203,46 +206,30 @@ void GameManager::DrawServerSelect() {
 void GameManager::DrawScene() {
 	switch (CurrentState) {
 		case START_MENU:
-		{
 			DrawMenu();
 			break;
-		}
 		case GAME_PLAY:
-		{
 			DrawGame();
 			break;
-		}
 		case END_MENU:
-		{
 			DrawEnd();
 			break;
-		}
 		case OPTION_MENU:
-		{
 			DrawOption();
 			break;
-		}
 		case MULTIPLAYER_LOBBY:
-		{
 			DrawServerOption();
 			break;
-		}
 		case HOST_LOBBY:
-		{
 			ServerManager::GetInstance();
 			DrawHostLobby();
 			break;
-		}
 		case SERVER_SELECT:
-		{
 			DrawServerSelect();
 			break;
-		}
 		case CLIENT_LOBBY:
-		{
 			DrawClientLobby();
 			break;
-		}
 		default:break;
 	}
 }
@@ -252,222 +239,262 @@ void GameManager::DestroyInstance() {
 }
 
 void GameManager::GameLoop(float _DeltaTime) {
-	/*if (PlayMusic == true) sm.ResumeBGM();
-	else sm.PauseBGM();*/
+	if (PlayMusic == true) sm.ResumeBGM();
+	else sm.PauseBGM();
 
-	if (CurrentState == START_MENU) {
-		int TempOutput = NULL;
-		StartMenu->Process(TempOutput);
-		InputManager::ProcessKeyInput();
+	switch (CurrentState) {
 
-		switch (TempOutput) {
-			case 0:
-			{
-				CurrentState = GAME_PLAY;
-				break;
-			}
-			case 1:
-			{
-				MultiplayerTitle0->SetText("Multiplayer");
-				CurrentState = MULTIPLAYER_LOBBY;
-				break;
-			}
-			case 2:
-			{
-				CurrentState = OPTION_MENU;
-				break;
-			}
-			case 3:
-			{
-				glutLeaveMainLoop();
-				break;
-			}
-			default:break;
-		}
-		return;
-	}
+		case START_MENU: {
+			int TempOutput = NULL;
+			StartMenu->Process(TempOutput);
+			InputManager::ProcessKeyInput();
 
-	else if (CurrentState == OPTION_MENU) {
-		//If BGM is on
-		if (PlayMusic == true) OptionMenu->ReplaceOption(0, "Background Music: ON");
-		else OptionMenu->ReplaceOption(0, "Background Music: OFF");
-		int TempOutput = NULL;
-		OptionMenu->Process(TempOutput);
-		InputManager::ProcessKeyInput();
-
-		switch (TempOutput) {
-			case 0:
-			{
-				ToggleMusic();
-				break;
+			switch (TempOutput) {
+				case 0:
+					CurrentState = GAME_PLAY;
+					break;
+				case 1:
+					MultiplayerTitle0->SetText("Multiplayer");
+					CurrentState = MULTIPLAYER_LOBBY;
+					break;
+				case 2:
+					CurrentState = OPTION_MENU;
+					break;
+				case 3:
+					glutLeaveMainLoop();
+					break;
+				default:break;
 			}
-			case 1:
-			{
-				CurrentState = START_MENU;
-				break;
-			}
-
-			default:break;
-		}
-		return;
-
-	}
-
-	else if (CurrentState == END_MENU) {
-		int TempOutput = NULL;
-		EndMenu->Process(TempOutput);
-		InputManager::ProcessKeyInput();
-
-		switch (TempOutput) {
-			case 0:
-			{
-				CurrentState = GAME_PLAY;
-				RestartGame();
-				break;
-			}
-			case 1:
-			{
-				CurrentState = START_MENU;
-				RestartGame();
-				break;
-			}
-			case 2:
-			{
-				glutLeaveMainLoop();
-				break;
-			}
-			default:break;
-		}
-		return;
-	}
-
-	else if (CurrentState == MULTIPLAYER_LOBBY) {
-		int TempOutput = NULL;
-		MultiplayerMenu->Process(TempOutput);
-		InputManager::ProcessKeyInput();
-
-		switch (TempOutput) {
-			case 0:
-			{
-				MultiplayerTitle0->SetText("Multiplayer - Host");
-				ServerManager::GetInstance()->NetworkEntityType = SERVER;
-				CurrentState = HOST_LOBBY;
-				break;
-			}
-			case 1:
-			{
-				MultiplayerTitle0->SetText("Multiplayer - Client");
-				ServerManager::GetInstance()->NetworkEntityType = CLIENT;
-				CurrentState = SERVER_SELECT;
-				break;
-			}
-			case 2:
-			{
-				CurrentState = START_MENU;
-				break;
-			}
-			default:break;
-		}
-		return;
-	}
-
-	else if (CurrentState == SERVER_SELECT) {
-		if (_Connected == false) {
-			ServerManager::GetInstance()->StartClient();
-			_Connected = true;
+			break;
 		}
 
-	}
-
-	else if (CurrentState == CLIENT_LOBBY) {
-
-
-		
-	}
-
-	else if (CurrentState == HOST_LOBBY) {
-
-		{
-			if (_Connected == false) {
-				ServerManager::GetInstance()->StartHost();
-				_Connected = true;
+		case GAME_PLAY || CLIENT_LOBBY: {
+			//If the player still exists
+			if (Player0->State == DEAD) {
+				CurrentState = END_MENU;
+				return;
 			}
-			ServerManager::GetInstance()->ProcessNetworkEntity();
-		}
-	}
+			if (Player0 != nullptr) {
+				DeltaTime = _DeltaTime;
+				//Spawning Enemies
+				if (EnemyVect.size() < 10) {
+					SpawnTimer += 10.0f * _DeltaTime;
+					if (SpawnTimer >= SpawnLimiter) {
+						SpawnTimer = 0.0f;
+						glm::vec3 SpawnPos = {
+							static_cast<float>((rand() % 6000) - 3000),
+							static_cast<float>((rand() % 6000) - 3000),
+							0.0f
+						};
+						if ((rand() % 5) == 0) {
+							EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, Player0));
+						} else {
+							EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, Player0));
+						}
+					}
+				}
 
-	else if (CurrentState == GAME_PLAY) {
-		//If the player still exists
-		if (PlayerObj->State == DEAD) {
-			CurrentState = END_MENU;
-			return;
-		}
-		if (PlayerObj != nullptr) {
-			DeltaTime = _DeltaTime;
-			//Spawning Enemies
-			if (EnemyVect.size() < 10) {
-				SpawnTimer += 10.0f * _DeltaTime;
-				if (SpawnTimer >= SpawnLimiter) {
-					SpawnTimer = 0.0f;
+				if (PickUpVect.size() < 3) {
 					glm::vec3 SpawnPos = {
 						static_cast<float>((rand() % 6000) - 3000),
 						static_cast<float>((rand() % 6000) - 3000),
 						0.0f
 					};
-					if ((rand() % 5) == 0) {
-						EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, PlayerObj));
+					int num = (rand() % 10);
+					if (num < 4) {
+						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
+					} else if (num < 8) {
+						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
+					} else {
+						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
 					}
-					else {
-						EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, PlayerObj));
+				}
+				InputManager::ProcessKeyInput(Player0);
+
+				//Checking every entity
+				for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
+					//Check against every bullet
+					for (unsigned int j = 0; j < Player0->GetBulletVect().size(); ++j) {
+						if (abs(glm::distance(Player0->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= EnemyVect[i]->HitRadius) {
+							//Destroy if colliding with a bullet
+							EnemyVect.erase(EnemyVect.begin() + i);
+							Player0->GetBulletVect().erase(Player0->GetBulletVect().begin() + j);
+							Score += 10;
+							ScoreText->SetText("SCORE: " + std::to_string(Score));
+							break;
+						}
 					}
 				}
-			}
 
-			if (PickUpVect.size() < 3) {
-				glm::vec3 SpawnPos = {
-					static_cast<float>((rand() % 6000) - 3000),
-					static_cast<float>((rand() % 6000) - 3000),
-					0.0f
-				};
-				int num = (rand() % 10);
-				if (num < 4) {
-					PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
-				}
-				else if (num < 8) {
-					PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
-				}
-				else {
-					PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
-				}
-			}
-			InputManager::ProcessKeyInput(PlayerObj);
-
-			//Checking every entity
-			for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
-				//Check against every bullet
-				for (unsigned int j = 0; j < PlayerObj->GetBulletVect().size(); ++j) {
-					if (abs(glm::distance(PlayerObj->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= EnemyVect[i]->HitRadius) {
-						//Destroy if colliding with a bullet
-						EnemyVect.erase(EnemyVect.begin() + i);
-						PlayerObj->GetBulletVect().erase(PlayerObj->GetBulletVect().begin() + j);
-						Score += 10;
-						ScoreText->SetText("SCORE: " + std::to_string(Score));
-						break;
+				for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
+					if (abs(glm::distance(Player0->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
+						Player0->State = PickUpVect[i]->Type;
+						Player0->PowerUpDuration = 100.0f;
+						PickUpVect.erase(PickUpVect.begin() + i);
 					}
 				}
 			}
-
-			for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
-				if (abs(glm::distance(PlayerObj->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
-					PlayerObj->State = PickUpVect[i]->Type;
-					PlayerObj->PowerUpDuration = 100.0f;
-					PickUpVect.erase(PickUpVect.begin() + i);
-				}
-			}
+			
+			break;
 		}
+
+		case OPTION_MENU: {
+			//If BGM is on
+			if (PlayMusic == true) OptionMenu->ReplaceOption(0, "Background Music: ON");
+			else OptionMenu->ReplaceOption(0, "Background Music: OFF");
+
+			int TempOutput = NULL;
+			OptionMenu->Process(TempOutput);
+			InputManager::ProcessKeyInput();
+
+			switch (TempOutput) {
+				case 0:
+					ToggleMusic();
+					break;
+				case 1:
+					CurrentState = START_MENU;
+					break;
+				default:break;
+			}
+			break;
+		}
+
+		case MULTIPLAYER_LOBBY: {
+			int TempOutput = NULL;
+			MultiplayerMenu->Process(TempOutput);
+			InputManager::ProcessKeyInput();
+
+			switch (TempOutput) {
+				case 0: {
+					std::cout << "Host Selected\n";
+					ServerManager::GetInstance()->StartNetwork(SERVER);
+					CurrentState = HOST_LOBBY;
+					break;
+				}
+				case 1: {
+					std::cout << "Client Selected\n";
+					ServerManager::GetInstance()->StartNetwork(CLIENT);
+					CurrentState = CLIENT_LOBBY;
+					break;
+				}
+				case 2: {
+					CurrentState = START_MENU;
+					return;
+				}
+				default:break;
+			}
+			break;
+		}
+
+		case HOST_LOBBY: {
+			
+			ServerManager::GetInstance()->ProcessNetworkEntity();
+			
+			break;
+		}
+
+		case SERVER_SELECT: {
+			break;
+		}
+
+		case CLIENT_LOBBY: {
+			
+			//If the player still exists
+			if (Player0->State == DEAD) {
+				CurrentState = END_MENU;
+				return;
+			}
+			if (Player0 != nullptr) {
+				DeltaTime = _DeltaTime;
+				//Spawning Enemies
+				if (EnemyVect.size() < 10) {
+					SpawnTimer += 10.0f * _DeltaTime;
+					if (SpawnTimer >= SpawnLimiter) {
+						SpawnTimer = 0.0f;
+						glm::vec3 SpawnPos = {
+							static_cast<float>((rand() % 6000) - 3000),
+							static_cast<float>((rand() % 6000) - 3000),
+							0.0f
+						};
+						if ((rand() % 5) == 0) {
+							EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, Player0));
+						} else {
+							EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, Player0));
+						}
+					}
+				}
+
+				if (PickUpVect.size() < 3) {
+					glm::vec3 SpawnPos = {
+						static_cast<float>((rand() % 6000) - 3000),
+						static_cast<float>((rand() % 6000) - 3000),
+						0.0f
+					};
+					int num = (rand() % 10);
+					if (num < 4) {
+						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
+					} else if (num < 8) {
+						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
+					} else {
+						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
+					}
+				}
+				InputManager::ProcessKeyInput(Player0);
+
+				//Checking every entity
+				for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
+					//Check against every bullet
+					for (unsigned int j = 0; j < Player0->GetBulletVect().size(); ++j) {
+						if (abs(glm::distance(Player0->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= EnemyVect[i]->HitRadius) {
+							//Destroy if colliding with a bullet
+							EnemyVect.erase(EnemyVect.begin() + i);
+							Player0->GetBulletVect().erase(Player0->GetBulletVect().begin() + j);
+							Score += 10;
+							ScoreText->SetText("SCORE: " + std::to_string(Score));
+							break;
+						}
+					}
+				}
+
+				for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
+					if (abs(glm::distance(Player0->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
+						Player0->State = PickUpVect[i]->Type;
+						Player0->PowerUpDuration = 100.0f;
+						PickUpVect.erase(PickUpVect.begin() + i);
+					}
+				}
+			}
+
+			std::stringstream ss;
+			ss << std::fixed << std::setprecision(1) << Player0->GetPos().x << ' ' << Player0->GetPos().y;
+			ServerManager::GetInstance()->SendPacket(ss.str());
+			ServerManager::GetInstance()->ProcessNetworkEntity();
+			break;
+		}
+
+		case END_MENU: {
+			int TempOutput = NULL;
+			EndMenu->Process(TempOutput);
+			InputManager::ProcessKeyInput();
+			switch (TempOutput) {
+				case 0:
+					CurrentState = GAME_PLAY;
+					RestartGame();
+					break;
+				case 1:
+					CurrentState = START_MENU;
+					RestartGame();
+					break;
+				case 2:
+					glutLeaveMainLoop();
+					break;
+				default:break;
+			}
+
+			break;
+		}
+		default: break;
 	}
-
-
 }
 
 std::shared_ptr<GameManager> GameManager::GetInstance() {
@@ -479,10 +506,10 @@ void GameManager::RestartGame() {
 	EnemyVect.clear();
 	PickUpVect.clear();
 
-	PlayerObj->State = NONE;
-	PlayerObj->GetPos() = glm::vec3(0.0f, 1000.0f, -0.2f);
-	PlayerObj->GetVelocity() = glm::vec3();
-	PlayerObj->GetBulletVect().clear();
+	Player0->State = NONE;
+	Player0->GetPos() = glm::vec3(0.0f, 1000.0f, -0.2f);
+	Player0->GetVelocity() = glm::vec3();
+	Player0->GetBulletVect().clear();
 
 	Score = 0;
 	ScoreText->SetPosition(glm::vec2(20.0f, 700.0f));

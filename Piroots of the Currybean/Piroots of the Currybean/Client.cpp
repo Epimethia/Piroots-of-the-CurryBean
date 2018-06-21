@@ -1,53 +1,62 @@
+//
+// Bachelor of Software Engineering
+// Media Design School
+
+
+//Local Includes
+#include "Network.h"
+#include "NetworkEntity.h"
+#include "Socket.h"
+
+//This includes
 #include "Client.h"
 
-Client::Client() {
-	//Creating a server socket address instance and zeros it out
+
+Client::Client()
+	:m_pcPacketData(0)
+	, m_pClientSocket(0) {
 	ZeroMemory(&m_ServerSocketAddress, sizeof(m_ServerSocketAddress));
 
 	//Create a Packet Array and fill it out with all zeros.
 	m_pcPacketData = new char[MAX_MESSAGE_LENGTH];
 	ZeroMemory(m_pcPacketData, MAX_MESSAGE_LENGTH);
+
 }
 
 Client::~Client() {
 	delete[] m_pcPacketData;
 	m_pcPacketData = 0;
 
-	//delete[] m_pClientSocket;
-	//m_pClientSocket = 0;
-	m_pClientSocket = nullptr;
+	delete m_pClientSocket;
+	m_pClientSocket = 0;
 
-	m_pWorkQueue = nullptr;
-
-	//Clearing server list
-	for (int i = 0; i = m_vecServerAddr.size(); ++i) {
-		m_vecServerAddr.pop_back();
-	}
-	m_vecServerAddr.clear();
+	delete m_pWorkQueue;
+	m_pWorkQueue = 0;
 }
 
+/***********************
+* Initialise: Initialises a client object by creating a client socket and filling out the socket address structure with details of server to send the data to.
+* @author:
+* @parameter: none
+* @return: void
+********************/
 bool Client::Initialise() {
+
 	char _cServerIPAddress[128];			//Server IP address char array
 	ZeroMemory(&_cServerIPAddress, 128);
 
-	//Clearing server list
-	for (int i = 0; i = m_vecServerAddr.size(); ++i) {
-		m_vecServerAddr.pop_back();
-	}
-	m_vecServerAddr.clear();
+	char _cServerChosen[5];					//Chosen server index
+	ZeroMemory(_cServerChosen, 5);
+	unsigned int _uiServerIndex;
 
 	//Create a work queue to distribute messages between the main thread and the receive thread.
-	m_pWorkQueue = std::make_shared<CWorkQueue<std::string>>();
+	m_pWorkQueue = new CWorkQueue<std::string>();
 
 	//Create a socket object
-	m_pClientSocket = std::make_shared<Socket>();
+	m_pClientSocket = new Socket();
 
 	//Getting and binding the client port number
-	//unsigned short _usClientPort = QueryPortNumber(DEFAULT_CLIENT_PORT);
-
-	//Setting default port to 0
-	unsigned short _usClientPort = DEFAULT_CLIENT_PORT;
-	if (!m_pClientSocket->Initialise(_usClientPort)) {
+	if (!m_pClientSocket->Initialise(DEFAULT_CLIENT_PORT)) {
 		return false;
 	}
 
@@ -55,32 +64,116 @@ bool Client::Initialise() {
 	m_bOnline = true;
 
 	//Use a boolean flag to determine if a valid server has been chosen by the client or not
-	//Question 7: Broadcast to detect server
-	m_bDoBroadcast = true;
-	m_pClientSocket->EnableBroadcast();
-	BroadcastForServers();
 	bool _bServerChosen = false;
+
 	do {
+
 		//Question 7: Broadcast to detect server
 		m_bDoBroadcast = true;
 		m_pClientSocket->EnableBroadcast();
 		BroadcastForServers();
 		if (m_vecServerAddr.size() == 0) {
-			//std::cout << "No Servers Found " << std::endl;
-			return false;
-		}
+			std::cout << "No Servers Found " << std::endl;
+			continue;
+		} 
 		else {
-			////Give a list of servers for the user to choose from :
+
+			//Give a list of servers for the user to choose from :
 			for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
 				std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
 			}
-			//std::cout << "Servers Found\n";
+
+			_uiServerIndex = atoi(_cServerChosen);
+			m_ServerSocketAddress.sin_family = AF_INET;
+			m_ServerSocketAddress.sin_port = m_vecServerAddr[0].sin_port;
+			m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[0].sin_addr.S_un.S_addr;
+			std::string _strServerAddress = ToString(m_vecServerAddr[0]);
+			std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
 			_bServerChosen = true;
 		}
+		m_bDoBroadcast = false;
 		m_pClientSocket->DisableBroadcast();
-	}
-	while (_bServerChosen == false);
+
+	} while (_bServerChosen == false);
+
+	//Send a handshake message to the server as part of the Client's Initialization process.
+	//Step1: Create a handshake packet
+
+	//sending the packet
+	TPacket _packet;
+	_packet.Serialize(HANDSHAKE, "HEllo");
+	SendData(_packet.PacketData);
 	return true;
+}
+
+bool Client::BroadcastForServers() {
+	//Make a broadcast packet
+	TPacket _packet;
+	_packet.Serialize(BROADCAST, "Broadcast to Detect Server");
+
+	char _pcTempBuffer[MAX_MESSAGE_LENGTH];
+	//Send out a broadcast message using the broadcast address
+	m_pClientSocket->SetRemoteAddress(INADDR_BROADCAST);
+	m_pClientSocket->SetRemotePort(DEFAULT_SERVER_PORT);
+
+	m_ServerSocketAddress.sin_family = AF_INET;
+	m_ServerSocketAddress.sin_addr.S_un.S_addr = INADDR_BROADCAST;
+	for (int i = 0; i < 10; i++) //Just try  a series of 10 ports to detect a running server; this is needed since we are testing multiple servers on the same local machine
+	{
+		m_ServerSocketAddress.sin_port = htons(DEFAULT_SERVER_PORT + i);
+		SendData(_packet.PacketData);
+	}
+	Sleep(16);
+	ReceiveBroadcastMessages(_pcTempBuffer);
+
+	return true;
+}
+
+void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
+	//set a timer on the socket for one second
+	struct timeval timeValue;
+	timeValue.tv_sec = 1;
+	timeValue.tv_usec = 0;
+	setsockopt(m_pClientSocket->GetSocketHandle(), SOL_SOCKET, SO_RCVTIMEO,
+		(char*)&timeValue, sizeof(timeValue));
+
+	//Receive data into a local buffer
+	char _buffer[MAX_MESSAGE_LENGTH];
+	sockaddr_in _FromAddress;
+	int iSizeOfAdd = sizeof(sockaddr_in);
+	//char _pcAddress[50];
+
+	while (m_bDoBroadcast) {
+		// pull off the packet(s) using recvfrom()
+		int _iNumOfBytesReceived = recvfrom(				// pulls a packet from a single source...
+											this->m_pClientSocket->GetSocketHandle(),	// client-end socket being used to read from
+											_buffer,									// incoming packet to be filled
+											MAX_MESSAGE_LENGTH,							// length of incoming packet to be filled
+											0,											// flags
+											reinterpret_cast<sockaddr*>(&_FromAddress),	// address to be filled with packet source
+											&iSizeOfAdd								// size of the above address struct.
+		);
+
+		if (_iNumOfBytesReceived < 0) {
+			//Error in receiving data 
+			int _iError = WSAGetLastError();
+			//std::cout << "recvfrom failed with error " << _iError;
+			if (_iError == WSAETIMEDOUT) // Socket timed out on Receive
+			{
+				m_bDoBroadcast = false; //Do not broadcast any more
+				break;
+			}
+			_pcBufferToReceiveData = 0;
+		} else if (_iNumOfBytesReceived == 0) {
+			//The remote end has shutdown the connection
+			_pcBufferToReceiveData = 0;
+		} else {
+			//There is valid data received.
+			strcpy_s(_pcBufferToReceiveData, strlen(_buffer) + 1, _buffer);
+			m_ServerSocketAddress = _FromAddress;
+			m_vecServerAddr.push_back(m_ServerSocketAddress);
+		}
+	}//End of while loop
 }
 
 bool Client::SendData(char* _pcDataToSend) {
@@ -88,6 +181,7 @@ bool Client::SendData(char* _pcDataToSend) {
 
 	char _RemoteIP[MAX_ADDRESS_LENGTH];
 	inet_ntop(AF_INET, &m_ServerSocketAddress.sin_addr, _RemoteIP, sizeof(_RemoteIP));
+	//std::cout << "Trying to send " << _pcDataToSend << " to " << _RemoteIP << ":" << ntohs(m_ServerSocketAddress.sin_port) << std::endl;
 	char _message[MAX_MESSAGE_LENGTH];
 	strcpy_s(_message, strlen(_pcDataToSend) + 1, _pcDataToSend);
 
@@ -101,7 +195,7 @@ bool Client::SendData(char* _pcDataToSend) {
 	);
 	//iNumBytes;
 	if (_iBytesToSend != iNumBytes) {
-		//std::cout << "There was an error in sending data from client to server" << std::endl;
+		std::cout << "There was an error in sending data from client to server" << std::endl;
 		return false;
 	}
 	return true;
@@ -120,34 +214,38 @@ void Client::ReceiveData(char* _pcBufferToReceiveData) {
 	ZeroMemory(&_pcAddress, 50);
 	while (m_bOnline) {
 		// pull off the packet(s) using recvfrom()
-		_iNumOfBytesReceived = recvfrom(									// pulls a packet from a single source...
-			this->m_pClientSocket->GetSocketHandle(),						// client-end socket being used to read from
-			_buffer,														// incoming packet to be filled
-			MAX_MESSAGE_LENGTH,												// length of incoming packet to be filled
-			0,																// flags
-			reinterpret_cast<sockaddr*>(&_FromAddress),						// address to be filled with packet source
-			&iSizeOfAdd														// size of the above address struct.
+		_iNumOfBytesReceived = recvfrom(			// pulls a packet from a single source...
+										this->m_pClientSocket->GetSocketHandle(),						// client-end socket being used to read from
+										_buffer,							// incoming packet to be filled
+										MAX_MESSAGE_LENGTH,					   // length of incoming packet to be filled
+										0,										// flags
+										reinterpret_cast<sockaddr*>(&_FromAddress),	// address to be filled with packet source
+										&iSizeOfAdd								// size of the above address struct.
 		);
 		inet_ntop(AF_INET, &_FromAddress, _pcAddress, sizeof(_pcAddress));
 
 		if (_iNumOfBytesReceived < 0) {
+			//Error in receiving data 
+			//std::cout << "recvfrom failed with error " << WSAGetLastError();
+			//WSACONNECTIONRESET
 			_pcBufferToReceiveData = 0;
-		}
-		else if (_iNumOfBytesReceived == 0) {
+		} else if (_iNumOfBytesReceived == 0) {
 			//The remote end has shutdown the connection
 			_pcBufferToReceiveData = 0;
-		}
-		else {
+		} else {
 			//There is valid data received.
 			strcpy_s(m_pcPacketData, strlen(_buffer) + 1, _buffer);
+			//strcpy_s(m_pcPacketData, strlen(_buffer) + 1, _buffer);
 			//Put this packet data in the workQ
 			m_ServerSocketAddress = _FromAddress;
 			m_pWorkQueue->push(m_pcPacketData);
 		}
+		//std::this_thread::yield(); //Yield the processor; giving the main a chance to run.
 	}
 }
 
 void Client::ProcessData(char* _pcDataReceived) {
+
 	TPacket _packetRecvd;
 	_packetRecvd = _packetRecvd.Deserialize(_pcDataReceived);
 	switch (_packetRecvd.MessageType) {
@@ -158,7 +256,7 @@ void Client::ProcessData(char* _pcDataReceived) {
 
 			if (strstr(_pcDataReceived, "Invalid Username") != nullptr) {
 				//There was an error
-				//std::cout << "\rUsername was invalid, please enter another username:";
+				std::cout << "\rUsername was invalid, please enter another username:";
 
 				//Creating a temp username
 				ZeroMemory(m_cUserName, 50);
@@ -166,34 +264,32 @@ void Client::ProcessData(char* _pcDataReceived) {
 				//Getting user input
 				do {
 					gets_s(m_cUserName);
-				}
-				while (m_cUserName[0] == 0);
+				} while (m_cUserName[0] == 0);
 
-			 //Package it off and send it to the server as a handshake message to recheck
+				//Package it off and send it to the server as a handshake message to recheck
 				TPacket _HandShakeMsg;
 				_HandShakeMsg.Serialize(HANDSHAKE, m_cUserName);
 				SendData(_HandShakeMsg.PacketData);
-			}
-			else {
+			} else {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-				//std::cout << "User Connected\n" << std::endl;
+				std::cout << "User Connected\n" << std::endl;
 			}
 			break;
 		}
 		case DATA:
 		{
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-			//std::cout << _packetRecvd.MessageContent << std::endl;
+			std::cout << _packetRecvd.MessageContent << std::endl;
 			break;
 		}
-		case KEEPALIVE:
-		{
-//Resend the same message back to the server to verify it is still alive
+		case KEEPALIVE: {
+			//Resend the same message back to the server to verify it is still alive
 			TPacket KeepAlive;
 			KeepAlive.Serialize(KEEPALIVE, "KeepAlive");
 			SendData(KeepAlive.PacketData);
 		}
 		default:break;
+
 	}
 }
 
@@ -210,103 +306,6 @@ void Client::GetPacketData(char* _pcLocalBuffer) {
 	strcpy_s(_pcLocalBuffer, strlen(m_pcPacketData) + 1, m_pcPacketData);
 }
 
-bool Client::BroadcastForServers() {
-	//Make a broadcast packet
-	TPacket _packet;
-	_packet.Serialize(BROADCAST, "Hello");
-
-	char _pcTempBuffer[MAX_MESSAGE_LENGTH];
-	//Send out a broadcast message using the broadcast address
-	m_pClientSocket->SetRemoteAddress(INADDR_BROADCAST);
-	m_pClientSocket->SetRemotePort(DEFAULT_SERVER_PORT);
-	m_ServerSocketAddress.sin_family = AF_INET;
-	m_ServerSocketAddress.sin_addr.S_un.S_addr = INADDR_BROADCAST;
-	for (int i = 0; i < 10; i++) //Just try  a series of 10 ports to detect a running server; this is needed since we are testing multiple servers on the same local machine
-	{
-		m_ServerSocketAddress.sin_port = htons(DEFAULT_SERVER_PORT + i);
-		SendData(_packet.PacketData);
-	}
-	ReceiveBroadcastMessages(_pcTempBuffer);
-
-	return true;
-}
-
-void Client::ChooseServer(unsigned int _ServerIndex) {
-	char _cUserName[50];					//Username
-	ZeroMemory(&m_cUserName, 50);
-
-	m_ServerSocketAddress.sin_family = AF_INET;
-	m_ServerSocketAddress.sin_port = m_vecServerAddr[_ServerIndex].sin_port;
-	m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[_ServerIndex].sin_addr.S_un.S_addr;
-	std::string _strServerAddress = ToString(m_vecServerAddr[_ServerIndex]);
-	//std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
-
-	strcpy_s(_cUserName, "Henlo dis a hanshek");
-	TPacket _packet;
-	_packet.Serialize(HANDSHAKE, _cUserName);
-	SendData(_packet.PacketData);
-}
-
-void Client::ReceiveBroadcastMessages(char* _pcBufferToReceiveData) {
-	//set a timer on the socket for one second
-	struct timeval timeValue;
-	timeValue.tv_sec = 1;
-	timeValue.tv_usec = 0;
-	setsockopt(m_pClientSocket->GetSocketHandle(), SOL_SOCKET, SO_RCVTIMEO,
-		(char*)&timeValue, sizeof(timeValue));
-
-	//Receive data into a local buffer
-	char _buffer[MAX_MESSAGE_LENGTH];
-	sockaddr_in _FromAddress;
-	int iSizeOfAdd = sizeof(sockaddr_in);
-
-	while (m_bDoBroadcast) {
-		// pull off the packet(s) using recvfrom()
-		int _iNumOfBytesReceived = recvfrom(				// pulls a packet from a single source...
-			this->m_pClientSocket->GetSocketHandle(),	// client-end socket being used to read from
-			_buffer,									// incoming packet to be filled
-			MAX_MESSAGE_LENGTH,							// length of incoming packet to be filled
-			0,											// flags
-			reinterpret_cast<sockaddr*>(&_FromAddress),	// address to be filled with packet source
-			&iSizeOfAdd								// size of the above address struct.
-		);
-
-		if (_iNumOfBytesReceived < 0) {
-			//Error in receiving data
-			int _iError = WSAGetLastError();
-			////std::cout << "recvfrom failed with error " << _iError;
-			if (_iError == WSAETIMEDOUT) // Socket timed out on Receive
-			{
-				//ErrorRoutines::PrintWSAErrorInfo(_iError);
-				m_bDoBroadcast = false; //Do not broadcast any more
-				break;
-			}
-			_pcBufferToReceiveData = 0;
-		}
-		else if (_iNumOfBytesReceived == 0) {
-			//The remote end has shutdown the connection
-			_pcBufferToReceiveData = 0;
-		}
-		else {
-			//There is valid data received.
-			if (
-				//Lambda to check if the server address is already in the server address vector
-				[&]()->bool {
-				for (auto it : m_vecServerAddr) {
-					if (ToString(_FromAddress) == ToString(it)) {
-						return true;
-					}
-				}
-				return false;
-			}() == false) {
-				strcpy_s(_pcBufferToReceiveData, strlen(_buffer) + 1, _buffer);
-				m_ServerSocketAddress = _FromAddress;
-				m_vecServerAddr.push_back(m_ServerSocketAddress);
-			}
-		}
-	}//End of while loop
-}
-
-std::shared_ptr<CWorkQueue<std::string>> Client::GetWorkQueue() {
+CWorkQueue<std::string>* Client::GetWorkQueue() {
 	return m_pWorkQueue;
 }

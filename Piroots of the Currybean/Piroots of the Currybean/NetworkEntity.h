@@ -8,7 +8,8 @@ enum EMessageType : unsigned char {
 	DATA,
 	KEEPALIVE,
 	COMMAND,
-	BROADCAST
+	BROADCAST,
+	PLAYERPOS
 };
 
 struct TPacket {
@@ -58,7 +59,7 @@ public:
 	virtual void ReceiveData(char* _pcBufferToReceiveData) = 0;
 	virtual void GetRemoteIPAddress(char *_pcSendersIP) = 0;
 	virtual unsigned short GetRemotePort() = 0;
-	virtual bool& GetOnlineState();
+	virtual bool& GetOnlineState() { return m_bOnline; };
 
 protected:
 	//Additional state variable to indicate whether a network entity is online or not

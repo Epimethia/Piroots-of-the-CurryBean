@@ -1,8 +1,4 @@
 
-#include "Resource.h"
-//Library Includes
-
-
 //Local Includes
 #include "Server.h"
 #include "Client.h"
@@ -13,28 +9,29 @@
 // Static Variables
 Network* Network::s_pNetwork = 0;
 
-Network::Network() {
-	m_pNetworkEntity = 0;
-	m_bOnline = false;
-}
+Network::Network()
+	: m_pNetworkEntity(0)
+	, m_bOnline(false) {
 
+}
 
 Network::~Network() {
-	m_pNetworkEntity = nullptr;
+	delete m_pNetworkEntity;
+	m_pNetworkEntity = 0;
 }
 
-bool
-Network::Initialise(EEntityType _eType) {
-	//VLDDisable();
+bool Network::Initialise(EEntityType _eType) {
 	switch (_eType) {
 		case CLIENT:
 		{
-			m_pNetworkEntity = static_cast<std::shared_ptr<INetworkEntity>>(std::make_shared<Client>());
+			std::cout << "Creating Client Instance\n";
+			m_pNetworkEntity = new Client();
 			break;
 		}
 		case SERVER:
 		{
-			m_pNetworkEntity = static_cast<std::shared_ptr<INetworkEntity>>(std::make_shared<Server>());
+			std::cout << "Creating Server Instance\n";
+			m_pNetworkEntity = new Server();
 			break;
 		}
 		default:
@@ -44,24 +41,21 @@ Network::Initialise(EEntityType _eType) {
 		}
 	}
 	VALIDATE(m_pNetworkEntity->Initialise());
-	//VLDEnable();
 	return (true);
 }
 
-void
-Network::StartUp() {
+void Network::StartUp() {
 	// startup windows sockets:
 	WSADATA wsaData;
 	int _iError;
 	if (WSAStartup(0x0202, &wsaData) != 0) {
 		_iError = WSAGetLastError();
-		//Diagnostic error messages to be added!!
+		ErrorRoutines::PrintWSAErrorInfo(_iError);
 	}
 	m_bOnline = true;
 }
 
-void
-Network::ShutDown() {
+void Network::ShutDown() {
 	int _iError;
 	if (WSACleanup() != 0) {
 		_iError = WSAGetLastError();
@@ -70,25 +64,22 @@ Network::ShutDown() {
 	m_bOnline = false;
 }
 
-Network&
-Network::GetInstance() {
+Network* Network::GetInstance() {
 	if (s_pNetwork == 0) {
 		s_pNetwork = new Network();
 	}
 
-	return (*s_pNetwork);
+	return s_pNetwork;
 }
 
-void
-Network::DestroyInstance() {
-	s_pNetwork->m_bOnline = false;
+void Network::DestroyInstance() {
 	delete s_pNetwork;
 	s_pNetwork = 0;
 }
 
 
 INetworkEntity* Network::GetNetworkEntity() {
-	return m_pNetworkEntity.get();
+	return m_pNetworkEntity;
 }
 
 bool Network::IsOnline() {

@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "Client.h"
 #include "Server.h"
+#include "Network.h"
 
 class ServerManager {
 public:
@@ -13,33 +14,33 @@ public:
 
 	//Server Methods
 	void SelectServer(unsigned int _Opt);
-	void StartHost();
-	void StartClient();
 
+	void StartNetwork(EEntityType _Type);
 	void ProcessNetworkEntity();
+	void SendPacket(std::string _Data);
 	void StopNetworkEntity();
+
+	bool LobbyCheck();
+
+
+private:
+	ServerManager();										//Singleton constructor
+	static std::shared_ptr<ServerManager> ServerManagerPtr;	//Singleton pointer
+
+	Client* ClientPtr;								//Pointer to the client instance (if it is running)
+	Server* ServerPtr;								//Pointer to the server instance (if it is running)
+
+	Network* NetworkPtr;
 
 	EEntityType NetworkEntityType;
 
-	std::vector<sockaddr_in> GetServerList() { return ClientPtr->GetServers(); };
+	std::thread _ClientReceiveThread;				//Separate thread for client receive so that it does not block main
+	std::thread _ServerReceiveThread;				//Separate thread for server receive so that it does not block main
 
-private:
-	float TimeSinceLastCheck = 0.0f;
-	ServerManager();
-	static std::shared_ptr<ServerManager> ServerManagerPtr;
+	char* _pcPacketData = 0;						//Packet Send/recieve information
+	char IPAddressArray[MAX_ADDRESS_LENGTH];		//Ip Address array
 
-	//Network instance
-	Network& _rNetwork = Network::GetInstance();
+	float TimeSinceLastCheck;						//Keep alive message timer
 
-	//Client and server
-	Client* ClientPtr;
-	Server* ServerPtr;
-
-	//Threads for receive
-	std::thread _ClientReceiveThread, _ServerReceiveThread;
-
-	//Packet Send/recieve information
-	char* PacketData = 0;
-	// An array to hold the IP Address as a string
-	char IPAddressArray[MAX_ADDRESS_LENGTH];
+	glm::vec3 Player1Pos;
 };
