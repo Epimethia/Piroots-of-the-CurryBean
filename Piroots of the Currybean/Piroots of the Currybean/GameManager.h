@@ -17,7 +17,7 @@ public:
 	static void DestroyInstance();
 	static std::shared_ptr<GameManager> GetInstance();
 
-	void GameLoop(float _DeltaTime);
+	void ProcessGame(float _DeltaTime);
 	void RestartGame();
 	void DrawScene();
 	static GameState& GetState() { return CurrentState; };
@@ -43,9 +43,12 @@ private:
 	void DrawOption();
 	void DrawServerOption();
 	void DrawHostLobby();
+	void DrawMultiplayerGame();
 	void DrawClientLobby();
 	void DrawServerSelect();
-	void DrawMultiplayerGame();
+
+
+	void GameLoop();
 
 	std::shared_ptr<Text> Title0;
 	std::shared_ptr<Text> Title1;
@@ -89,6 +92,8 @@ private:
 	//Sound
 	bool PlayMusic;
 	SoundManager sm;
+
+	unsigned int NumPlayers;
 
 	//Networking
 	bool _Connected = false;

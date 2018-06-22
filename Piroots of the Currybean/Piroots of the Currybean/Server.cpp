@@ -98,8 +98,7 @@ bool Server::AddClient(std::string _strClientName) {
 
 	std::string _strAddress = ToString(m_ClientAddress);
 	m_pConnectedClients->insert(std::pair < std::string, TClientDetails >(_strAddress, _clientToAdd));
-
-	
+	LobbyReady = true;
 	return true;
 }
 
@@ -151,8 +150,6 @@ void Server::ReceiveData(char* _pcBufferToReceiveData) {
 			char _IPAddress[100];
 			inet_ntop(AF_INET, &m_ClientAddress.sin_addr, _IPAddress, sizeof(_IPAddress));
 
-			std::cout << "Server Received \"" << _pcBufferToReceiveData << "\" from " <<
-				_IPAddress << ":" << ntohs(m_ClientAddress.sin_port) << std::endl;
 			//Push this packet data into the WorkQ
 			m_pWorkQueue->push(_pcBufferToReceiveData);
 		}
@@ -245,7 +242,7 @@ void Server::ProcessData(char* _pcDataReceived) {
 			break;
 		}
 		case DATA: {
-			std::cout << "Server Received a Data Message\n";
+			std::cout << "Server Received a Data Message";
 			std::string ClientName;
 			std::string Message = _packetRecvd.MessageContent;
 
@@ -305,9 +302,10 @@ void Server::ProcessData(char* _pcDataReceived) {
 		case PLAYERPOS: {
 			std::string str(_pcDataReceived);
 			std::stringstream ss(str);
+			std::cout << ss.str() << std::endl;
 			float x, y;
 			ss >> x >> y;
-			Player1Pos = glm::vec3(x, y, -0.2);
+			Player1Pos = glm::vec3(x, y, -0.2f);
 		}
 
 		default:break;

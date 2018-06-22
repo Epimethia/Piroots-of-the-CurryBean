@@ -23,7 +23,7 @@ void render(void) {
 
 void update(void) {
 	g_DeltaTime = Clock::GetDeltaTime();
-	GameManager::GetInstance()->GameLoop(g_DeltaTime);
+	GameManager::GetInstance()->ProcessGame(g_DeltaTime);
 	glutPostRedisplay();
 }
 

@@ -78,8 +78,6 @@ void ServerManager::ProcessNetworkEntity() {
 		if (ServerPtr != nullptr) {
 			if (!ServerPtr->GetWorkQueue()->empty()) {
 				NetworkPtr->GetInstance()->GetNetworkEntity()->GetRemoteIPAddress(IPAddressArray);
-				//std::cout << _cIPAddress
-				//<< ":" << _rNetwork.GetInstance().GetNetworkEntity()->GetRemotePort() << "> " << _pcPacketData << std::endl;
 
 				//Retrieve off a message from the queue and process it
 				ServerPtr->GetWorkQueue()->pop(_pcPacketData);

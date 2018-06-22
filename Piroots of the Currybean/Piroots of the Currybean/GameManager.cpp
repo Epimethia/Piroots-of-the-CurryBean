@@ -30,7 +30,7 @@ GameManager::GameManager() {
 
 	//Initializing consistent objects
 	Player0 = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
-	Player1 = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
+	Player1 = std::make_shared<Player>(glm::vec3(0.0f, 0.0f, -0.2f));
 	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	//Other Variables
@@ -129,7 +129,7 @@ void GameManager::DrawMenu() {
 
 	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(), glm::vec3(-140.0f + (cos(ZBobbing) * 10.0f), 180.0f, 40.0f + (sin(ZBobbing) * 20.0f)) / 375.0f);
 	UIBoat->Render(TranslationMatrix * StartMenuMatrix);
-	ZBobbing += 0.03f * DeltaTime;
+	ZBobbing += 2.0f * DeltaTime;
 
 	WaveObj->Process(DeltaTime);
 
@@ -158,7 +158,7 @@ void GameManager::DrawEnd() {
 	ScoreText->Render();
 	EndGameTitle->Render();
 	EndMenu->Render();
-	ZBobbing += 0.03f * DeltaTime;
+	ZBobbing += 2.0f * DeltaTime;
 }
 
 void GameManager::DrawOption() {
@@ -169,7 +169,7 @@ void GameManager::DrawOption() {
 	Title0->Render();
 	Title1->Render();
 	OptionMenu->Render();
-	ZBobbing += 0.03f * DeltaTime;
+	ZBobbing += 2.0f * DeltaTime;
 }
 
 void GameManager::DrawServerOption() {
@@ -212,12 +212,79 @@ void GameManager::DrawMultiplayerGame() {
 	ScoreText->Render();
 }
 
+void GameManager::GameLoop() {
+	//If the player still exists
+	if (Player0->State == DEAD) {
+		CurrentState = END_MENU;
+		return;
+	}
+	if (Player0 != nullptr) {
+		//Spawning Enemies
+		if (EnemyVect.size() < 10) {
+			SpawnTimer += 10.0f * DeltaTime;
+			if (SpawnTimer >= SpawnLimiter) {
+				SpawnTimer = 0.0f;
+				glm::vec3 SpawnPos = {
+					static_cast<float>((rand() % 6000) - 3000),
+					static_cast<float>((rand() % 6000) - 3000),
+					0.0f
+				};
+				if ((rand() % 5) == 0) {
+					EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, Player0));
+				} else {
+					EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, Player0));
+				}
+			}
+		}
+
+		if (PickUpVect.size() < 3) {
+			glm::vec3 SpawnPos = {
+				static_cast<float>((rand() % 6000) - 3000),
+				static_cast<float>((rand() % 6000) - 3000),
+				0.0f
+			};
+			int num = (rand() % 10);
+			if (num < 4) {
+				PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
+			} else if (num < 8) {
+				PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
+			} else {
+				PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
+			}
+		}
+		InputManager::ProcessKeyInput(Player0);
+
+		//Checking every entity
+		for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
+			//Check against every bullet
+			for (unsigned int j = 0; j < Player0->GetBulletVect().size(); ++j) {
+				if (abs(glm::distance(Player0->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= EnemyVect[i]->HitRadius) {
+					//Destroy if colliding with a bullet
+					EnemyVect.erase(EnemyVect.begin() + i);
+					Player0->GetBulletVect().erase(Player0->GetBulletVect().begin() + j);
+					Score += 10;
+					ScoreText->SetText("SCORE: " + std::to_string(Score));
+					break;
+				}
+			}
+		}
+
+		for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
+			if (abs(glm::distance(Player0->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
+				Player0->State = PickUpVect[i]->Type;
+				Player0->PowerUpDuration = 100.0f;
+				PickUpVect.erase(PickUpVect.begin() + i);
+			}
+		}
+	}
+}
+
 void GameManager::DrawScene() {
 	switch (CurrentState) {
 		case START_MENU:
 			DrawMenu();
 			break;
-		case GAME_PLAY:
+		case SINGLEPLAYER_GAME:
 			DrawGame();
 			break;
 		case END_MENU:
@@ -226,16 +293,16 @@ void GameManager::DrawScene() {
 		case OPTION_MENU:
 			DrawOption();
 			break;
-		case MULTIPLAYER_LOBBY:
+		case MULTIPLAYER_MENU:
 			DrawServerOption();
 			break;
 		case HOST_LOBBY:
 			DrawHostLobby();
 			break;
-		case SERVER_SELECT:
-			DrawServerSelect();
+		case CLIENT_GAME:
+			DrawMultiplayerGame();
 			break;
-		case MULTIPLAYER_GAME:
+		case HOST_GAME:
 			DrawMultiplayerGame();
 			break;
 		case CLIENT_LOBBY:
@@ -249,7 +316,8 @@ void GameManager::DestroyInstance() {
 	SceneManagerPtr = nullptr;
 }
 
-void GameManager::GameLoop(float _DeltaTime) {
+void GameManager::ProcessGame(float _DeltaTime) {
+	DeltaTime = _DeltaTime;
 	if (PlayMusic == true) sm.ResumeBGM();
 	else sm.PauseBGM();
 
@@ -262,11 +330,11 @@ void GameManager::GameLoop(float _DeltaTime) {
 
 			switch (TempOutput) {
 				case 0:
-					CurrentState = GAME_PLAY;
+					CurrentState = SINGLEPLAYER_GAME;
 					break;
 				case 1:
 					MultiplayerTitle0->SetText("Multiplayer");
-					CurrentState = MULTIPLAYER_LOBBY;
+					CurrentState = MULTIPLAYER_MENU;
 					break;
 				case 2:
 					CurrentState = OPTION_MENU;
@@ -279,73 +347,8 @@ void GameManager::GameLoop(float _DeltaTime) {
 			break;
 		}
 
-		case GAME_PLAY: {
-			//If the player still exists
-			if (Player0->State == DEAD) {
-				CurrentState = END_MENU;
-				return;
-			}
-			if (Player0 != nullptr) {
-				DeltaTime = _DeltaTime;
-				//Spawning Enemies
-				if (EnemyVect.size() < 0) {
-					SpawnTimer += 10.0f * _DeltaTime;
-					if (SpawnTimer >= SpawnLimiter) {
-						SpawnTimer = 0.0f;
-						glm::vec3 SpawnPos = {
-							static_cast<float>((rand() % 6000) - 3000),
-							static_cast<float>((rand() % 6000) - 3000),
-							0.0f
-						};
-						if ((rand() % 5) == 0) {
-							EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, Player0));
-						} else {
-							EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, Player0));
-						}
-					}
-				}
-
-				if (PickUpVect.size() < 3) {
-					glm::vec3 SpawnPos = {
-						static_cast<float>((rand() % 6000) - 3000),
-						static_cast<float>((rand() % 6000) - 3000),
-						0.0f
-					};
-					int num = (rand() % 10);
-					if (num < 4) {
-						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
-					} else if (num < 8) {
-						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
-					} else {
-						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
-					}
-				}
-				InputManager::ProcessKeyInput(Player0);
-
-				//Checking every entity
-				for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
-					//Check against every bullet
-					for (unsigned int j = 0; j < Player0->GetBulletVect().size(); ++j) {
-						if (abs(glm::distance(Player0->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= EnemyVect[i]->HitRadius) {
-							//Destroy if colliding with a bullet
-							EnemyVect.erase(EnemyVect.begin() + i);
-							Player0->GetBulletVect().erase(Player0->GetBulletVect().begin() + j);
-							Score += 10;
-							ScoreText->SetText("SCORE: " + std::to_string(Score));
-							break;
-						}
-					}
-				}
-
-				for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
-					if (abs(glm::distance(Player0->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
-						Player0->State = PickUpVect[i]->Type;
-						Player0->PowerUpDuration = 100.0f;
-						PickUpVect.erase(PickUpVect.begin() + i);
-					}
-				}
-			}
-			
+		case SINGLEPLAYER_GAME: {
+			GameLoop();
 			break;
 		}
 
@@ -370,7 +373,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 			break;
 		}
 
-		case MULTIPLAYER_LOBBY: {
+		case MULTIPLAYER_MENU: {
 			int TempOutput = NULL;
 			MultiplayerMenu->Process(TempOutput);
 			InputManager::ProcessKeyInput();
@@ -398,62 +401,55 @@ void GameManager::GameLoop(float _DeltaTime) {
 		}
 
 		case HOST_LOBBY: {
-			
+			InputManager::ProcessKeyInput(Player0);
 			ServerManager::GetInstance()->ProcessNetworkEntity();
 			if (ServerManager::GetInstance()->LobbyReady()) {
-				CurrentState = MULTIPLAYER_GAME;
+				CurrentState = HOST_GAME;
 			}
-			
-			break;
-		}
-		case MULTIPLAYER_GAME: {
-			ServerManager::GetInstance()->ProcessNetworkEntity();
-			Player1->GetTarget() = ServerManager::GetInstance()->GetPlayerPos();
+			//Player1->GetPos() = ServerManager::GetInstance()->GetPlayerPos();
 			break;
 		}
 
-		case SERVER_SELECT: {
+		case HOST_GAME: {
+			InputManager::ProcessKeyInput(Player0);
+			ServerManager::GetInstance()->ProcessNetworkEntity();
+			std::cout << ServerManager::GetInstance()->GetPlayerPos().x;
+			Player1->GetPos() = ServerManager::GetInstance()->GetPlayerPos();
+			break;
+		}
+
+		case CLIENT_GAME: {
+			GameLoop();
+			std::stringstream ss;
+			ss << std::fixed << std::setprecision(1);
+			ss << Player0->GetPos().x << ' ' << Player0->GetPos().y;
+
+			TPacket Data;
+			Data.Serialize(PLAYERPOS, const_cast<char*>(ss.str().c_str()));
+			ServerManager::GetInstance()->SendPacket(Data.PacketData);
 			break;
 		}
 
 		case CLIENT_LOBBY: {
 			//Getting the server list and putting them into the menu options
-			int NumOptions = ServerManager::GetInstance()->GetServerAddrs().size();
-			for (int i = 0; i < NumOptions; ++i) {
+			ServerManager::GetInstance()->ProcessNetworkEntity();
+			int NumServers = ServerManager::GetInstance()->GetServerAddrs().size();
+			for (int i = 0; i < NumServers; ++i) {
 				ServerListMenu->ReplaceOption(i, ToString(ServerManager::GetInstance()->GetServerAddrs()[i]));
 			}
-
 			int TempOutput = NULL;
 			ServerListMenu->Process(TempOutput);
 			InputManager::ProcessKeyInput();
-			switch (TempOutput) {
-				case 0:
-					if (ServerManager::GetInstance()->SelectServer(TempOutput)) {
-						CurrentState = MULTIPLAYER_GAME;
-					}
-					break;
-				case 1:
 
-					break;
-				case 2:
-
-					break;
-				case 3:
-
-					break;
-				case 4:
-
-					break;
-				case 5:
-
-					break;
-				case 6:
-					ServerManager::GetInstance()->StopNetworkEntity();
-					CurrentState = START_MENU;
-					break;
-				default:break;
+			if (TempOutput < NumServers) {
+				ServerManager::GetInstance()->SelectServer(TempOutput);
+				
+				CurrentState = CLIENT_GAME;
 			}
-
+			else if (TempOutput == 6) {
+				ServerManager::GetInstance()->StopNetworkEntity();
+				CurrentState = MULTIPLAYER_MENU;
+			}
 			break;
 			
 		}
@@ -464,7 +460,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 			InputManager::ProcessKeyInput();
 			switch (TempOutput) {
 				case 0:
-					CurrentState = GAME_PLAY;
+					CurrentState = SINGLEPLAYER_GAME;
 					RestartGame();
 					break;
 				case 1:

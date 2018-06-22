@@ -47,7 +47,6 @@ bool Client::Initialise() {
 
 	char _cServerChosen[5];					//Chosen server index
 	ZeroMemory(_cServerChosen, 5);
-	unsigned int _uiServerIndex;
 
 	//Create a work queue to distribute messages between the main thread and the receive thread.
 	m_pWorkQueue = new CWorkQueue<std::string>();
@@ -65,21 +64,26 @@ bool Client::Initialise() {
 
 	//Use a boolean flag to determine if a valid server has been chosen by the client or not
 
-	//Question 7: Broadcast to detect server
-	m_bDoBroadcast = true;
-	m_pClientSocket->EnableBroadcast();
-	BroadcastForServers();
-	if (m_vecServerAddr.size() == 0) {
-		std::cout << "No Servers Found " << std::endl;
-	} else {
 
-		//Give a list of servers for the user to choose from :
-		for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
-			std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
+	for (int i = 0; i < 10; ++i) {
+		//Question 7: Broadcast to detect server
+		m_bDoBroadcast = true;
+		m_pClientSocket->EnableBroadcast();
+		BroadcastForServers();
+		if (m_vecServerAddr.size() == 0) {
+			std::cout << "No Servers Found " << std::endl;
+			continue;
+		}
+		else {
+		 //Give a list of servers for the user to choose from :
+			for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
+				std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
+			}
+			m_bDoBroadcast = false;
+			m_pClientSocket->DisableBroadcast();
+			break;
 		}
 	}
-	m_bDoBroadcast = false;
-	m_pClientSocket->DisableBroadcast();
 	return true;
 }
 
@@ -100,6 +104,7 @@ bool Client::BroadcastForServers() {
 		m_ServerSocketAddress.sin_port = htons(DEFAULT_SERVER_PORT + i);
 		SendData(_packet.PacketData);
 	}
+	Sleep(16);
 	ReceiveBroadcastMessages(_pcTempBuffer);
 
 	return true;
@@ -281,7 +286,7 @@ unsigned short Client::GetRemotePort() {
 
 bool Client::SelectServer(int _Opt) {
 
-	if (_Opt > m_vecServerAddr.size()) return false;
+	if (_Opt > static_cast<int>(m_vecServerAddr.size())) return false;
 
 	m_ServerSocketAddress.sin_family = AF_INET;
 	m_ServerSocketAddress.sin_port = m_vecServerAddr[_Opt].sin_port;
