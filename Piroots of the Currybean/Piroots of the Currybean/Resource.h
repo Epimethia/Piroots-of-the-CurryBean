@@ -16,7 +16,7 @@
 #include FT_FREETYPE_H
 
 //VLD
-#include "Dependencies\Visual Leak Detector\include\vld.h"
+//#include "Dependencies\Visual Leak Detector\include\vld.h"
 
 //Main Includes
 #include <iostream>

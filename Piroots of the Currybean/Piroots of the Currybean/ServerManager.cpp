@@ -35,8 +35,12 @@ void ServerManager::DestroyInstance() {
 	ServerManagerPtr = nullptr;
 }
 
-void ServerManager::SelectServer(unsigned int _Opt) {
+bool ServerManager::SelectServer(unsigned int _Opt) {
+	return ClientPtr->SelectServer(_Opt);
+}
 
+std::vector<sockaddr_in> ServerManager::GetServerAddrs() {
+	return ClientPtr->GetServerList();
 }
 
 void ServerManager::StartNetwork(EEntityType _Type) {
@@ -103,13 +107,13 @@ void ServerManager::SendPacket(std::string _Data) {
 void ServerManager::StopNetworkEntity() {
 	if (ClientPtr != nullptr) {
 		ClientPtr->GetOnlineState() = false;
-		_ClientReceiveThread.join();
+		if (_ClientReceiveThread.joinable()) _ClientReceiveThread.join();
 		ClientPtr = nullptr;
 	}
 
 	if (ServerPtr != nullptr) {
 		ServerPtr->GetOnlineState() = false;
-		_ServerReceiveThread.join();
+		if (_ServerReceiveThread.joinable()) _ServerReceiveThread.join();
 		ServerPtr = nullptr;
 	}
 }

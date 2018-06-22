@@ -20,6 +20,10 @@ public:
 	virtual void GetRemoteIPAddress(char* _pcSendersIP);
 	virtual unsigned short GetRemotePort();
 
+	std::vector<sockaddr_in> GetServerList() { return m_vecServerAddr; };
+
+	bool SelectServer(int _Opt);
+
 	void GetPacketData(char* _pcLocalBuffer);
 	CWorkQueue<std::string>* GetWorkQueue();
 

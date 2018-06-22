@@ -64,7 +64,7 @@ private:
 	std::shared_ptr<Menu> EndMenu;
 	std::shared_ptr<Menu> OptionMenu;
 	std::shared_ptr<Menu> MultiplayerMenu;
-	std::shared_ptr<Menu> ServerList;
+	std::shared_ptr<Menu> ServerListMenu;
 
 	std::shared_ptr<Model> UIBoat;
 	glm::mat4 StartMenuMatrix;

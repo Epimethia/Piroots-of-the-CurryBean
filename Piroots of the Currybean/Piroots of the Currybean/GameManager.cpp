@@ -96,7 +96,7 @@ GameManager::GameManager() {
 	ServerListOpt.push_back("----");
 	ServerListOpt.push_back("----");
 	ServerListOpt.push_back("Back");
-	ServerList = std::make_shared<Menu>(ServerListOpt, glm::vec2(90.0f, 460.0f));
+	ServerListMenu = std::make_shared<Menu>(ServerListOpt, glm::vec2(90.0f, 460.0f));
 	#pragma endregion
 
 	#pragma region Aesthetic Boat Model
@@ -187,13 +187,11 @@ void GameManager::DrawHostLobby() {
 }
 
 void GameManager::DrawClientLobby() {
-	Player0->Process(DeltaTime);
-	Player1->Process(DeltaTime);
-	for (auto it : EnemyVect) it->Process(DeltaTime);
-	for (auto it : PickUpVect) it->Process(DeltaTime);
 	CM.Render(CubeMapShader, Camera::GetMatrix());
 	WaveObj->Process(DeltaTime);
-	ScoreText->Render();
+	MultiplayerTitle0->Render();
+	MultiplayerTitle1->Render();
+	ServerListMenu->Render();
 }
 
 void GameManager::DrawServerSelect() {
@@ -201,7 +199,7 @@ void GameManager::DrawServerSelect() {
 	WaveObj->Process(DeltaTime);
 	MultiplayerTitle0->Render();
 	MultiplayerTitle1->Render();
-	ServerList->Render();
+	ServerListMenu->Render();
 }
 
 void GameManager::DrawMultiplayerGame() {
@@ -281,7 +279,7 @@ void GameManager::GameLoop(float _DeltaTime) {
 			break;
 		}
 
-		case GAME_PLAY || CLIENT_LOBBY: {
+		case GAME_PLAY: {
 			//If the player still exists
 			if (Player0->State == DEAD) {
 				CurrentState = END_MENU;
@@ -419,78 +417,45 @@ void GameManager::GameLoop(float _DeltaTime) {
 		}
 
 		case CLIENT_LOBBY: {
-			
-			//If the player still exists
-			if (Player0->State == DEAD) {
-				CurrentState = END_MENU;
-				return;
-			}
-			if (Player0 != nullptr) {
-				DeltaTime = _DeltaTime;
-				//Spawning Enemies
-				if (EnemyVect.size() < 0) {
-					SpawnTimer += 10.0f * _DeltaTime;
-					if (SpawnTimer >= SpawnLimiter) {
-						SpawnTimer = 0.0f;
-						glm::vec3 SpawnPos = {
-							static_cast<float>((rand() % 6000) - 3000),
-							static_cast<float>((rand() % 6000) - 3000),
-							0.0f
-						};
-						if ((rand() % 5) == 0) {
-							EnemyVect.push_back(std::make_shared<WanderEnemy>(SpawnPos, Player0));
-						} else {
-							EnemyVect.push_back(std::make_shared<PursueEnemy>(SpawnPos, Player0));
-						}
-					}
-				}
-
-				if (PickUpVect.size() < 3) {
-					glm::vec3 SpawnPos = {
-						static_cast<float>((rand() % 6000) - 3000),
-						static_cast<float>((rand() % 6000) - 3000),
-						0.0f
-					};
-					int num = (rand() % 10);
-					if (num < 4) {
-						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, ATTACK_POWERUP));
-					} else if (num < 8) {
-						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPEED_POWERUP));
-					} else {
-						PickUpVect.push_back(std::make_shared<PickUp>(SpawnPos, SPECIAL_POWERUP));
-					}
-				}
-				InputManager::ProcessKeyInput(Player0);
-
-				//Checking every entity
-				for (unsigned int i = 0; i < EnemyVect.size(); ++i) {
-					//Check against every bullet
-					for (unsigned int j = 0; j < Player0->GetBulletVect().size(); ++j) {
-						if (abs(glm::distance(Player0->GetBulletVect()[j]->GetPos(), EnemyVect[i]->GetPos())) <= EnemyVect[i]->HitRadius) {
-							//Destroy if colliding with a bullet
-							EnemyVect.erase(EnemyVect.begin() + i);
-							Player0->GetBulletVect().erase(Player0->GetBulletVect().begin() + j);
-							Score += 10;
-							ScoreText->SetText("SCORE: " + std::to_string(Score));
-							break;
-						}
-					}
-				}
-
-				for (unsigned int i = 0; i < PickUpVect.size(); ++i) {
-					if (abs(glm::distance(Player0->GetPos(), PickUpVect[i]->GetPos()) <= 100.0f)) {
-						Player0->State = PickUpVect[i]->Type;
-						Player0->PowerUpDuration = 100.0f;
-						PickUpVect.erase(PickUpVect.begin() + i);
-					}
-				}
+			//Getting the server list and putting them into the menu options
+			int NumOptions = ServerManager::GetInstance()->GetServerAddrs().size();
+			for (int i = 0; i < NumOptions; ++i) {
+				ServerListMenu->ReplaceOption(i, ToString(ServerManager::GetInstance()->GetServerAddrs()[i]));
 			}
 
-			std::stringstream ss;
-			ss << std::fixed << std::setprecision(1) << Player0->GetPos().x << ' ' << Player0->GetPos().y;
-			ServerManager::GetInstance()->SendPacket(ss.str());
-			ServerManager::GetInstance()->ProcessNetworkEntity();
+			int TempOutput = NULL;
+			ServerListMenu->Process(TempOutput);
+			InputManager::ProcessKeyInput();
+			switch (TempOutput) {
+				case 0:
+					if (ServerManager::GetInstance()->SelectServer(TempOutput)) {
+						CurrentState = MULTIPLAYER_GAME;
+					}
+					break;
+				case 1:
+
+					break;
+				case 2:
+
+					break;
+				case 3:
+
+					break;
+				case 4:
+
+					break;
+				case 5:
+
+					break;
+				case 6:
+					ServerManager::GetInstance()->StopNetworkEntity();
+					CurrentState = START_MENU;
+					break;
+				default:break;
+			}
+
 			break;
+			
 		}
 
 		case END_MENU: {

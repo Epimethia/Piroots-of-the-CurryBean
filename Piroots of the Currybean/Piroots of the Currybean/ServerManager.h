@@ -13,7 +13,8 @@ public:
 	static void DestroyInstance();
 
 	//Server Methods
-	void SelectServer(unsigned int _Opt);
+	bool SelectServer(unsigned int _Opt);
+	std::vector<sockaddr_in> GetServerAddrs();
 
 	void StartNetwork(EEntityType _Type);
 	void ProcessNetworkEntity();

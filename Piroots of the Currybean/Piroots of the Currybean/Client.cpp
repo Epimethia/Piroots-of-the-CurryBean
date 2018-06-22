@@ -64,45 +64,22 @@ bool Client::Initialise() {
 	m_bOnline = true;
 
 	//Use a boolean flag to determine if a valid server has been chosen by the client or not
-	bool _bServerChosen = false;
 
-	do {
+	//Question 7: Broadcast to detect server
+	m_bDoBroadcast = true;
+	m_pClientSocket->EnableBroadcast();
+	BroadcastForServers();
+	if (m_vecServerAddr.size() == 0) {
+		std::cout << "No Servers Found " << std::endl;
+	} else {
 
-		//Question 7: Broadcast to detect server
-		m_bDoBroadcast = true;
-		m_pClientSocket->EnableBroadcast();
-		BroadcastForServers();
-		if (m_vecServerAddr.size() == 0) {
-			std::cout << "No Servers Found " << std::endl;
-			continue;
-		} 
-		else {
-
-			//Give a list of servers for the user to choose from :
-			for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
-				std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
-			}
-
-			_uiServerIndex = atoi(_cServerChosen);
-			m_ServerSocketAddress.sin_family = AF_INET;
-			m_ServerSocketAddress.sin_port = m_vecServerAddr[0].sin_port;
-			m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[0].sin_addr.S_un.S_addr;
-			std::string _strServerAddress = ToString(m_vecServerAddr[0]);
-			std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
-			_bServerChosen = true;
+		//Give a list of servers for the user to choose from :
+		for (unsigned int i = 0; i < m_vecServerAddr.size(); i++) {
+			std::cout << std::endl << "[" << i << "]" << " SERVER : found at " << ToString(m_vecServerAddr[i]) << std::endl;
 		}
-		m_bDoBroadcast = false;
-		m_pClientSocket->DisableBroadcast();
-
-	} while (_bServerChosen == false);
-
-	//Send a handshake message to the server as part of the Client's Initialization process.
-	//Step1: Create a handshake packet
-
-	//sending the packet
-	TPacket _packet;
-	_packet.Serialize(HANDSHAKE, "HEllo");
-	SendData(_packet.PacketData);
+	}
+	m_bDoBroadcast = false;
+	m_pClientSocket->DisableBroadcast();
 	return true;
 }
 
@@ -123,7 +100,6 @@ bool Client::BroadcastForServers() {
 		m_ServerSocketAddress.sin_port = htons(DEFAULT_SERVER_PORT + i);
 		SendData(_packet.PacketData);
 	}
-	Sleep(16);
 	ReceiveBroadcastMessages(_pcTempBuffer);
 
 	return true;
@@ -233,6 +209,7 @@ void Client::ReceiveData(char* _pcBufferToReceiveData) {
 			//The remote end has shutdown the connection
 			_pcBufferToReceiveData = 0;
 		} else {
+			std::cout << "Received Message\n";
 			//There is valid data received.
 			strcpy_s(m_pcPacketData, strlen(_buffer) + 1, _buffer);
 			//strcpy_s(m_pcPacketData, strlen(_buffer) + 1, _buffer);
@@ -300,6 +277,23 @@ void Client::GetRemoteIPAddress(char *_pcSendersIP) {
 
 unsigned short Client::GetRemotePort() {
 	return ntohs(m_ServerSocketAddress.sin_port);
+}
+
+bool Client::SelectServer(int _Opt) {
+
+	if (_Opt > m_vecServerAddr.size()) return false;
+
+	m_ServerSocketAddress.sin_family = AF_INET;
+	m_ServerSocketAddress.sin_port = m_vecServerAddr[_Opt].sin_port;
+	m_ServerSocketAddress.sin_addr.S_un.S_addr = m_vecServerAddr[_Opt].sin_addr.S_un.S_addr;
+	std::string _strServerAddress = ToString(m_vecServerAddr[_Opt]);
+	std::cout << "Attempting to connect to server at " << _strServerAddress << std::endl;
+
+	//sending a handshake packet to the server
+	TPacket _packet;
+	_packet.Serialize(HANDSHAKE, "HEllo");
+	SendData(_packet.PacketData);
+	return true;
 }
 
 void Client::GetPacketData(char* _pcLocalBuffer) {
