@@ -37,7 +37,6 @@ void InputManager::ProcessKeyInput(std::shared_ptr<Player> _Player) {
 		//Held Stuff
 	} else if (KeySpecialArray[GLUT_KEY_UP] == KEY_FIRST_PRESS) {
 		_Player->CreateBullet(glm::vec3(0.0f, -1.0f, 0.0f));
-
 		KeySpecialArray[GLUT_KEY_UP] = KEY_HELD;
 	}
 

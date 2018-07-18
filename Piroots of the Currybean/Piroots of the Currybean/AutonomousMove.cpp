@@ -28,7 +28,7 @@ glm::vec3 AutoMove::Limit(glm::vec3 _Vec, float _MaxForce) {
 //Return Type:		glm::vec3 Steering Velocity
 //Description:		Takes an objects position and velocity and calculates the
 //                             required vector to reach the target point
-glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _Target) {
+glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3& _Target) {
 	//Get the objects current Velocity
 	Velocity = _ObjVelocity;
 
@@ -46,6 +46,7 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 		//Reduce the speed
 		DesiredVelocity *= (Distance / ApproachDistance);
 	}
+
 
 	//Calculating the max force that would be applied to the object
 	glm::vec3 Steering = DesiredVelocity - _ObjVelocity;
@@ -65,6 +66,10 @@ glm::vec3 AutoMove::Seek(glm::vec3 _ObjPos, glm::vec3 _ObjVelocity, glm::vec3 _T
 	float Distance = glm::length(DesiredVelocity);
 	DesiredVelocity = glm::normalize(DesiredVelocity) * _MaxSpeed;
 	if (Distance < ApproachDistance) DesiredVelocity *= (Distance / ApproachDistance);
+	if (_ObjPos.x >= 3000.0f) { DesiredVelocity = glm::vec3(-MaxSpeed, _ObjVelocity.y, 0.0f); _Target = _ObjPos; }
+	else if (_ObjPos.x <= -3000.0f) { DesiredVelocity = glm::vec3(MaxSpeed, _ObjVelocity.y, 0.0f); _Target = _ObjPos; }
+	else if (_ObjPos.y >= 3000.0f) { DesiredVelocity = glm::vec3(_ObjVelocity.x, -MaxSpeed, 0.0f); _Target = _ObjPos; }
+	else if (_ObjPos.y <= -3000.0f) { DesiredVelocity = glm::vec3(_ObjVelocity.x, MaxSpeed, 0.0f); _Target = _ObjPos; };
 	glm::vec3 Steering = DesiredVelocity - _ObjVelocity;
 	Steering = Limit(Steering, _MaxSpeed);
 	Steering.z = 0.0f;

@@ -272,7 +272,7 @@ void ModelEntity::Process(float _DeltaTime) {
 
 #pragma region WAVE FUNCTION DEFINITIONS
 Wave::Wave(glm::vec3 _Pos) {
-	ObjScale = glm::vec3(0.3f, 0.2f, 0.3f);
+	ObjScale = glm::vec3(0.4f, 0.2f, 0.4f);
 	ObjRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	ObjPos = _Pos;
 	model = EntityManager::GetModel(WAVE_ENTITY);
@@ -435,7 +435,10 @@ void Player::Process(float _DeltaTime) {
 			ShootTimer = 0.0f;
 		}
 	}
-
+	if (Target.x >= 3000.0f) Target.x = 2999.0f;
+	if (Target.x <= -3000.0f) Target.x = -2999.0f;
+	if (Target.y >= 3000.0f) Target.y = 2999.0f;
+	if (Target.y <= -3000.0f) Target.y = -2999.0f;
 	ObjVel += AutoMove::Seek(ObjPos, ObjVel, Target);
 	ObjPos += ObjVel * MaxSpeed * _DeltaTime;
 	Render();

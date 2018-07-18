@@ -23,7 +23,6 @@ GameManager::GameManager() {
 	PlayMusic = true;
 	#pragma endregion
 
-
 	//Initializing consistent objects
 	PlayerObj = std::make_shared<Player>(glm::vec3(0.0f, 1000.0f, -0.2f));
 	WaveObj = std::make_shared<Wave>(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -374,8 +373,8 @@ void GameManager::GameLoop(float _DeltaTime) {
 				if (SpawnTimer >= SpawnLimiter) {
 					SpawnTimer = 0.0f;
 					glm::vec3 SpawnPos = {
-						static_cast<float>((rand() % 6000) - 3000),
-						static_cast<float>((rand() % 6000) - 3000),
+						static_cast<float>((rand() % 5998) - 2999),
+						static_cast<float>((rand() % 5998) - 2999),
 						0.0f
 					};
 					if ((rand() % 5) == 0) {
@@ -451,6 +450,9 @@ void GameManager::RestartGame() {
 	Score = 0;
 	ScoreText->SetPosition(glm::vec2(20.0f, 700.0f));
 	ScoreText->SetText("SCORE: " + std::to_string(Score));
+	for (int i = 0; i < 255; ++i) InputManager::KeyArray[i] = KEYSTATE::KEY_RELEASED;
+	for (int i = 0; i < 255; ++i) InputManager::KeySpecialArray[i] = KEYSTATE::KEY_RELEASED;
+	
 }
 
 
